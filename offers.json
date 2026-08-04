@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-04T09:03:19+02:00",
+  "updated_at": "2026-08-04T11:05:57+02:00",
   "affiliate_tag": "rebajasdiaria-21",
   "offers": [
     {
@@ -11,7 +11,9 @@
       "discount_percent": 31,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/61NlSN4+liL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B085S2147W?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B085S2147W?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DYF82545",
@@ -22,7 +24,9 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51bkPDf8dUL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0DYF82545?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DYF82545?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DK4G3FMS",
@@ -33,7 +37,9 @@
       "discount_percent": 35,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/514hdnJlp6L._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0DK4G3FMS?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DK4G3FMS?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B08PKJZR1F",
@@ -44,7 +50,9 @@
       "discount_percent": 35,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/61Z5KRpJs3L._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B08PKJZR1F?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B08PKJZR1F?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B08QBDLBBV",
@@ -55,7 +63,9 @@
       "discount_percent": 42,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/61skcTpzf3L._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B08QBDLBBV?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B08QBDLBBV?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0GJL2L7NG",
@@ -66,7 +76,9 @@
       "discount_percent": 49,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71BSFxMXbRL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0GJL2L7NG?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0GJL2L7NG?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0FDGHHQ2W",
@@ -77,7 +89,9 @@
       "discount_percent": 64,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/710ZYNMeQJL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0FDGHHQ2W?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0FDGHHQ2W?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0FDFBN7R2",
@@ -88,7 +102,9 @@
       "discount_percent": 47,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61kl-FWOkuL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0FDFBN7R2?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0FDFBN7R2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0F4KJ59T1",
@@ -99,7 +115,9 @@
       "discount_percent": 64,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71R6m-FTd5L._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4KJ59T1?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0F4KJ59T1?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07QSC2YY8",
@@ -110,7 +128,9 @@
       "discount_percent": 53,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71YD2PjxnkL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B07QSC2YY8?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07QSC2YY8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0FDGXRT8T",
@@ -121,7 +141,9 @@
       "discount_percent": 52,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/6198YyIVY9L._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0FDGXRT8T?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0FDGXRT8T?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07TKDN6FX",
@@ -132,7 +154,9 @@
       "discount_percent": 62,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/619EMi6qAEL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B07TKDN6FX?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07TKDN6FX?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07S4X8GS2",
@@ -143,7 +167,9 @@
       "discount_percent": 46,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61RywsB+COL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B07S4X8GS2?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07S4X8GS2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0F4QKYSVT",
@@ -154,7 +180,9 @@
       "discount_percent": 55,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71qb19rP-rL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4QKYSVT?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0F4QKYSVT?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B089ZX7QX4",
@@ -165,7 +193,9 @@
       "discount_percent": 65,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61VmmsqxRRS._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B089ZX7QX4?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B089ZX7QX4?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07S2G42Q2",
@@ -176,7 +206,9 @@
       "discount_percent": 50,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51IqeXLrEwL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B07S2G42Q2?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07S2G42Q2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0F4NWPSGM",
@@ -187,7 +219,9 @@
       "discount_percent": 60,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71CjiPrh6pL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4NWPSGM?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0F4NWPSGM?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0F4NWBB88",
@@ -198,7 +232,9 @@
       "discount_percent": 59,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/6161uQ3q06L._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4NWBB88?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0F4NWBB88?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B00ON48TZW",
@@ -209,7 +245,9 @@
       "discount_percent": 78,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81H5GIAr6bL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B00ON48TZW?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B00ON48TZW?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CSPFNQ17",
@@ -220,7 +258,9 @@
       "discount_percent": 67,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51BTa94OFTL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0CSPFNQ17?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CSPFNQ17?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CKRZV8YC",
@@ -231,7 +271,9 @@
       "discount_percent": 52,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51Y3YV8vt6L._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0CKRZV8YC?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CKRZV8YC?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CYT925X9",
@@ -242,7 +284,9 @@
       "discount_percent": 42,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61keL1ywd8L._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0CYT925X9?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CYT925X9?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CYTB3GKH",
@@ -253,7 +297,9 @@
       "discount_percent": 45,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71WcI5-kKjL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0CYTB3GKH?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CYTB3GKH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DHVV9FGH",
@@ -264,7 +310,9 @@
       "discount_percent": 45,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61XH0w-U8OL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0DHVV9FGH?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DHVV9FGH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CZ9J4GDD",
@@ -275,7 +323,9 @@
       "discount_percent": 30,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71H8kaSsIcL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0CZ9J4GDD?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CZ9J4GDD?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CYQ5S28L",
@@ -286,7 +336,9 @@
       "discount_percent": 40,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/519D1+QdduL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0CYQ5S28L?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CYQ5S28L?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CT3XSVVL",
@@ -297,7 +349,9 @@
       "discount_percent": 40,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71enKp8dozL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0CT3XSVVL?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CT3XSVVL?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0D9676DGR",
@@ -308,7 +362,9 @@
       "discount_percent": 38,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/8104YS5UXmL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0D9676DGR?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0D9676DGR?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CSKPB56J",
@@ -319,7 +375,9 @@
       "discount_percent": 40,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61elRBB6NfL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CSKPB56J?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CSKPB56J?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0GF21JHJD",
@@ -330,7 +388,9 @@
       "discount_percent": 35,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/814nIVbNccL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0GF21JHJD?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0GF21JHJD?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0GJDHC4JQ",
@@ -341,7 +401,9 @@
       "discount_percent": 30,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71YxCGbijqL._AC_SR480,440_.jpg",
-      "url": "https://www.amazon.es/dp/B0GJDHC4JQ?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0GJDHC4JQ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0GGGPT585",
@@ -352,7 +414,9 @@
       "discount_percent": 57,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71DvFock0AL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GGGPT585?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0GGGPT585?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0GQ37Z8NX",
@@ -363,7 +427,9 @@
       "discount_percent": 34,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71zV8WukTTL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GQ37Z8NX?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0GQ37Z8NX?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0BJVRCTHB",
@@ -374,7 +440,9 @@
       "discount_percent": 41,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71cYwFEDZjL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0BJVRCTHB?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0BJVRCTHB?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CKBSCTY3",
@@ -385,7 +453,9 @@
       "discount_percent": 32,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/7174UT1x6xL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CKBSCTY3?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CKBSCTY3?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0H3ZC2QMD",
@@ -396,7 +466,9 @@
       "discount_percent": 69,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71uu4DOJIwL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0H3ZC2QMD?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0H3ZC2QMD?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0F66MS88R",
@@ -407,7 +479,9 @@
       "discount_percent": 30,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51RyMor1wiL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F66MS88R?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0F66MS88R?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0H2VPR999",
@@ -418,7 +492,9 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81B7sbgTtLL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0H2VPR999?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0H2VPR999?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0B9LDPXBF",
@@ -429,7 +505,9 @@
       "discount_percent": 49,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51ty7-7+CQL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0B9LDPXBF?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0B9LDPXBF?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0FHWBK77M",
@@ -440,7 +518,9 @@
       "discount_percent": 50,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71yLUQTQfPL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FHWBK77M?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0FHWBK77M?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0GVJP7Z5T",
@@ -451,7 +531,9 @@
       "discount_percent": 99,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71494VYOh3L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GVJP7Z5T?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0GVJP7Z5T?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B01C7JN256",
@@ -462,7 +544,9 @@
       "discount_percent": 99,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71Iv4CeojvL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B01C7JN256?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B01C7JN256?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B08JMC17RY",
@@ -473,7 +557,9 @@
       "discount_percent": 80,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/6104dbKX9pL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08JMC17RY?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B08JMC17RY?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B00A9XBMEG",
@@ -484,7 +570,9 @@
       "discount_percent": 32,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71M-MiUjNWL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B00A9XBMEG?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B00A9XBMEG?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07BFD6LHZ",
@@ -495,7 +583,9 @@
       "discount_percent": 49,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51lpzQABdHL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07BFD6LHZ?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07BFD6LHZ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DHH7TMGF",
@@ -506,7 +596,9 @@
       "discount_percent": 37,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81uCuIFLHHL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DHH7TMGF?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DHH7TMGF?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CNVVVY3M",
@@ -517,7 +609,9 @@
       "discount_percent": 73,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71jPnCJRUOL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CNVVVY3M?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CNVVVY3M?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B006FDHBXA",
@@ -528,7 +622,9 @@
       "discount_percent": 81,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/51Ro1uMiHYL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B006FDHBXA?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B006FDHBXA?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B09MDF185P",
@@ -539,7 +635,9 @@
       "discount_percent": 50,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61QHp4vJXBL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09MDF185P?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B09MDF185P?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07H2CLW43",
@@ -550,7 +648,9 @@
       "discount_percent": 40,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71EJMVHa-rL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07H2CLW43?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07H2CLW43?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CR45B3JW",
@@ -561,7 +661,9 @@
       "discount_percent": 42,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81i7Kfu8LxL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CR45B3JW?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CR45B3JW?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0BX45VZBM",
@@ -572,7 +674,9 @@
       "discount_percent": 56,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61YKXTVB1EL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0BX45VZBM?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0BX45VZBM?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DG3JWG1M",
@@ -583,7 +687,9 @@
       "discount_percent": 61,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71EtPApxs4L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DG3JWG1M?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DG3JWG1M?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B09CTVQWK8",
@@ -594,7 +700,9 @@
       "discount_percent": 46,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51sVFEQCXXL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09CTVQWK8?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B09CTVQWK8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B06Y68XBHF",
@@ -605,7 +713,9 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71+zZDEatdL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B06Y68XBHF?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B06Y68XBHF?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07S7NRZL4",
@@ -616,7 +726,9 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61KdqY6rFeL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07S7NRZL4?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07S7NRZL4?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CLB4XMXC",
@@ -627,7 +739,9 @@
       "discount_percent": 43,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/51qiG2jyzpL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CLB4XMXC?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CLB4XMXC?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B007WQJSGM",
@@ -638,7 +752,9 @@
       "discount_percent": 44,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81nKW2g0SPL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B007WQJSGM?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B007WQJSGM?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B079M59MSH",
@@ -649,7 +765,9 @@
       "discount_percent": 41,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61qjuVmjJwL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B079M59MSH?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B079M59MSH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CX54K6ZX",
@@ -660,7 +778,9 @@
       "discount_percent": 41,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/717GTtnwAPL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CX54K6ZX?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CX54K6ZX?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CLB6QKR8",
@@ -671,7 +791,9 @@
       "discount_percent": 31,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/51ACDOOOWrL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CLB6QKR8?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CLB6QKR8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07KM2WKSK",
@@ -682,7 +804,9 @@
       "discount_percent": 39,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81Sq1ZGtVEL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07KM2WKSK?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07KM2WKSK?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B007WQJTJ8",
@@ -693,7 +817,9 @@
       "discount_percent": 47,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51OnuWC--2L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B007WQJTJ8?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B007WQJTJ8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CWDY9VGZ",
@@ -704,7 +830,9 @@
       "discount_percent": 32,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61cHBlS1zIL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CWDY9VGZ?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CWDY9VGZ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B09KHGSLJB",
@@ -715,7 +843,9 @@
       "discount_percent": 80,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51jO04aSG+L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09KHGSLJB?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B09KHGSLJB?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0D3PYHDDG",
@@ -726,7 +856,9 @@
       "discount_percent": 35,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71WfwufZ-mL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D3PYHDDG?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0D3PYHDDG?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B09KHGKQSH",
@@ -737,7 +869,9 @@
       "discount_percent": 82,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51R04jRy-iL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09KHGKQSH?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B09KHGKQSH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07H299DK5",
@@ -748,7 +882,9 @@
       "discount_percent": 40,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71EJMVHa-rL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07H299DK5?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07H299DK5?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B06Y69RLRP",
@@ -759,18 +895,22 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71+zZDEatdL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B06Y69RLRP?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B06Y69RLRP?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CLY2TQH8",
-      "title": "TEEHON",
-      "category": "Moda Hombre",
+      "title": "TEEHON Cartera para Hombre Slim Fibra de Carbono con Bloqueo RFID, Tarjetero Hombre Ranuras para Tarjetas de Crédito, Clip para Billetes, Cartera Bid-Fold (Negro)",
+      "category": "Tecnología",
       "price": 18.99,
       "original_price": 29.99,
       "discount_percent": 37,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81OinHEBskL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CLY2TQH8?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CLY2TQH8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B06XZNJWZL",
@@ -781,7 +921,9 @@
       "discount_percent": 80,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/617qUYsjR6L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B06XZNJWZL?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B06XZNJWZL?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B00803ZCOI",
@@ -792,7 +934,9 @@
       "discount_percent": 35,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51Go+g60t9L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B00803ZCOI?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B00803ZCOI?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B09QF1XZNZ",
@@ -803,7 +947,9 @@
       "discount_percent": 82,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51ZMhrZ4IyL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09QF1XZNZ?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B09QF1XZNZ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0F4XWTNPY",
@@ -814,7 +960,9 @@
       "discount_percent": 82,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51SA7Bkz2XL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4XWTNPY?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0F4XWTNPY?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0C2ZMSFK8",
@@ -825,7 +973,9 @@
       "discount_percent": 70,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51dOnyDR-3L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0C2ZMSFK8?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0C2ZMSFK8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0D455KBGG",
@@ -836,7 +986,9 @@
       "discount_percent": 30,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/41z7T9zPGHL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D455KBGG?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0D455KBGG?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0BBVXVGWK",
@@ -847,7 +999,9 @@
       "discount_percent": 50,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/41yAan-b-DL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0BBVXVGWK?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0BBVXVGWK?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0F2GYWSX3",
@@ -858,7 +1012,9 @@
       "discount_percent": 70,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51cs846DDML._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F2GYWSX3?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0F2GYWSX3?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CJ9PX39G",
@@ -869,7 +1025,9 @@
       "discount_percent": 70,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51oj6cPp0bL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CJ9PX39G?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CJ9PX39G?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CJ9SF2P2",
@@ -880,7 +1038,9 @@
       "discount_percent": 75,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61OnOxnZGAL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CJ9SF2P2?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CJ9SF2P2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B08QP5PJDP",
@@ -891,7 +1051,9 @@
       "discount_percent": 36,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61IltSxY5aL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08QP5PJDP?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B08QP5PJDP?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B0DWDYDGDN",
@@ -902,7 +1064,9 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71k1ZfO2CsL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DWDYDGDN?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DWDYDGDN?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B00CTKDD80",
@@ -913,7 +1077,9 @@
       "discount_percent": 30,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61r9vnSX0bL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B00CTKDD80?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B00CTKDD80?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CMGXG262",
@@ -924,7 +1090,9 @@
       "discount_percent": 36,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71oQZIIKpxL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CMGXG262?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CMGXG262?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DPQGBT1G",
@@ -935,7 +1103,9 @@
       "discount_percent": 50,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71fTTgVMooL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DPQGBT1G?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DPQGBT1G?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CB6KFXH3",
@@ -946,7 +1116,9 @@
       "discount_percent": 35,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61ywcjQiePL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CB6KFXH3?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CB6KFXH3?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DL7FHC3V",
@@ -957,7 +1129,9 @@
       "discount_percent": 42,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81KQqPotScL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DL7FHC3V?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DL7FHC3V?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0BRSRFKP3",
@@ -968,7 +1142,9 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71qVQtfiZYL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0BRSRFKP3?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0BRSRFKP3?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CSKNWZQL",
@@ -979,7 +1155,9 @@
       "discount_percent": 43,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/710jZp-z7sL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CSKNWZQL?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CSKNWZQL?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DC6Z1S67",
@@ -990,7 +1168,9 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/8104YS5UXmL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DC6Z1S67?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DC6Z1S67?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0D6YQX5WP",
@@ -1001,7 +1181,9 @@
       "discount_percent": 40,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61aocnk7QBL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D6YQX5WP?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0D6YQX5WP?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CSKQ33NS",
@@ -1012,7 +1194,9 @@
       "discount_percent": 40,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61elRBB6NfL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CSKQ33NS?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CSKQ33NS?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0983LY2K6",
@@ -1023,7 +1207,9 @@
       "discount_percent": 36,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61oZve9XmvL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0983LY2K6?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0983LY2K6?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0DYL98F7N",
@@ -1034,7 +1220,9 @@
       "discount_percent": 30,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61WcUj8AWjL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DYL98F7N?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0DYL98F7N?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B09NRX94YS",
@@ -1045,7 +1233,9 @@
       "discount_percent": 35,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61DaOVbc5vL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09NRX94YS?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B09NRX94YS?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0FKT1HY9K",
@@ -1056,7 +1246,9 @@
       "discount_percent": 99,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51mcvS44orL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FKT1HY9K?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0FKT1HY9K?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B07S9JFN7W",
@@ -1067,7 +1259,9 @@
       "discount_percent": 94,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/61xz1Z9MBZL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07S9JFN7W?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07S9JFN7W?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B0D2P1ZVZ8",
@@ -1078,7 +1272,9 @@
       "discount_percent": 70,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/71BK9YE+E-L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D2P1ZVZ8?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0D2P1ZVZ8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B08B21PRLM",
@@ -1089,7 +1285,9 @@
       "discount_percent": 70,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/71YYaAzgQDL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08B21PRLM?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B08B21PRLM?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B08P4YPB8Q",
@@ -1100,7 +1298,9 @@
       "discount_percent": 93,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/41WSwC2KlcL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08P4YPB8Q?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B08P4YPB8Q?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B0GF86QJK7",
@@ -1111,7 +1311,9 @@
       "discount_percent": 70,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51CRssUhs5L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GF86QJK7?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0GF86QJK7?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B08J4NMBL2",
@@ -1122,7 +1324,9 @@
       "discount_percent": 34,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61+QL5xKFaL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08J4NMBL2?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B08J4NMBL2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B01MF9YDQN",
@@ -1133,7 +1337,9 @@
       "discount_percent": 50,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71T6BLS2AaL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B01MF9YDQN?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B01MF9YDQN?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B0009G5BRW",
@@ -1144,7 +1350,9 @@
       "discount_percent": 30,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/516TIVXT3TL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0009G5BRW?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0009G5BRW?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0H2XY3XX8",
@@ -1155,7 +1363,9 @@
       "discount_percent": 69,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61cUAM1zxkL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0H2XY3XX8?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0H2XY3XX8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0F82HR8QZ",
@@ -1166,7 +1376,9 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61P-U5rHVRL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F82HR8QZ?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0F82HR8QZ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0FRLWSGPW",
@@ -1177,7 +1389,9 @@
       "discount_percent": 35,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/617bRi2T2LL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FRLWSGPW?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0FRLWSGPW?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0CK2V4QT3",
@@ -1188,7 +1402,9 @@
       "discount_percent": 33,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/71p6NHrWakL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CK2V4QT3?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0CK2V4QT3?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0H2Y1HK2H",
@@ -1199,7 +1415,9 @@
       "discount_percent": 57,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61etLvAmj5L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0H2Y1HK2H?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0H2Y1HK2H?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0H5W97TC9",
@@ -1210,7 +1428,9 @@
       "discount_percent": 53,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71WbUj3LEML._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0H5W97TC9?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0H5W97TC9?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B0GX32263V",
@@ -1221,7 +1441,9 @@
       "discount_percent": 48,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71vvuWIS8QL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GX32263V?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B0GX32263V?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B001J8C7JE",
@@ -1232,7 +1454,9 @@
       "discount_percent": 42,
       "is_flash": true,
       "image": "https://m.media-amazon.com/images/I/81JlaEmQuwL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B001J8C7JE?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B001J8C7JE?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B001DT3TLE",
@@ -1243,7 +1467,9 @@
       "discount_percent": 45,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61-2I134udL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B001DT3TLE?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B001DT3TLE?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T09:03:19+02:00"
     },
     {
       "id": "B09CG11ZW1",
@@ -1254,7 +1480,9 @@
       "discount_percent": 30,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71d3islqwbL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09CG11ZW1?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B09CG11ZW1?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B091PD782Y",
@@ -1265,7 +1493,9 @@
       "discount_percent": 32,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/714gPuhKs3L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B091PD782Y?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B091PD782Y?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B07ZTSYYX4",
@@ -1276,7 +1506,9 @@
       "discount_percent": 38,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61k0pRw50CL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07ZTSYYX4?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07ZTSYYX4?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     },
     {
       "id": "B07DTWXCYD",
@@ -1287,7 +1519,1569 @@
       "discount_percent": 33,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81I4IIYQCUL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07DTWXCYD?tag=rebajasdiaria-21"
+      "url": "https://www.amazon.es/dp/B07DTWXCYD?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T09:03:19+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GRV7K5NR",
+      "title": "Altavoz Bluetooth Portátil 25W, Potente Altavoz Bluetooth, Altavoces Graves Duales, 25H Reproducción, IPX7, RGB, Emparejamiento TWS, AUX, TF, USB, Ideal Para Actividades Aire Libre",
+      "category": "Música",
+      "price": 39.99,
+      "original_price": 129.99,
+      "discount_percent": 69,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71pCA6IrJwL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GRV7K5NR?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0BQ3CGGLJ",
+      "title": "Sharp CP-SS30(BK) Pareja Altavoces estantería Activos 2vías, 60W RMS (2x30W) Carcasa Madera, Bluetooth v5.0, USB, óptica, Auxiliar, RCA, Ajuste Graves y Agudos, Rejilla extraíble, ",
+      "category": "Música",
+      "price": 88.64,
+      "original_price": 129.9,
+      "discount_percent": 32,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71fIK1rGPbL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BQ3CGGLJ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GSVPLDNC",
+      "title": "Bluetooth 5.4 Altavoz Bluetooth Potente 80W, Impermeable IPX7 Altavoces Portátil Potente con 8000mAh Batería, Sonido Estéreo, USB/RGB/TWS/AUX/TF, Speaker con 2EQ para Exterior, Neg",
+      "category": "Música",
+      "price": 59.99,
+      "original_price": 159.99,
+      "discount_percent": 63,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71sdBcPAOwL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GSVPLDNC?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0H6HQBRM5",
+      "title": "Altavoz Bluetooth Potente 25W, Altavoz Bluetooth con Graves | 24H Reproducción, 5 Modos RGB, Emparejamiento TWS, Impermeable IPX7, Soporte AUX/TF, Altavoz Portátil para Fiestas y V",
+      "category": "Música",
+      "price": 35.99,
+      "original_price": 129.99,
+      "discount_percent": 72,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/810xNexpkoL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0H6HQBRM5?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0D3X3YKVF",
+      "title": "Ultimate Ears WONDERBOOM 4, Altavoz Bluetooth portátil Resistente al Agua | Altavoz flotante a prueba de polvo, sonido 360 grados, graves potentes, radio de acción 40 m - Negro",
+      "category": "Música",
+      "price": 69.99,
+      "original_price": 105.0,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71O-9Qt8GXL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D3X3YKVF?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CQ53RVTW",
+      "title": "Soundcore Altavoz Bluetooth Potente Boom 2, con Potente Sonido 80W Gracias al Subwoofer y BassUp™, 24h, IPX7, Tiene Luces RGB, Puerto USB-C, para IR de Camping, a la Playa o al Cam",
+      "category": "Música",
+      "price": 89.77,
+      "original_price": 129.99,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71UFhbO8+sL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CQ53RVTW?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B08VDNCZT9",
+      "title": "JBL Charge 5 Altavoz inalámbrico portátil con Bluetooth y batería integrada, resistente al agua (IP67), con PartyBoost para subir el nivel de la fiesta, hasta 20h de reproducción, ",
+      "category": "Música",
+      "price": 115.0,
+      "original_price": 199.99,
+      "discount_percent": 42,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81FChGNqztL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08VDNCZT9?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07W7KT2B3",
+      "title": "Logitech G G733 Lightspeed Auriculares con Micrófono Inalámbricos",
+      "category": "Gaming",
+      "price": 65.99,
+      "original_price": 129.99,
+      "discount_percent": 49,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71xNjrzG69L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07W7KT2B3?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B089SSFV85",
+      "title": "Razer BlackShark V2 X - Auriculares Gaming (Auriculares con cable con controlador de 50 mm, supresión de ruido para PC, Mac, PS4, Xbox One y Switch) Negro",
+      "category": "Gaming",
+      "price": 45.99,
+      "original_price": 79.99,
+      "discount_percent": 43,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61kchbxWJ5L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B089SSFV85?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B083X3G4Y1",
+      "title": "JBL Quantum 200 Auriculares para gamers con sonido QuantumSOUND y micrófono, con un diseño llamativo, compatible con múltiples plataformas, en negro",
+      "category": "Gaming",
+      "price": 29.99,
+      "original_price": 59.99,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/615Y-wL6veL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B083X3G4Y1?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FL7NNGRG",
+      "title": "Logitech G G321 Lightspeed, Auriculares inalámbricos Bluetooth para Gaming | Comodidad y ajuste dinámicos, micrófono de varilla 16 khz, PC, PS4, PS5, Nintendo Switch y dispositivos",
+      "category": "Gaming",
+      "price": 44.99,
+      "original_price": 69.99,
+      "discount_percent": 36,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71yLbvA4jrL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FL7NNGRG?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B09YHJLQ4X",
+      "title": "Corsair HS55 Surround Auriculares con Cable para Juegos – Carbono | Ligeros, Sonido Envolvente Dolby 7.1, Compatible con iCUE - PC, Mac, PS5, PS4, Xbox, Nintendo Switch, Móvil",
+      "category": "Gaming",
+      "price": 54.99,
+      "original_price": 81.92,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61n7bcDfQmL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09YHJLQ4X?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0H36J2ZFS",
+      "title": "Auriculares inalámbricos de oído abierto con Bluetooth 5.4, 50 horas de autonomía, sonido estéreo y cancelación de ruido ENC; auriculares resistentes al agua (IPX7) con gancho ergo",
+      "category": "Gaming",
+      "price": 26.99,
+      "original_price": 109.99,
+      "discount_percent": 75,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61f38qyXGtL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0H36J2ZFS?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07W6FQ658",
+      "title": "Logitech G733 Lightspeed Auriculares con Micrófono Inalámbricos | Para Gaming, con Diadema con Suspensión, LIGHTSYNC RGB, Tecnología de Micrófono Blue VO!CE, Ligeros, 29h de baterí",
+      "category": "Gaming",
+      "price": 79.99,
+      "original_price": 129.99,
+      "discount_percent": 38,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71RSZdY7pJL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07W6FQ658?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B084871D8H",
+      "title": "Turtle Beach Auriculares para juegos Recon 70 Camo Green para Xbox Series X|S, Xbox One, PS5, PS4, Nintendo Switch y PC",
+      "category": "Gaming",
+      "price": 19.99,
+      "original_price": 34.99,
+      "discount_percent": 43,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/710F8cX7dHL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B084871D8H?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DWXZ9Z27",
+      "title": "Elden Ring Nightreign",
+      "category": "Gaming",
+      "price": 25.0,
+      "original_price": 41.99,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81DpKx0WnUL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DWXZ9Z27?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07VNB55ZX",
+      "title": "Xbox - Tarjeta Regalo Digital - 5 EUR",
+      "category": "Gaming",
+      "price": 5.0,
+      "original_price": 45.0,
+      "discount_percent": 89,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61h5SY0HOjL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07VNB55ZX?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FX3895S9",
+      "title": "Assassin's Creed Shadows (Xbox Series X)",
+      "category": "Gaming",
+      "price": 32.99,
+      "original_price": 49.99,
+      "discount_percent": 34,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81QIjpQ07QL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FX3895S9?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CZTNZ13W",
+      "title": "Star Wars Outlaws Limited Edition (Exclusive to Amazon.es) (Xbox Series X)",
+      "category": "Gaming",
+      "price": 19.99,
+      "original_price": 29.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/815hL4bJcDL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CZTNZ13W?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FCSSNXT4",
+      "title": "HP DeskJet 2920, Impresora Multifunción de Inyección de Tinta a Color | Wi-Fi de Doble Banda, Panel LCD, HP Smart App, Impresión, Copia y Escaneo, 3 Meses de Instant Ink incluidos,",
+      "category": "Oficina",
+      "price": 39.0,
+      "original_price": 64.9,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61wNcsc0BIL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FCSSNXT4?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DGLXK3B9",
+      "title": "HP Envy 6120e 714L8B, Impresora multifunción de inyección de Tinta A4 a Color, Conexión Wi-Fi, Impresión a Doble Cara automática, hasta 10 ppm, 3 Meses de impresión Instant Ink, Bl",
+      "category": "Oficina",
+      "price": 60.52,
+      "original_price": 89.0,
+      "discount_percent": 32,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61wGd8Ja+eL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DGLXK3B9?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0BPJK37V7",
+      "title": "HP Smart Tank 5105 - Impresora multifunción 3 en 1 (Wi-Fi, impresión móvil) - 3 años de Tinta incluida, depósito de Tinta Grande, Gran Alcance, impresión",
+      "category": "Oficina",
+      "price": 168.98,
+      "original_price": 240.0,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71nLFcxgcdL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BPJK37V7?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CZP8X9H5",
+      "title": "Canon Pixma TR7650 Impresora Multifunción 4 en 1, Sistema de Inyección de Tinta, Copiar, Imprimir, Escanear, Fax, WiFi, 5 Cartuchos de Tinta Independientes, ADF 20 Hojas, Pantalla ",
+      "category": "Oficina",
+      "price": 148.99,
+      "original_price": 219.0,
+      "discount_percent": 32,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61sLoZGELDL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CZP8X9H5?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CYPZBKV7",
+      "title": "Cirorld",
+      "category": "Viajes",
+      "price": 19.99,
+      "original_price": 66.63,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/811Uwtx86UL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CYPZBKV7?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GHYL1C4X",
+      "title": "Raplink Bolsas Vacio Ropa con Bomba Eléctrica, 8 Bolsas Vacio Ropa Viaje (4 * 100x80cm, 4 * 74x54cm), para Viajes, Mudanzas y Almacenamiento",
+      "category": "Viajes",
+      "price": 19.99,
+      "original_price": 33.32,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61LFhXsEfNL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GHYL1C4X?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0D3LLXCL2",
+      "title": "Cirorld",
+      "category": "Viajes",
+      "price": 11.99,
+      "original_price": 74.94,
+      "discount_percent": 84,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81kdfJqWTjL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D3LLXCL2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0BY93HZHR",
+      "title": "Rowenta",
+      "category": "Viajes",
+      "price": 34.99,
+      "original_price": 49.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/619-6t48fiL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BY93HZHR?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0D948VHYD",
+      "title": "Xkdoai",
+      "category": "Viajes",
+      "price": 22.99,
+      "original_price": 35.99,
+      "discount_percent": 36,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/616TuXutcTL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D948VHYD?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07N198RY4",
+      "title": "G-STAR",
+      "category": "Moda Hombre",
+      "price": 65.0,
+      "original_price": 129.95,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71otldGv7IL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07N198RY4?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CRZCWSQ6",
+      "title": "G-STAR",
+      "category": "Moda Hombre",
+      "price": 59.97,
+      "original_price": 129.95,
+      "discount_percent": 54,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81x+MNerTBL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CRZCWSQ6?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07KFGTGSZ",
+      "title": "G-STAR",
+      "category": "Moda Hombre",
+      "price": 29.97,
+      "original_price": 59.95,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61RUKv7IOvL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07KFGTGSZ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07MZK3RLM",
+      "title": "G-STAR",
+      "category": "Moda Hombre",
+      "price": 17.5,
+      "original_price": 35.0,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71b8hNIUGrL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07MZK3RLM?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B082M3W1CP",
+      "title": "G-STAR",
+      "category": "Moda Hombre",
+      "price": 14.97,
+      "original_price": 29.95,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71F5unNCZyL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B082M3W1CP?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B083GBK71D",
+      "title": "G-STAR",
+      "category": "Moda Hombre",
+      "price": 18.95,
+      "original_price": 29.95,
+      "discount_percent": 37,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71jT+Htz6cL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B083GBK71D?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07JD2GZSC",
+      "title": "G-STAR",
+      "category": "Moda Hombre",
+      "price": 17.5,
+      "original_price": 35.0,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71k7sdXif1L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07JD2GZSC?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0F9PLC7J1",
+      "title": "G-STAR",
+      "category": "Moda Hombre",
+      "price": 39.97,
+      "original_price": 79.95,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61if4g1hXpL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0F9PLC7J1?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GTYN55XL",
+      "title": "LASTAR Perfume de larga duración con mini muestra, tamaño de viaje, Eau de Perfume Fragancia para mujeres y hombres – azahar, café, vainilla – 55 ml + 2 ml, perfecto para regalos d",
+      "category": "Moda Hombre",
+      "price": 16.99,
+      "original_price": 29.81,
+      "discount_percent": 43,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/614D3+CyEsL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GTYN55XL?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07W4TH2CH",
+      "title": "CALVIN KLEIN ETERNITY Eau de Parfum para hombre | Perfume de hombre con notas de geranio, nuez moscada y vetiver | Fragancia durader",
+      "category": "Moda Hombre",
+      "price": 34.7,
+      "original_price": 69.4,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61gCzmh1YCL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07W4TH2CH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B00EXW6SJS",
+      "title": "Versace Eros Eau de Toilette Vaporizador 50 ml",
+      "category": "Moda Hombre",
+      "price": 46.57,
+      "original_price": 93.14,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71573qboGxL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00EXW6SJS?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B007JRXOKU",
+      "title": "Diesel Only The Brave Tattoo Eau De Toilette de hombre en vaporizador",
+      "category": "Moda Hombre",
+      "price": 42.99,
+      "original_price": 85.98,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/615JJkPbYcL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B007JRXOKU?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B002BLW0D6",
+      "title": "Diesel Only The Brave Eau De Toilette de hombre en Vaporizador",
+      "category": "Moda Hombre",
+      "price": 31.58,
+      "original_price": 63.16,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51w1p5htboL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B002BLW0D6?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GJSPH1PF",
+      "title": "Perfumes Hombre - 50ml Regalos Originales para Hombre Esposo Papá Personalizados, Regalo Dia Del Padre Aniversario Boda Novio Pareja San Valentin Cumpleaños de Navidad, Perfume Fer",
+      "category": "Moda Hombre",
+      "price": 9.99,
+      "original_price": 19.98,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71EKDGE29uL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GJSPH1PF?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B08HTJ9KB2",
+      "title": "GUESS Seductive Noir, Eau de Toilette, Perfume Hombre, Fougère Oriental Especiado, Fragancia Seductora, Larga Duración",
+      "category": "Moda Hombre",
+      "price": 18.5,
+      "original_price": 61.67,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71tHn8Is4fL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08HTJ9KB2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0D5BXPL4P",
+      "title": "GIORGIO ARMANI Acqua di Gio Eau de Toilette 50 ml",
+      "category": "Moda Hombre",
+      "price": 55.2,
+      "original_price": 110.4,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41kTEKNDAYL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D5BXPL4P?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GFMY4J3L",
+      "title": "MONSGA Robot Aspirador y Fregasuelos 3 en 1 8000PA,Robot Aspirador Doble Sistema Antienredos, Obstacle Avoidance, 90 Día Self-Emptying, LiDAR Navegación, Control por App, 5 Mapas |",
+      "category": "Tecnología",
+      "price": 229.99,
+      "original_price": 439.99,
+      "discount_percent": 48,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71PezzYwH0L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GFMY4J3L?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GSRVQB6D",
+      "title": "dreame L40 Ultra A Robot Aspirador Friegasuelo, Succión de 24,000 Pa | Cepillo TriCut, Elevación de 10,5 mm, Estación Base Multifuncional, Autolimpieza de Mopa, Elusión de Obstácul",
+      "category": "Tecnología",
+      "price": 349.0,
+      "original_price": 499.0,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61Nb7KueooL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GSRVQB6D?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DSLB5ZQ8",
+      "title": "roborock Robot Aspirador QV 35A Set, Dos mopas giratorias elevables, Blanco | 8000Pa de succión, Cepillos antienredos, Tecnología reactiva para evitar obstáculos",
+      "category": "Tecnología",
+      "price": 299.98,
+      "original_price": 599.99,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61gsyqYHMfL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DSLB5ZQ8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FX5MSQFH",
+      "title": "XIAOMI S40 Pro Robot Aspirador con Fregado, 15000Pa, Brazos Ext. | Sistema Anti-Tangle Dual, Evitación Obstáculos Gran Angular, Recon. Alfombras, Control App",
+      "category": "Tecnología",
+      "price": 179.99,
+      "original_price": 299.0,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61hczKtwFVL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FX5MSQFH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GQH4SQ1B",
+      "title": "Lefant M330 Pro Robot Aspirador y Fregasuelos con Mapeo 3 en 1, 5000Pa, 150min, Evitación de Obstáculos PSD 190°, Navegación dToF, App/Alexa/i Watch, Recogida de Pelo de Mascotas",
+      "category": "Tecnología",
+      "price": 139.99,
+      "original_price": 499.99,
+      "discount_percent": 72,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71WYcqkYuqL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GQH4SQ1B?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FQPBJN2Q",
+      "title": "Lefant M2 Robot Aspirador y Fregasuelos 2 en 1, 6000Pa, 160min Automático, Navegación Láser, Evitación PSD, Limpieza Personalizada, Ideal para Limpiar Pelo de Mascotas y Suelos Dur",
+      "category": "Tecnología",
+      "price": 99.97,
+      "original_price": 329.99,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81kyMTASh8L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FQPBJN2Q?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DT13JGY2",
+      "title": "roborock Qrevo S5V Robot Aspirador 12.000Pa de Succión, Negro | Doble Cepillo Anti Enredos, Evitación Inteligente de Obstáculos, Doble Mopa Giratoria Elevable, Auto Vaciado y Relle",
+      "category": "Tecnología",
+      "price": 449.99,
+      "original_price": 769.99,
+      "discount_percent": 42,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51Br5OrimUL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DT13JGY2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FBGXW79K",
+      "title": "dreame D20 Pro Plus Robot Aspirador y Fregado 2 en 1, Succión de 13.000 Pa | Cepillo Doble para Pelo de Mascota, Limpieza de Esquina, Autovaciado de 150 Días, Navegación LDS y Elus",
+      "category": "Tecnología",
+      "price": 199.0,
+      "original_price": 299.0,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61DPuE7MWEL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FBGXW79K?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07DQBC6NH",
+      "title": "UGREEN Organizador Viaje Almacenamiento de Accesorios Electrónicos, Bolsa de Cable Impermeable, Protección a Prueba de Golpes, para Memoria USB, Cargador de Disco Duro, Batería",
+      "category": "Tecnología",
+      "price": 17.49,
+      "original_price": 24.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/813JYnCLh-L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07DQBC6NH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0BCKHQGJN",
+      "title": "Auriculares Inalámbricos Bluetooth, Auriculares Bluetooth 5.3, HiFi Estéreo | Reducción de Ruido, HD Micrófono, Pantalla LED, 13 mm Controlador dinámico, IP7 Impermeable 36H Cascos",
+      "category": "Tecnología",
+      "price": 22.29,
+      "original_price": 49.99,
+      "discount_percent": 55,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71vfIyTVo5L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BCKHQGJN?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CD9Y92WB",
+      "title": "Philips Sonicare Irrigador oral Power Flosser 3000 sin cable con tecnología Quad Stream y Pulse Wave, HX3826/31, Negro, 3000, Blanco",
+      "category": "Tecnología",
+      "price": 68.9,
+      "original_price": 99.99,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71BYgNk2CwL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CD9Y92WB?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0D544WSFP",
+      "title": "Tapo C410 Kit - Cámara de Vigilancia WiFi Exterior, Panel Solar, 2K 3MP, IA | Detección de Movimiento y Personas. Batería 6400mAh. Visión Nocturna a Color. Alarma Luz y Sonido. Adm",
+      "category": "Jardín",
+      "price": 54.99,
+      "original_price": 79.99,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81Cs+nZEREL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D544WSFP?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GDDHXVBX",
+      "title": "Kit Jardineria Niños, 10pcs Herramientas Jardin Set con Pala, Rastrillo, Tenedor, Guantes de Trabajo, Herramientas de Jardín (B)",
+      "category": "Jardín",
+      "price": 21.58,
+      "original_price": 35.98,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71+CqgButoL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GDDHXVBX?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0G2BZTM1T",
+      "title": "Kit de Tijeras de Podar Telescópicas y Motosierra Telescópica a Batería, 4 en 1 Podadora Electrica Herramientas de Jardín con Motorm 550 W, 2*4000 mAh Baterías, 4 Cadenas para Jard",
+      "category": "Jardín",
+      "price": 139.99,
+      "original_price": 199.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/7100K3LZSdL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0G2BZTM1T?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B083MNJ3KJ",
+      "title": "Tommy Hilfiger",
+      "category": "Gafas de Sol",
+      "price": 62.9,
+      "original_price": 209.67,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61twDdpvUoL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B083MNJ3KJ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B01BKO9VJ0",
+      "title": "Polaroid",
+      "category": "Gafas de Sol",
+      "price": 29.5,
+      "original_price": 55.0,
+      "discount_percent": 46,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61CIEnUMsaL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B01BKO9VJ0?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B09KHFJRFM",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 18.49,
+      "original_price": 61.63,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/513bVD2k4TL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09KHFJRFM?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B00174VD90",
+      "title": "Polaroid",
+      "category": "Gafas de Sol",
+      "price": 40.11,
+      "original_price": 57.0,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51P645wK5jL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00174VD90?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0BVKGS7WK",
+      "title": "CAROLINA HERRERA",
+      "category": "Gafas de Sol",
+      "price": 90.68,
+      "original_price": 149.0,
+      "discount_percent": 39,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51itcBriMeL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BVKGS7WK?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DGGTBF11",
+      "title": "BOSS",
+      "category": "Gafas de Sol",
+      "price": 99.5,
+      "original_price": 200.0,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61qnLmPVIPL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DGGTBF11?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0BKJYBFM2",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 29.99,
+      "original_price": 99.97,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51cXGpFDurL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BKJYBFM2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B09HKNKTV8",
+      "title": "Carrera",
+      "category": "Gafas de Sol",
+      "price": 89.0,
+      "original_price": 160.0,
+      "discount_percent": 44,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61SfqbERS-L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09HKNKTV8?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GGX3ZZ3L",
+      "title": "Soplador de Hojas, 900.000 RPM, 2 Baterías y Cargador, Ligero, para Jardín, Césped, Patio, Coche, Eliminación de Nieve y Polvo, Verde",
+      "category": "Hogar",
+      "price": 80.99,
+      "original_price": 119.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71ZY47w115L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GGX3ZZ3L?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B08F39WW2N",
+      "title": "Frosch Baby - Quitamanchas, Pretratamiento para Manchas Difíciles y Secas (Cereales, Papilla...) - Apto para Ropa Blanca y de Color - 500ml (Formato Spray)",
+      "category": "Bebés",
+      "price": 5.27,
+      "original_price": 10.54,
+      "discount_percent": 50,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/61IXNCtUG2L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08F39WW2N?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GLG5CKFG",
+      "title": "Suavinex, Dosificador Leche en Polvo, Cereales y Snacks, Bebés +0M, Azul | Dispensador con 4 Compartimentos, Boquilla y Tapa, Hermético con Cierres de Rosca, Apilable, Resistente, ",
+      "category": "Bebés",
+      "price": 5.39,
+      "original_price": 8.25,
+      "discount_percent": 35,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51GZBIYKnxL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GLG5CKFG?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B08VK9N4BP",
+      "title": "Set GCF Giraffe Conservation Foundation Nacimiento | Juguete y llavero de caucho natural | apoyo a la conservación de las jirafas de África | idea de regalo también solidaria",
+      "category": "Bebés",
+      "price": 8.26,
+      "original_price": 17.5,
+      "discount_percent": 53,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61A-eoPXm6L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08VK9N4BP?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0B4NDJRS2",
+      "title": "Medi Partners Nido Bebe Recien Nacido Reductor de Cuna - 100x60x15 Portátil o de Viaje de Colecho anticolicos Bilateral Bebés 100% Algodón Gofre (Glade con Gris Gofre)",
+      "category": "Bebés",
+      "price": 34.29,
+      "original_price": 50.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/8183DDDcZVL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0B4NDJRS2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0F8TXNWN4",
+      "title": "Ambientador para coche, 3 modos, difusor de coche inteligente, eléctrico, difusor de aroma para coche, difusor ultrasónico, ambientador automático (negro)",
+      "category": "Automóviles",
+      "price": 21.69,
+      "original_price": 21690.0,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61D0URGkb1L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0F8TXNWN4?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B09GG3RX93",
+      "title": "California Scents Ambientador de coche en Lata Premium - 4 Pack (Hasta 60 Días)- Fragancia Duradera de Cereza - Control de Intensidad de Olor para un Ambiente Fresco y Personalizad",
+      "category": "Automóviles",
+      "price": 14.99,
+      "original_price": 89.23,
+      "discount_percent": 83,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71XDsRCMqcL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09GG3RX93?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GDTWWTH9",
+      "title": "Orgullo y Prejuicio: La Novela Romántica Clásica de Amor, Sociedad y Crecimiento Personal",
+      "category": "Libros",
+      "price": 0.0,
+      "original_price": 7.7,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71B6JdVlgpL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GDTWWTH9?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FVJW9KF3",
+      "title": "Vuelve a casa (Una novela de suspense de Kate Valentine—Libro 1)",
+      "category": "Libros",
+      "price": 0.0,
+      "original_price": 0.99,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71JEv+Ew9vL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FVJW9KF3?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B093CKSC48",
+      "title": "La chica sola (Un thriller de suspense FBI de Ella Dark – Libro 1)",
+      "category": "Libros",
+      "price": 0.0,
+      "original_price": 2.99,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81bL4J0aGaS._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B093CKSC48?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0GVYTNBNW",
+      "title": "Parches Reparadores para Uñas de los Pies, Cuidado Nocturno para Uñas Engrosadas, Amarillentas o Dañadas, Parche Adhesivos para Uñas, Uso Diario, 21 Parches",
+      "category": "Salud",
+      "price": 9.99,
+      "original_price": 47.57,
+      "discount_percent": 79,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71AcXFf1B2L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GVYTNBNW?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FVDLJ16N",
+      "title": "29 Piezas Set de Cuidado Facial Sakura, Set de Cuidado Diario de la Piel | con Limpiador, Tónico, Mascarilla Facial Limpiadora, Limpieza y cuidado facial, para Adolescentes y Mujer",
+      "category": "Salud",
+      "price": 19.99,
+      "original_price": 1999.0,
+      "discount_percent": 99,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71VfyETVWFL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FVDLJ16N?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B09SZ5JX2Y",
+      "title": "d'alba Piedmont Trufa Blanca Double Serum All-in-one Multi Balm | Cuidado de la piel vegano, Tratamiento 3 en 1, Bálsamo para arrugas, Skincare coreano",
+      "category": "Salud",
+      "price": 19.95,
+      "original_price": 199.5,
+      "discount_percent": 90,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41m7nqQIBML._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09SZ5JX2Y?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B00STBW4R4",
+      "title": "L'Oréal Paris Men Expert Hydra Energetic Crema Hidratante Anti-Fatiga, 50ml | Guaraná, Vitamina C y Proteínas, Ayuda a Reducir Signos de Cansancio, Hidratación 24h, Men Expert Hydr",
+      "category": "Salud",
+      "price": 6.95,
+      "original_price": 13.9,
+      "discount_percent": 50,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71TtFZnATSL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00STBW4R4?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0H1G5J46M",
+      "title": "Pack Cuidado Facial Vitamina C 6 Piezas,Set Skincare Mujer Hidratante e Iluminador con Sérum Vitamina C,Limpiador Facial,Tónico,Crema Facial,Contorno de Ojos y Loción,Rutina Facial",
+      "category": "Salud",
+      "price": 26.59,
+      "original_price": 2659.0,
+      "discount_percent": 99,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71fgH+Hu-wL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0H1G5J46M?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B00X9W8Y18",
+      "title": "L'Oréal Paris Men Expert Power Age Crema Facial Reafirmante, 50ml | Ácido Hialurónico*, Hidratación Intensa, Ayuda a Combatir Signos de Edad, Rutina Masculina, Men Expert Power Age",
+      "category": "Salud",
+      "price": 9.95,
+      "original_price": 19.9,
+      "discount_percent": 50,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71G1pP7gtZL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00X9W8Y18?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DFY92NDB",
+      "title": "CENTELLIAN 24 Madeca Crema Time Reverse (50 ml) - Nutritiva y de rápida absorción, hidrata, reafirma y reduce arrugas, baja irritación, cuidado de la piel coreano",
+      "category": "Salud",
+      "price": 15.85,
+      "original_price": 31.7,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41ypePzzK-L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DFY92NDB?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B09NN88V83",
+      "title": "d'alba Piedmont Trufa Blanca Italiana Doble Sérum y Crema (70g) | Crema vegana, Cuidado 2 en 1, Elasticidad y nutrición, Para todo tipo de piel, Skincare coreano",
+      "category": "Salud",
+      "price": 25.99,
+      "original_price": 37.13,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51N-OzKy6nL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09NN88V83?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07RFLY8DZ",
+      "title": "Multivitaminas y Minerales - 25 sustancias vitales - Vitaminas A B C D3 E K, Zinc, Magnesio, CoQ10, Selenio, OPC y más - Materias primas de primera calidad para tu sistema inmunita",
+      "category": "Salud",
+      "price": 16.99,
+      "original_price": 139.26,
+      "discount_percent": 88,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71MNIS3LZnL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07RFLY8DZ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0749PPGNP",
+      "title": "Vitamina B Complex - Alta Dosis con B1, B2, B3, B5, B6, B12 - Con Biotina (B7) y Ácido fólico (B9) - Energía y Vitalidad - Las 7 Vitaminas B en una pastilla - Vegano, Probado en la",
+      "category": "Salud",
+      "price": 14.99,
+      "original_price": 149.9,
+      "discount_percent": 90,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61-ThGPX6ML._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0749PPGNP?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DS21FHGW",
+      "title": "heekpek",
+      "category": "Moda Mujer",
+      "price": 9.99,
+      "original_price": 22.99,
+      "discount_percent": 57,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61r7vgjwpAL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DS21FHGW?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CZ7B4MJN",
+      "title": "adidas",
+      "category": "Moda Mujer",
+      "price": 28.99,
+      "original_price": 45.0,
+      "discount_percent": 36,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/61EZDkFtdXL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CZ7B4MJN?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FGJRW8RV",
+      "title": "Desigual",
+      "category": "Moda Mujer",
+      "price": 39.97,
+      "original_price": 79.95,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81olqlDcciL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FGJRW8RV?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FGK3CFQR",
+      "title": "Desigual",
+      "category": "Moda Mujer",
+      "price": 44.97,
+      "original_price": 89.95,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61UHitioo7L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FGK3CFQR?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FGK26DG1",
+      "title": "Desigual",
+      "category": "Moda Mujer",
+      "price": 53.97,
+      "original_price": 89.95,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71uj3RdHfUL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FGK26DG1?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FGJYJ8FM",
+      "title": "Desigual",
+      "category": "Moda Mujer",
+      "price": 59.5,
+      "original_price": 119.0,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71Swo3LE9OL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FGJYJ8FM?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FGQ4DR7B",
+      "title": "Desigual",
+      "category": "Moda Mujer",
+      "price": 20.96,
+      "original_price": 29.95,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71iFLV8xanL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FGQ4DR7B?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FGJXZLDM",
+      "title": "Desigual",
+      "category": "Moda Mujer",
+      "price": 39.97,
+      "original_price": 79.95,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81co+l2mydL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FGJXZLDM?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FGK2BR8R",
+      "title": "Desigual",
+      "category": "Moda Mujer",
+      "price": 62.96,
+      "original_price": 89.95,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71EnI-fGC8L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FGK2BR8R?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FGQ1D1SJ",
+      "title": "Desigual",
+      "category": "Moda Mujer",
+      "price": 32.37,
+      "original_price": 59.95,
+      "discount_percent": 46,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71T478tm-fL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FGQ1D1SJ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DQQ64R3M",
+      "title": "whiskas Temptations Premios para Gatos Sabor Salmón, 60g (Pack de 6)",
+      "category": "Mascotas",
+      "price": 11.94,
+      "original_price": 33.17,
+      "discount_percent": 64,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71iVuhEDsVL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DQQ64R3M?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B01I1J3AKI",
+      "title": "Applaws Comida Húmeda para Gatos 100% Natural Multipack de Pechuga de Pollo en sobre - 12 Sobres de 70g",
+      "category": "Mascotas",
+      "price": 17.79,
+      "original_price": 254.14,
+      "discount_percent": 93,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71u8P-k+y5L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B01I1J3AKI?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B09RTGMK5Q",
+      "title": "Sodastream Art – Máquina para hacer agua con gas y bebidas favoritas, negro",
+      "category": "Alimentación",
+      "price": 85.99,
+      "original_price": 129.9,
+      "discount_percent": 34,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61KoxvJG7WL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09RTGMK5Q?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B004LLZP3Q",
+      "title": "Hendrick's Gin - Ginebra superpremium infusionada con pepino y rosa - Curiosamente suave y maravillosamente diferente - Elaborada artesanalmente en Escocia - El regalo Definitivo -",
+      "category": "Alimentación",
+      "price": 29.95,
+      "original_price": 42.79,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/618UcjtvkwL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B004LLZP3Q?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B096VNPTLX",
+      "title": "Pepsi Zero Cherry Concentrado de Refresco, Sin Azúcar, Prepara hasta 9 l de Bebida, Apto para Todas las Máquinas Gasificadoras de Agua SodaStream, 440 ml",
+      "category": "Alimentación",
+      "price": 5.49,
+      "original_price": 12.48,
+      "discount_percent": 56,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/617jaMmwqrL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B096VNPTLX?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B096VLBW2X",
+      "title": "Pepsi Zero Lima Concentrado de Refresco, Sin Azúcar, Prepara hasta 9 l de Bebida, Apto para Todas las Máquinas Gasificadoras de Agua SodaStream, 440 ml",
+      "category": "Alimentación",
+      "price": 5.49,
+      "original_price": 12.48,
+      "discount_percent": 56,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/61AptUVI-tL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B096VLBW2X?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CBPQYV4X",
+      "title": "Z Drinks Energy - Bebida Energética en Polvo | 70 Servicios Sin Azúcar | Energía en Cada Sorbo | con Cafeína, Minerales y Vitaminas | Ideal para Gamers y Apasionados del Deporte | ",
+      "category": "Alimentación",
+      "price": 44.0,
+      "original_price": 44000.0,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81XXeil8TLL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CBPQYV4X?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0874X78ZH",
+      "title": "Under Armour",
+      "category": "Deporte",
+      "price": 24.49,
+      "original_price": 35.0,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/618+8HGZbxL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0874X78ZH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B07P5JL9GQ",
+      "title": "Joma",
+      "category": "Deporte",
+      "price": 6.99,
+      "original_price": 11.6,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71EJMVHa-rL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07P5JL9GQ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DSHBZPSS",
+      "title": "Chaleco Running Hombre Mujer, Ligero Mochila Hidratacion Trail Running, Mochila Running, Chaleco para Correr con Bolsa Agua 2L o Botella 500ml, Silbato y Reflectante para Correr Se",
+      "category": "Deporte",
+      "price": 19.85,
+      "original_price": 33.99,
+      "discount_percent": 42,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81QlY53vp2L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DSHBZPSS?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0DQ9KDKT2",
+      "title": "Garmin",
+      "category": "Deporte",
+      "price": 63.04,
+      "original_price": 89.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61DZ9mOKb2L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DQ9KDKT2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CKS1SN2G",
+      "title": "adidas",
+      "category": "Deporte",
+      "price": 37.49,
+      "original_price": 60.0,
+      "discount_percent": 38,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51tZGjMiXzL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CKS1SN2G?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0874WD2B2",
+      "title": "Under Armour",
+      "category": "Deporte",
+      "price": 20.99,
+      "original_price": 35.0,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41Tl89KmYkL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0874WD2B2?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B08Y1MJJJ4",
+      "title": "Joma",
+      "category": "Deporte",
+      "price": 7.99,
+      "original_price": 11.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71NU1Wu9u+L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08Y1MJJJ4?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FW2RGQDR",
+      "title": "adidas",
+      "category": "Deporte",
+      "price": 36.49,
+      "original_price": 55.0,
+      "discount_percent": 34,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61K9CwkMMmL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FW2RGQDR?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0CJ5GW8RY",
+      "title": "L'Oréal Paris Máscara de pestañas Panorama, Pestañas con Volumen Panorámico, Color: Negro | Cepillo Panorámico para un Volumen de 360º, para Todo Tipo de Pestañas, Hasta 24 Horas d",
+      "category": "Belleza",
+      "price": 10.56,
+      "original_price": 100.57,
+      "discount_percent": 89,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/61roDAvtEaL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CJ5GW8RY?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B007NYKXMQ",
+      "title": "Ralph Lauren Big Pony Pink Eau de Toilette, Deliciosa y Sensual Fragancia Afrutada, Aroma de Arándano y Haba Tonka, Duración Prolongada, Perfume de Lujo para Mujer, 50 ml.",
+      "category": "Belleza",
+      "price": 17.69,
+      "original_price": 35.38,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51iZQMgteVL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B007NYKXMQ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0B9DC2M89",
+      "title": "Viking Revolution - Colonia Hombre - Perfume Sólido Hombre con Madera de Cedro, Salvia Esclarea, Vetiver, Sándalo - Regalo Hombre - Paquete de 4 x 14 g",
+      "category": "Belleza",
+      "price": 10.99,
+      "original_price": 19.28,
+      "discount_percent": 43,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71OHOtSq59L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0B9DC2M89?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FXML1H2Y",
+      "title": "Calvin Klein euphoria bold elixir Parfum Intense para Mujer 30 ml",
+      "category": "Belleza",
+      "price": 45.1,
+      "original_price": 150.33,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61qCWQdbRKL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FXML1H2Y?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0FJGQHDTH",
+      "title": "GUESS Set Mujer, 4 Mini EDT Seductive, Red, Blue, Noir, 7.5 ml",
+      "category": "Belleza",
+      "price": 21.4,
+      "original_price": 285.33,
+      "discount_percent": 92,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/618B0USKWqL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FJGQHDTH?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B09GKJ77WD",
+      "title": "GUESS Seductive Red, Eau de Toilette para Mujer, Perfume Gourmand, 30 ml",
+      "category": "Belleza",
+      "price": 12.5,
+      "original_price": 41.67,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71q9jwRdikL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09GKJ77WD?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B08FF3R22G",
+      "title": "Tous LoveMe, Eau de Parfum para Mujer, Fragancia Floral Afrutada, 30 ml con Vaporizador",
+      "category": "Belleza",
+      "price": 24.5,
+      "original_price": 81.67,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61SXeqeXMeL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08FF3R22G?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B0013NXHRQ",
+      "title": "CALVIN KLEIN EVERYONE Eau de Parfum para mujer | Fragancia femenina floral con notas de bergamota y lirio blanco | Atemporal y larga duración",
+      "category": "Belleza",
+      "price": 27.28,
+      "original_price": 54.56,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51j-z7crLpL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0013NXHRQ?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
+    },
+    {
+      "id": "B076X8YRLC",
+      "title": "Cacharel",
+      "category": "Belleza",
+      "price": 17.88,
+      "original_price": 59.6,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51LZc1JLNJL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B076X8YRLC?tag=rebajasdiaria-21",
+      "first_seen": "2026-08-04T11:05:57+02:00",
+      "last_seen": "2026-08-04T11:05:57+02:00"
     }
   ]
 }
