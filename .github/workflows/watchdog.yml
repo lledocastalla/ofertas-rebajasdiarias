@@ -1,0 +1,42 @@
+name: Watchdog — avisa por Telegram si la Pi lleva mucho sin actualizar
+
+# Comprueba cada hora la antigüedad del último commit a este repo (lo hace la Raspberry Pi
+# de RebajasDiarias tras cada scraping con éxito, ver RASPI_REBAJASDIARIAS.md). Si lleva
+# demasiado tiempo sin novedad, probablemente la Pi se ha quedado sin luz o sin internet
+# (ninguno de esos dos casos lo puede detectar/avisar la propia Pi por sí sola), así que
+# lo hace este workflow, que corre en los servidores de GitHub, independiente de la Pi,
+# del Mac y de cualquier sesión de Claude.
+
+on:
+  schedule:
+    - cron: "13 * * * *"   # cada hora, minuto 13 (evita el pico de :00 de todo el mundo)
+  workflow_dispatch: {}     # permite lanzarlo a mano desde la pestaña Actions, para probar
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Comprobar antigüedad del último commit y avisar si hace falta
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          STALE_AFTER_HOURS: 4
+        run: |
+          last_ts=$(git log -1 --format=%ct)
+          now_ts=$(date -u +%s)
+          diff_h=$(( (now_ts - last_ts) / 3600 ))
+          echo "Último commit hace ${diff_h}h (umbral: ${STALE_AFTER_HOURS}h)"
+
+          if [ "$diff_h" -ge "$STALE_AFTER_HOURS" ]; then
+            msg="⚠️ RebajasDiarias: la Pi lleva ${diff_h}h sin subir ofertas nuevas (esperado cada ~2-3h en horario 8h-23h). Puede que se haya quedado sin luz o sin internet — revisa cuando puedas."
+            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -d chat_id="${TELEGRAM_CHAT_ID}" \
+              -d text="$msg" > /dev/null
+            echo "Aviso enviado por Telegram."
+          else
+            echo "Todo normal, no se avisa."
+          fi
