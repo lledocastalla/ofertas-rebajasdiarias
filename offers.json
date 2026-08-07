@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-07T12:07:22.985072+02:00",
+  "updated_at": "2026-08-07T12:12:44.183088+02:00",
   "affiliate_tag": "rebajasdiar05-21",
   "offers": [
     {
@@ -3147,6 +3147,71 @@
       "url": "https://www.amazon.es/dp/B09QLG3HZ8?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T11:23:11+02:00",
       "last_seen": "2026-08-07T11:23:11+02:00"
+    },
+    {
+      "id": "B093CKSC48",
+      "title": "La chica sola (Un thriller de suspense FBI de Ella Dark – Libro 1)",
+      "category": "Libros",
+      "price": 0.0,
+      "original_price": 2.99,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81bL4J0aGaS._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B093CKSC48?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-06T08:32:29+02:00",
+      "last_seen": "2026-08-06T17:17:37+02:00"
+    },
+    {
+      "id": "B0FVJW9KF3",
+      "title": "Vuelve a casa (Una novela de suspense de Kate Valentine—Libro 1)",
+      "category": "Libros",
+      "price": 0.0,
+      "original_price": 0.99,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71JEv+Ew9vL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FVJW9KF3?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-06T08:32:29+02:00",
+      "last_seen": "2026-08-06T17:17:37+02:00"
+    },
+    {
+      "id": "B0GDTWWTH9",
+      "title": "Orgullo y Prejuicio: La Novela Romántica Clásica de Amor, Sociedad y Crecimiento Personal",
+      "category": "Libros",
+      "price": 0.0,
+      "original_price": 7.7,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71B6JdVlgpL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GDTWWTH9?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-06T08:32:29+02:00",
+      "last_seen": "2026-08-06T17:17:37+02:00"
+    },
+    {
+      "id": "B0D74L2913",
+      "title": "Un Pasado Escondido: Una novela de suspense fascinante con un sorprendente giro",
+      "category": "Libros",
+      "price": 0.0,
+      "original_price": 2.99,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81-l8hm-UEL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D74L2913?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-06T08:32:29+02:00",
+      "last_seen": "2026-08-06T17:17:37+02:00"
+    },
+    {
+      "id": "B008CQQ404",
+      "title": "Largas noches de lluvia: Novela Negra | Crimen y suspense en un pueblo aislado",
+      "category": "Libros",
+      "price": 0.0,
+      "original_price": 1.89,
+      "discount_percent": 100,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71dhTWGw3dL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B008CQQ404?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-06T17:17:37+02:00",
+      "last_seen": "2026-08-06T17:17:37+02:00"
     }
   ]
 }
