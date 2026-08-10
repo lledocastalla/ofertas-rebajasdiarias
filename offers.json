@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-10T08:31:28+02:00",
+  "updated_at": "2026-08-10T11:35:45+02:00",
   "affiliate_tag": "rebajasdiar05-21",
   "offers": [
     {
@@ -57,7 +57,7 @@
     {
       "id": "B07W7KT2B3",
       "title": "Logitech G G733 Lightspeed Auriculares con Micrófono Inalámbricos",
-      "category": "Tecnología",
+      "category": "Gaming",
       "price": 85.49,
       "original_price": 129.99,
       "discount_percent": 34,
@@ -65,11 +65,11 @@
       "image": "https://m.media-amazon.com/images/I/71xNjrzG69L._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07W7KT2B3?tag=rebajasdiar05-21",
       "first_seen": "2026-08-06T17:17:37+02:00",
-      "last_seen": "2026-08-08T11:55:53+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B07W5JKFQC",
-      "title": "Logitech G G203 LIGHTSYNC Ratón Gaming con Iluminación RGB Personalizable | 6 Botones Programables, Captor 8K para Gaming, Seguimiento de hasta 8,000 DPI, Ultra-ligero - Negro",
+      "title": "Logitech G G203 LIGHTSYNC Ratón Gaming con Iluminación RGB Personalizable",
       "category": "Gaming",
       "price": 20.99,
       "original_price": 34.99,
@@ -78,11 +78,11 @@
       "image": "https://m.media-amazon.com/images/I/61oE1NouXuL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07W5JKFQC?tag=rebajasdiar05-21",
       "first_seen": "2026-08-06T17:17:37+02:00",
-      "last_seen": "2026-08-09T17:22:34+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B07GS6ZB7T",
-      "title": "Logitech G G502 Hero Ratón Gaming con Cable Alto Rendimiento | Captor HERO 25K, 25,600 DPI, RGB, Peso Personalizable, 11 Botones Programables, Memoria Integrada, PC/Mac - Negro",
+      "title": "Logitech G G502 Hero Ratón Gaming con Cable Alto Rendimiento",
       "category": "Gaming",
       "price": 29.99,
       "original_price": 59.99,
@@ -91,7 +91,7 @@
       "image": "https://m.media-amazon.com/images/I/61mpMH5TzkL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07GS6ZB7T?tag=rebajasdiar05-21",
       "first_seen": "2026-08-06T17:17:37+02:00",
-      "last_seen": "2026-08-09T17:22:34+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B07SD3W9SN",
@@ -328,71 +328,6 @@
       "last_seen": "2026-08-09T11:14:19+02:00"
     },
     {
-      "id": "B0H1M5WYFZ",
-      "title": "Beurer EM 56 TENS/EMS digital, dispositivo de electroestimulación 3 en 1 para el alivio del dolor sin medicamentos mediante estimulación eléctrica nerviosa, entrenamiento muscular,",
-      "category": "Salud",
-      "price": 39.99,
-      "original_price": 59.99,
-      "discount_percent": 33,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81cDej+zbzL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0H1M5WYFZ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B089GRH43R",
-      "title": "Beurer BiteX Original Dispositivo para el tratamiento de mordeduras y picaduras de insectos BR 60, bolígrafo térmico eléctrico para picaduras de mosquitos que alivia picor, ideal v",
-      "category": "Salud",
-      "price": 24.99,
-      "original_price": 35.99,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71Jye41hURL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B089GRH43R?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B085CXYMFN",
-      "title": "Beurer EM 50 Menstrual Relax, contra el dolor menstrual y el dolor de la endometriosis, función de TENS y calor, con batería recargable",
-      "category": "Salud",
-      "price": 49.99,
-      "original_price": 74.9,
-      "discount_percent": 33,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71k-lLlJISL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B085CXYMFN?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B0GV4XJ5WD",
-      "title": "Beurer PowerReload pistola de masaje, masaje de puntos gatillo para relajación y regeneración, potente dispositivo de masaje muscular con 5 cabezales, 5 niveles de intensidad,extre",
-      "category": "Salud",
-      "price": 39.99,
-      "original_price": 59.99,
-      "discount_percent": 33,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81-X1FyeGOL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GV4XJ5WD?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B009A48WTI",
-      "title": "Beurer MP 41 Set de manicura y pedicura profesional, torno para uñas con 7 accesorios, luz LED, rotación derecha/izquierda, 2 velocidades, bolsa incluida",
-      "category": "Salud",
-      "price": 27.99,
-      "original_price": 44.9,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71EbKcnddFL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B009A48WTI?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
       "id": "B075X3RXH2",
       "title": "Polaroid",
       "category": "Gafas de Sol",
@@ -507,7 +442,7 @@
       "image": "https://m.media-amazon.com/images/I/61zvXLJjveL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B01ITRYZV0?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-09T08:50:45+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B07B316JSD",
@@ -520,7 +455,7 @@
       "image": "https://m.media-amazon.com/images/I/710ndMWQtdL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07B316JSD?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-09T08:50:45+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B07PTSK2FG",
@@ -533,7 +468,7 @@
       "image": "https://m.media-amazon.com/images/I/71wDnZ82K3L._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07PTSK2FG?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-09T08:50:45+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B07SJ82K2C",
@@ -546,7 +481,7 @@
       "image": "https://m.media-amazon.com/images/I/71ga-fg0R1L._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07SJ82K2C?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-09T08:50:45+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B0DCFZ7SKL",
@@ -590,7 +525,7 @@
     {
       "id": "B0DBLN4C47",
       "title": "Sony WF-C510 Auriculares Inalámbricos pequeños, Ligeros, con conexión multipunto, Modo Sonido Ambiente, Resistencia al Agua IPX4, Spotify Tap, Carga rápida, 22 Horas de batería, iO",
-      "category": "Tecnología",
+      "category": "Música",
       "price": 34.9,
       "original_price": 59.99,
       "discount_percent": 42,
@@ -598,7 +533,7 @@
       "image": "https://m.media-amazon.com/images/I/41CpD7mn8tL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0DBLN4C47?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-09T14:25:05+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B0B7X7PK9S",
@@ -705,19 +640,6 @@
       "last_seen": "2026-08-09T11:14:19+02:00"
     },
     {
-      "id": "B09LQVC5F9",
-      "title": "LOTUS",
-      "category": "Relojes",
-      "price": 104.87,
-      "original_price": 149.0,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71ZMa2kb7EL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09LQVC5F9?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
       "id": "B0BHZCLVZ3",
       "title": "LOTUS",
       "category": "Relojes",
@@ -731,32 +653,6 @@
       "last_seen": "2026-08-09T11:14:19+02:00"
     },
     {
-      "id": "B0DGH3JQWQ",
-      "title": "LOTUS",
-      "category": "Relojes",
-      "price": 103.35,
-      "original_price": 149.0,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71yJCruSZFL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DGH3JQWQ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B07TJW59YZ",
-      "title": "BENYAR",
-      "category": "Relojes",
-      "price": 49.99,
-      "original_price": 79.99,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71LYGPRSCwL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07TJW59YZ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
       "id": "B0DVSXRJGH",
       "title": "Samsonite",
       "category": "Viajes",
@@ -768,123 +664,6 @@
       "url": "https://www.amazon.es/dp/B0DVSXRJGH?tag=rebajasdiar05-21",
       "first_seen": "2026-08-08T08:44:21+02:00",
       "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B06XSSJQDB",
-      "title": "American Tourister",
-      "category": "Viajes",
-      "price": 89.24,
-      "original_price": 165.0,
-      "discount_percent": 46,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51ZA-c+qNSL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B06XSSJQDB?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B0CSKQT1Q2",
-      "title": "American Tourister",
-      "category": "Viajes",
-      "price": 32.99,
-      "original_price": 55.0,
-      "discount_percent": 40,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61SSZssPyxL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CSKQT1Q2?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B0DZD4B1Z4",
-      "title": "American Tourister",
-      "category": "Viajes",
-      "price": 55.93,
-      "original_price": 80.0,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/717pVU8W7TL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DZD4B1Z4?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B07RQ9S1HD",
-      "title": "Hozelock Pistola de riego Multi Spray Pro",
-      "category": "Jardín",
-      "price": 40.09,
-      "original_price": 200.45,
-      "discount_percent": 80,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51+o3ua3upL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07RQ9S1HD?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B0017RKEGU",
-      "title": "Hozelock - Aspersor redondo Pro con soporte trineo para 314m² de superficie y 5 tipos de riego",
-      "category": "Jardín",
-      "price": 27.29,
-      "original_price": 39.99,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51Tj-i1P-pL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0017RKEGU?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B002ZRQ4BA",
-      "title": "Bosch Limpiaparabrisas Trasero H 301, 30 cm | Rendimiento Óptimo de Limpieza - Escobilla Individual de Recambio para Luneta Trasera",
-      "category": "Automóviles",
-      "price": 6.2,
-      "original_price": 14.25,
-      "discount_percent": 56,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61xyXh9qTeL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B002ZRQ4BA?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B0068M0SAG",
-      "title": "Bosch Limpiaparabrisas Trasero A331H, 33 cm | Rendimiento Óptimo de Limpieza - Escobilla Individual de Recambio para Luneta Trasera",
-      "category": "Automóviles",
-      "price": 6.9,
-      "original_price": 12.65,
-      "discount_percent": 45,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61-CcCXlDmL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0068M0SAG?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B00ES5Q63S",
-      "title": "BOSCH Heckwischerblatt H281 3397011428 | Compatible con: Hyundai Creta, Kona, Kona, Kasten/SUV, Jeep Grand Cherokee IV, Grand Cherokee Van, Kia Rio III",
-      "category": "Automóviles",
-      "price": 5.3,
-      "original_price": 10.32,
-      "discount_percent": 49,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61FX5WGwLcL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B00ES5Q63S?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
-    },
-    {
-      "id": "B0CPY9PT7D",
-      "title": "ACEZUK Arrancador de Batería de Coche 8000A, Compresor de Aire 150PSI, Arrancador de Coches para Vehículo(Toda Gasolina o 10L Diésel), 12V Jump Starter con 400-Lumen LED",
-      "category": "Automóviles",
-      "price": 62.69,
-      "original_price": 109.99,
-      "discount_percent": 43,
-      "is_flash": true,
-      "image": "https://m.media-amazon.com/images/I/71+7CmRN7rL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CPY9PT7D?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
     },
     {
       "id": "B08GY4P2ND",
@@ -924,19 +703,6 @@
       "url": "https://www.amazon.es/dp/B0FT1J2536?tag=rebajasdiar05-21",
       "first_seen": "2026-08-08T08:44:21+02:00",
       "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B0B4HXDZWZ",
-      "title": "Beurer BiteX Day&Night BR 90 Aparato contra picaduras de insectos, dispositivo térmico electrónico para tratar picaduras y mordeduras de insectos, con luz para uso en la oscuridad,",
-      "category": "Salud",
-      "price": 27.0,
-      "original_price": 39.99,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71M0Rw-VgFL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0B4HXDZWZ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-08T08:44:21+02:00"
     },
     {
       "id": "B0DGLXK3B9",
@@ -3094,7 +2860,7 @@
       "image": "https://m.media-amazon.com/images/I/412Up3ex-QL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B01N9HMYMZ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T08:50:45+02:00",
-      "last_seen": "2026-08-09T08:50:45+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B00I5VLCT4",
@@ -4398,7 +4164,7 @@
     },
     {
       "id": "B07CGNDZR3",
-      "title": "Logitech G G305 Lightspeed Ratón Gaming Inalámbrico | Captor HERO 12K, 12,000 DPI, Ultra-ligero, Batería de 250h, 6 Botones Programables, Memoría Integrada, PC/Mac - Negro",
+      "title": "Logitech G G305 Lightspeed Ratón Gaming Inalámbrico",
       "category": "Gaming",
       "price": 38.99,
       "original_price": 59.99,
@@ -4407,11 +4173,11 @@
       "image": "https://m.media-amazon.com/images/I/51sg9BLSMTL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07CGNDZR3?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T17:22:34+02:00",
-      "last_seen": "2026-08-09T17:22:34+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B07GS6ZS8J",
-      "title": "Logitech G G502 Hero Ratón Gaming con Cable Alto Rendimiento | Captor HERO 25K, 25,600 DPI, RGB, Peso Personalizable, 11 Botones Programables, Memoria Integrada, PC/Mac - Negro",
+      "title": "Logitech G G502 Hero Ratón Gaming con Cable Alto Rendimiento",
       "category": "Gaming",
       "price": 40.95,
       "original_price": 59.99,
@@ -4420,11 +4186,11 @@
       "image": "https://m.media-amazon.com/images/I/51jWEFaiZFL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07GS6ZS8J?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T17:22:34+02:00",
-      "last_seen": "2026-08-09T17:22:34+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B0FL7NNGRG",
-      "title": "Logitech G G321 Lightspeed, Auriculares inalámbricos Bluetooth para Gaming | Comodidad y ajuste dinámicos, micrófono de varilla 16 khz, PC, PS4, PS5, Nintendo Switch y dispositivos",
+      "title": "Logitech G G321 Lightspeed, Auriculares inalámbricos Bluetooth para Gaming",
       "category": "Gaming",
       "price": 44.9,
       "original_price": 69.99,
@@ -4433,7 +4199,7 @@
       "image": "https://m.media-amazon.com/images/I/71yLbvA4jrL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0FL7NNGRG?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T17:22:34+02:00",
-      "last_seen": "2026-08-09T17:22:34+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B07W6FQ658",
@@ -4463,7 +4229,7 @@
     },
     {
       "id": "B00YUIM2J0",
-      "title": "Logitech G G29, Driving Force Volante y Pedales para Playstation & PC | Force Feedback, Aluminio Anodizado, Palancas Cambio, USB 2.0/Alámbrico, PS4, PS3, Window 10.81, Windows 8/7,",
+      "title": "Logitech G G29, Driving Force Volante y Pedales para Playstation & PC",
       "category": "Gaming",
       "price": 219.99,
       "original_price": 349.99,
@@ -4472,7 +4238,7 @@
       "image": "https://m.media-amazon.com/images/I/61j1ZCgzQRL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B00YUIM2J0?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T17:22:34+02:00",
-      "last_seen": "2026-08-09T17:22:34+02:00"
+      "last_seen": "2026-08-10T11:35:45+02:00"
     },
     {
       "id": "B004VNCCEO",
@@ -5331,6 +5097,578 @@
       "url": "https://www.amazon.es/dp/B0C2J6W6XC?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T08:31:28+02:00",
       "last_seen": "2026-08-10T08:31:28+02:00"
+    },
+    {
+      "id": "B08B21PRLM",
+      "title": "L'Oréal Paris Revitalift Filler Sérum Facial Ácido Hialurónico y PDRN, 30ml | Ácido Hialurónico y PDRN, Rellena Arrugas Profundas en 1H, Hidratación Intensa 48H e Ilumina al Instan",
+      "category": "Belleza",
+      "price": 16.89,
+      "original_price": 56.3,
+      "discount_percent": 70,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71RrKjOM5ZL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08B21PRLM?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0D2P1ZVZ8",
+      "title": "L'Oréal Paris Age Perfect Sérum Le Duo Antiarrugas Rejuvenecedor, 30ml | Péptidos de Colágeno, Vitaminas B3 y C, Efecto Reafirmante, Rejuvenecedor, Antiarrugas, Antiedad, Piel más ",
+      "category": "Belleza",
+      "price": 19.91,
+      "original_price": 66.37,
+      "discount_percent": 70,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71PVr7ZW1ML._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D2P1ZVZ8?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09R89BLYH",
+      "title": "L'Oréal Paris Revitalift Filler Sérum Ojos con Cafeína Antiarrugas, 20ml | Ácido Hialurónico*, Corrige Ojeras, Disminuye Líneas 21% tras 6 Semanas, Triple Aplicador Metálico, Revit",
+      "category": "Belleza",
+      "price": 18.9,
+      "original_price": 94.5,
+      "discount_percent": 80,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71WlnDhXcmL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09R89BLYH?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B094TYNC9T",
+      "title": "L'Oréal Paris Revitalift Filler Crema Hidratante Día Nº1 con SPF 50, 50ml | Ácido Hialurónico, Crema Hidratante con Protección Solar Facial, Rellena y Reduce Arrugas, Textura Liger",
+      "category": "Belleza",
+      "price": 17.02,
+      "original_price": 34.04,
+      "discount_percent": 50,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71-pMNPmF1L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B094TYNC9T?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B08SS5TRP4",
+      "title": "L'Oréal Paris Revitalift Laser Serúm de Noche Nº1 con Retinol Puro, 30ml | Retinol Puro Aprobado por Dermatólogos, Reduce Manchas y Arrugas Profundas, Piel más Lisa e Iluminada, Sé",
+      "category": "Belleza",
+      "price": 18.99,
+      "original_price": 63.3,
+      "discount_percent": 70,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/61I6MKqCj2L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08SS5TRP4?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B06XDS7J69",
+      "title": "L'Oréal Paris Revitalift Laser SPF 25, Crema de Día Nº1 Anti-Edad Triple Acción, con Pro-Retinol, Ácido Hialurónico y Vitamina Cg, Reduce Arrugas, Reafirma y Reduce Manchas Oscuras",
+      "category": "Belleza",
+      "price": 16.76,
+      "original_price": 33.52,
+      "discount_percent": 50,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71aYQeMSdTL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B06XDS7J69?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0CGJLC8G9",
+      "title": "La Roche-Posay, Effaclar Duo+M, Gel crema corrector triple, 40 ml | Cuidado corrector triple anti-granos para pieles grasas y con tendencia acneica, potenciado con la ciencia del m",
+      "category": "Belleza",
+      "price": 14.39,
+      "original_price": 35.98,
+      "discount_percent": 60,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61AKdloPlPL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CGJLC8G9?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B07J2P85LG",
+      "title": "Face D - Pure Plump Sérum Facial y de Cuello, 30 ml, Ácido Hialurónico Efecto Rellenador Inmediato",
+      "category": "Belleza",
+      "price": 29.5,
+      "original_price": 98.33,
+      "discount_percent": 70,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/61q0G1XQt0L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07J2P85LG?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09WDRFSLN",
+      "title": "La Roche-Posay, Effaclar H Iso-Biome, Crema hidratante día, 40 ml | Hidrata y repara pieles fragilizadas por tratamientos anti-acné, reequilibra el microbioma y reduce imperfeccion",
+      "category": "Belleza",
+      "price": 14.91,
+      "original_price": 37.28,
+      "discount_percent": 60,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61psTRb3iHL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09WDRFSLN?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0DHS9NX45",
+      "title": "La Roche-Posay, Pure Vitamin C12 Sérum Antiarrugas e Iluminador, 30 ml | Sérum con 12% de vitamina C pura, antioxidante e iluminador. Potencia la luminosidad y unifica el tono de l",
+      "category": "Belleza",
+      "price": 39.99,
+      "original_price": 133.3,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61iok67HDYL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DHS9NX45?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0F225FYN9",
+      "title": "La Roche-Posay, Hyalu B5 Suractivated Sérum, Serum Anti-arrugas, 30 ml | Rellena intensamente, corrige arrugas y ayuda a devolver firmeza y elasticidad. 27X más ácido hialurónico e",
+      "category": "Belleza",
+      "price": 39.99,
+      "original_price": 133.3,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51fsVF+41jL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0F225FYN9?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09SLF5ZH8",
+      "title": "La Roche Posay - Protector Solar, SPF50+, Previene el Estrés Oxidativo, Resistente al Agua, Sudor y Arena, Fórmula con Mexoryl 400, Fluido Invisible, Anthelios UV-MUNE 400, 50 ml",
+      "category": "Belleza",
+      "price": 14.99,
+      "original_price": 29.98,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61cE9FG+lTL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09SLF5ZH8?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0CM4B43DZ",
+      "title": "La Roche-Posay, Mela B3 Sérum, Hiperpigmentación y manchas post acné, 30 ml | Sérum dermatológico despigmentante intensivo. Corrige manchas oscuras persistentes, ayuda a prevenir s",
+      "category": "Belleza",
+      "price": 39.12,
+      "original_price": 130.4,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71aDmgiq0SL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CM4B43DZ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0BTJD6LCL",
+      "title": "Sony WH-CH520, Auriculares de diadema inalámbricos Bluetooth, diseño ligero, 50 h de batería, carga rápida, ecualizador, llamadas nítidas, iOS y Android - Negro | Hasta 50 horas, B",
+      "category": "Música",
+      "price": 27.99,
+      "original_price": 69.99,
+      "discount_percent": 60,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61rFE093esL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BTJD6LCL?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0BTJCRW9L",
+      "title": "Sony WH-CH520 Auriculares Bluetooth con 50 h de batería, sonido DSEE y micrófono integrado, Blanco",
+      "category": "Música",
+      "price": 27.5,
+      "original_price": 69.99,
+      "discount_percent": 61,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61-3lx5wQQL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BTJCRW9L?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0DBLPBVVY",
+      "title": "Auriculares Inalámbricos Bluetooth Sony WF-C510 pequeños, conexión multipunto, Modo Sonido Ambiente, Resistencia al Agua IPX4, Spotify Tap, Carga rápida, 22H de batería, iOS y Andr",
+      "category": "Música",
+      "price": 34.9,
+      "original_price": 59.99,
+      "discount_percent": 42,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41f-S5zLdNL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DBLPBVVY?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B00NBR70DO",
+      "title": "Sony MDR-ZX110 - Auriculares cerrados, negro",
+      "category": "Música",
+      "price": 9.69,
+      "original_price": 15.0,
+      "discount_percent": 35,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51udwldPBbL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00NBR70DO?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B00I3LUUIU",
+      "title": "Sony MDR-EX110AP - Auriculares in-ear (con micrófono, control remoto integrado), Color negro, Alámbrico",
+      "category": "Música",
+      "price": 13.69,
+      "original_price": 25.0,
+      "discount_percent": 45,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51W9Rf9R7cL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00I3LUUIU?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0DK4G3FMS",
+      "title": "JVC Auriculares Inalámbricos Bluetooth | 24h de Batería y Carga Rápida | Oido Abierto | Ligeros y Resistentes al Agua | Deportivos con IPX4 y Control Táctil - HA-NP1T Granate",
+      "category": "Música",
+      "price": 89.9,
+      "original_price": 129.99,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/514hdnJlp6L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DK4G3FMS?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0HB9JLKZB",
+      "title": "2026 Auriculares Inalámbricos Deportivos 5.4, Cascos Bluetooth HiFi Estéreo | Control App/60H Cascos Inalambricos/4 ENC Cancelacion Ruido HD Mic/Pantalla LED/USB-C, IP7 Impermeable",
+      "category": "Música",
+      "price": 23.99,
+      "original_price": 99.99,
+      "discount_percent": 76,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71i-BD18kmL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0HB9JLKZB?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0D7LVY6GZ",
+      "title": "NIKE",
+      "category": "Deporte",
+      "price": 52.24,
+      "original_price": 89.99,
+      "discount_percent": 42,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61Xg4CYYRML._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D7LVY6GZ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0C8TFSRKR",
+      "title": "NIKE",
+      "category": "Deporte",
+      "price": 40.19,
+      "original_price": 64.99,
+      "discount_percent": 38,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71t0U59Rb-L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0C8TFSRKR?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0CKS1Y72V",
+      "title": "adidas",
+      "category": "Deporte",
+      "price": 35.99,
+      "original_price": 60.0,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51xiSaQ8HML._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CKS1Y72V?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0CT3Y4TK3",
+      "title": "NIKE",
+      "category": "Deporte",
+      "price": 83.99,
+      "original_price": 139.99,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71enKp8dozL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CT3Y4TK3?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09FQJMF12",
+      "title": "NIKE",
+      "category": "Deporte",
+      "price": 32.5,
+      "original_price": 65.0,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61wRzsn74gL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09FQJMF12?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0DYL98F7N",
+      "title": "NIKE",
+      "category": "Deporte",
+      "price": 41.99,
+      "original_price": 59.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61WcUj8AWjL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DYL98F7N?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0CSKPZWQR",
+      "title": "NIKE",
+      "category": "Deporte",
+      "price": 48.99,
+      "original_price": 69.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61gMJLj++6L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CSKPZWQR?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0CSKP4TLH",
+      "title": "NIKE",
+      "category": "Deporte",
+      "price": 48.99,
+      "original_price": 69.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/710jZp-z7sL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CSKP4TLH?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0BZ8YKT3T",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 16.99,
+      "original_price": 54.99,
+      "discount_percent": 69,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51rNaxsHNRL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BZ8YKT3T?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09NYF925S",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 26.99,
+      "original_price": 44.99,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51ZOiql2h2L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09NYF925S?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09XBNBMV9",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 18.49,
+      "original_price": 92.45,
+      "discount_percent": 80,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/511cJae-XNL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09XBNBMV9?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09KHGSLJB",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 23.99,
+      "original_price": 119.95,
+      "discount_percent": 80,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51jO04aSG+L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09KHGSLJB?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09KHFKZ3Z",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 15.99,
+      "original_price": 34.99,
+      "discount_percent": 54,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41DUEYNmydL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09KHFKZ3Z?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09XBP41VH",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 19.99,
+      "original_price": 66.63,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51rip7l1xgL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09XBP41VH?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09KHHBCC5",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 15.99,
+      "original_price": 53.3,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/514uR269ENL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09KHHBCC5?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09NYFJ4CC",
+      "title": "HAWKERS",
+      "category": "Gafas de Sol",
+      "price": 15.99,
+      "original_price": 39.99,
+      "discount_percent": 60,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51GEooisggL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09NYFJ4CC?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0F544B9P8",
+      "title": "ColaCao, Turbo Cacao Instantáneo y sin Grumitos - Formato Ahorro - 585g",
+      "category": "Alimentación",
+      "price": 4.99,
+      "original_price": 8.53,
+      "discount_percent": 42,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71uZncJPaDL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0F544B9P8?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0FWQQ6PB2",
+      "title": "NESTLÉ NESQUIK UP Cacao Soluble Instantáneo con Proteína 330g",
+      "category": "Alimentación",
+      "price": 4.84,
+      "original_price": 14.67,
+      "discount_percent": 67,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71x1Xf8FZkL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FWQQ6PB2?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09YHNKBFX",
+      "title": "Corsair HS80 RGB Auriculares con Micrófono para Juegos USB - Negro",
+      "category": "Gaming",
+      "price": 73.99,
+      "original_price": 129.99,
+      "discount_percent": 43,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81NXY8ScZTL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09YHNKBFX?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09YHJLQ4X",
+      "title": "Corsair HS55 Surround Auriculares con Cable para Juegos – Carbono",
+      "category": "Gaming",
+      "price": 54.99,
+      "original_price": 81.92,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61n7bcDfQmL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09YHJLQ4X?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09YHNCQNZ",
+      "title": "Corsair HS65 SURROUND Auriculares para juegos (Sonido envolvente Dolby Audio 7.1 en PC y Mac, Micrófono omnidireccional, Tecnología SoundID de SonarWorks, Control de volumen de fác",
+      "category": "Gaming",
+      "price": 59.99,
+      "original_price": 89.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51ccCf52EcL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09YHNCQNZ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0CZTN664T",
+      "title": "Corsair HS35 v2 Multiplataforma Auriculares con Cable para Juegos – Carbón",
+      "category": "Gaming",
+      "price": 29.99,
+      "original_price": 49.99,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61jiJet+XrL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CZTN664T?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B09YHR8TKF",
+      "title": "Corsair HS65 Surround Auriculares para Juegos (Sonido Envolvente Dolby Audio 7.1 en PC y Mac, Micrófono omnidireccional, Tecnología SoundID de SonarWorks, Control de Volumen de fác",
+      "category": "Gaming",
+      "price": 59.99,
+      "original_price": 89.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51q56AGW5SL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09YHR8TKF?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
+    },
+    {
+      "id": "B0D3GXH1C4",
+      "title": "Logitech G309 Ratón inalámbrico Lightspeed para Gaming, Ligero, interruptores híbridos LIGHTFORCE, Sensor Hero 25K, 300+ Horas con una batería AA, 6 Botones programables, PC y Mac ",
+      "category": "Gaming",
+      "price": 50.96,
+      "original_price": 79.99,
+      "discount_percent": 36,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/415uoM7eX7L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D3GXH1C4?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-10T11:35:45+02:00",
+      "last_seen": "2026-08-10T11:35:45+02:00"
     }
   ]
 }
