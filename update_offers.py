@@ -76,6 +76,12 @@ TELEGRAM_TOPIC_ICON_COLORS = [
     0xFB6F5F,  # rojo
     0xCC46D8,  # naranja/magenta (7º valor válido, visto en la respuesta real de la API)
 ]
+# Tema especial (11 ago 2026, a petición del usuario: "en todas las ofertas de telegram deben
+# de estar todas"): a diferencia del resto de temas por categoría (solo lo destacado, ver
+# _is_standout_offer), este reúne TODO el catálogo, igual que la pestaña "Todas las Ofertas" de
+# la app. No es una categoría real de KEYWORDS_BY_CATEGORY, se trata aparte en
+# sync_telegram_group_topics().
+TELEGRAM_ALL_OFFERS_CATEGORY = "Todas las Ofertas"
 
 MIN_DISCOUNT_PERCENT = 30
 # Tope de sensatez: un descuento calculado por encima de esto casi seguro viene de un "precio
@@ -394,8 +400,10 @@ def sync_telegram_group_topics(all_offers):
         for offer in all_offers:
             if _is_standout_offer(offer):
                 by_category.setdefault(offer.get("category") or "Otros", []).append(offer)
+        # "Todas las Ofertas": el catálogo completo, no solo lo destacado (ver constante arriba).
+        by_category[TELEGRAM_ALL_OFFERS_CATEGORY] = list(all_offers)
 
-        for category in set(KEYWORDS_BY_CATEGORY) | set(state) | set(by_category):
+        for category in set(KEYWORDS_BY_CATEGORY) | {TELEGRAM_ALL_OFFERS_CATEGORY} | set(state) | set(by_category):
             current = by_category.get(category, [])
             current_ids = {o["id"] for o in current if o.get("id")}
             entry = state.get(category) or {}
@@ -941,11 +949,6 @@ def main():
     log(f"Ofertas nuevas/actualizadas esta ejecución: {len(new_or_updated)}. "
         f"Catálogo final: {len(merged)}.")
 
-    # Se hace SIEMPRE que el catálogo final es válido, aunque no haya cambios que comitear a
-    # git (más abajo) — así los temas del grupo reflejan el catálogo real incluso en una
-    # ejecución "sin novedad" (p.ej. justo después de activar esta función por primera vez).
-    sync_telegram_group_topics(list(merged.values()))
-
     output = {
         "updated_at": now_iso,
         "affiliate_tag": AFFILIATE_TAG,
@@ -962,25 +965,31 @@ def main():
     diff = subprocess.run(["git", "-C", REPO_DIR, "diff", "--cached", "--quiet"])
     if diff.returncode == 0:
         log("Sin cambios respecto al commit anterior, no se hace commit.")
-        log("=== Fin ===")
-        return
+    else:
+        commit_msg = (
+            f"Actualiza ofertas ({len(new_or_updated)} nuevas/actualizadas, "
+            f"{len(merged)} totales)"
+            + (", favoritos vigilados" if watched_written else "")
+            + f" — {output['updated_at']}"
+        )
+        subprocess.run(["git", "-C", REPO_DIR, "commit", "-m", commit_msg], check=True)
+        push = subprocess.run(["git", "-C", REPO_DIR, "push"], capture_output=True, text=True)
+        if push.returncode != 0:
+            log(f"ERROR haciendo push: {push.stderr}")
+            sys.exit(1)
+        log("Push realizado correctamente.")
+        notify_telegram(
+            f"📦 RebajasDiarias actualizado: {len(new_or_updated)} ofertas nuevas/actualizadas, "
+            f"{len(merged)} en total."
+        )
 
-    commit_msg = (
-        f"Actualiza ofertas ({len(new_or_updated)} nuevas/actualizadas, "
-        f"{len(merged)} totales)"
-        + (", favoritos vigilados" if watched_written else "")
-        + f" — {output['updated_at']}"
-    )
-    subprocess.run(["git", "-C", REPO_DIR, "commit", "-m", commit_msg], check=True)
-    push = subprocess.run(["git", "-C", REPO_DIR, "push"], capture_output=True, text=True)
-    if push.returncode != 0:
-        log(f"ERROR haciendo push: {push.stderr}")
-        sys.exit(1)
-    log("Push realizado correctamente.")
-    notify_telegram(
-        f"📦 RebajasDiarias actualizado: {len(new_or_updated)} ofertas nuevas/actualizadas, "
-        f"{len(merged)} en total."
-    )
+    # Publicación en el grupo público de Telegram: se hace DESPUÉS del push, no antes (cambiado
+    # el 11 ago 2026) — así una tanda larga (p.ej. el primer envío del catálogo completo al tema
+    # "Todas las Ofertas", ver TELEGRAM_ALL_OFFERS_CATEGORY) nunca retrasa que la web/app vean el
+    # catálogo nuevo. Se hace siempre que el catálogo final es válido, haya habido o no cambios
+    # que comitear a git.
+    sync_telegram_group_topics(list(merged.values()))
+
     log("=== Fin ===")
 
 
