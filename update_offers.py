@@ -146,6 +146,12 @@ CAMPAIGN_PATH_CANDIDATES = ["campaign.json"]  # relativo a REPO_DIR (mismo repo 
 WATCHED_PATH = f"{REPO_DIR}/watched_prices.json"
 FIREBASE_CREDENTIALS_PATH = f"{HOME}/firebase-service-account.json"
 WATCHED_LAST_REPORTED_MAX_DAYS = 20  # ignora entradas de Firestore que nadie renueva ya
+
+# Push de "catálogo actualizado" (11 ago 2026, ver RASPI_REBAJASDIARIAS.md §3.3): la app se
+# suscribe sola a este topic al arrancar (lib/services/push_service.dart) — mandar aquí evita
+# tener que guardar/gestionar un token por dispositivo. Mismo proyecto/credenciales de Firebase
+# que ya se usan arriba para Firestore.
+CATALOG_UPDATES_TOPIC = "catalog_updates"
 MAX_WATCHED_DIRECT_VISITS_PER_RUN = 15  # límite de visitas directas por ejecución (además de
                                          # las búsquedas normales) — cinturón de seguridad por
                                          # si algún día hay muchos favoritos vigilados a la vez
@@ -540,6 +546,44 @@ def _fetch_watched_asins():
     except Exception as e:
         log(f"  aviso: no se pudo consultar Firestore de favoritos vigilados: {e}")
         return None
+
+
+def notify_app_push(all_offers):
+    """Manda un push de Firebase Cloud Messaging al topic al que se suscribe la app (ver
+    lib/services/push_service.dart) — solo se llama tras un commit/push real a git, nunca en
+    ciclos sin cambios (11 ago 2026, ver RASPI_REBAJASDIARIAS.md §3.3: el usuario pidió que
+    avisara "cuando actualice las ofertas, para que la gente no se las pierda"). Nunca debe
+    tumbar el script si falla, igual que notify_telegram()."""
+    if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        return
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, messaging
+
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+
+        flash_count = sum(1 for o in all_offers if o.get("is_flash"))
+        daily_count = sum(1 for o in all_offers if (o.get("discount_percent") or 0) > 50)
+        if flash_count > 0:
+            body = (
+                f"🔥 {flash_count} ofertas flash o con más del 50% de descuento, "
+                "recién actualizadas."
+            )
+        elif daily_count > 0:
+            body = f"📦 {daily_count} ofertas con más del 50% de descuento, recién actualizadas."
+        else:
+            body = f"📦 Catálogo actualizado: {len(all_offers)} ofertas activas."
+
+        message = messaging.Message(
+            notification=messaging.Notification(title="¡Catálogo actualizado! 🛍️", body=body),
+            topic=CATALOG_UPDATES_TOPIC,
+        )
+        messaging.send(message)
+        log("Push de catálogo actualizado enviado a la app.")
+    except Exception as e:
+        log(f"aviso: no se pudo enviar el push del catálogo a la app: {e}")
 
 
 def build_driver():
@@ -982,6 +1026,10 @@ def main():
             f"📦 RebajasDiarias actualizado: {len(new_or_updated)} ofertas nuevas/actualizadas, "
             f"{len(merged)} en total."
         )
+        # Push a la app (11 ago 2026) — solo aquí, en la rama donde hubo un commit/push real;
+        # nunca en un ciclo sin cambios (evita avisos vacíos "actualizado" cuando no hay nada
+        # nuevo que ver).
+        notify_app_push(list(merged.values()))
 
     # Publicación en el grupo público de Telegram: se hace DESPUÉS del push, no antes (cambiado
     # el 11 ago 2026) — así una tanda larga (p.ej. el primer envío del catálogo completo al tema
