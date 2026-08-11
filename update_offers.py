@@ -25,6 +25,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+import zlib
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote_plus
 
@@ -46,6 +47,35 @@ AFFILIATE_TAG = "rebajasdiar05-21"
 # RASPI_REBAJASDIARIAS.md). Sin librerías nuevas: urllib de la stdlib basta para un POST simple.
 TELEGRAM_BOT_TOKEN = "8853076314:AAGld1wicuDIAgklHwrlq36frqihSOwLelo"
 TELEGRAM_CHAT_ID = "1338347086"
+
+# Grupo público "REBAJAS DIARIAS" (supergrupo con Temas/forum activado), añadido 11 ago 2026 a
+# petición del usuario para publicar ahí las ofertas más destacadas de la app/web, repartidas
+# por tema según categoría. A diferencia de TELEGRAM_CHAT_ID de arriba (aviso privado al
+# usuario en cada push), esto es contenido público para los miembros del grupo.
+TELEGRAM_GROUP_CHAT_ID = "-1002409782408"
+# Mismo criterio que "Ofertas del día"/Flash en la app (ver OffersService.flashOffers /
+# dailyDeals en lib/services/offers_service.dart): solo lo más llamativo, no el catálogo entero.
+TELEGRAM_DEAL_DISCOUNT_THRESHOLD = 50
+# Nada fijo: el usuario pidió explícitamente (11 ago 2026) que los temas del grupo se creen
+# solo cuando una categoría tiene ofertas destacadas activas y se BORREN en cuanto se quede sin
+# ninguna, en vez de tener un tema permanente por categoría. Este archivo (fuera del repo, local
+# a la Pi, mismo patrón que GROUP_STATE_PATH) recuerda qué tema (message_thread_id) hay abierto
+# ahora mismo para cada categoría y qué ASINs ya se han publicado en él, para no repetir el
+# mismo producto en cada ejecución del cron mientras siga siendo destacado.
+TELEGRAM_TOPICS_STATE_PATH = f"{HOME}/.rebajas_telegram_topics.json"
+# Únicos 7 valores de icon_color que acepta la Bot API para temas de un forum (paleta fija de
+# Telegram, no vale cualquier RGB). Cada categoría recibe siempre el mismo color (hash estable
+# del nombre, no random.choice, para que no cambie de un tema borrado/recreado al siguiente) —
+# así cada categoría es visualmente distinta y reconocible en la lista de temas del grupo.
+TELEGRAM_TOPIC_ICON_COLORS = [
+    0x6FB9F0,  # azul
+    0xFFD67E,  # amarillo
+    0xCB86DB,  # morado
+    0x8EEE98,  # verde
+    0xFF93B2,  # rosa
+    0xFB6F5F,  # rojo
+    0xCC46D8,  # naranja/magenta (7º valor válido, visto en la respuesta real de la API)
+]
 
 MIN_DISCOUNT_PERCENT = 30
 # Tope de sensatez: un descuento calculado por encima de esto casi seguro viene de un "precio
@@ -119,77 +149,108 @@ MAX_WATCHED_DIRECT_VISITS_PER_RUN = 15  # límite de visitas directas por ejecuc
 # EXACTOS o la app no filtra bien). 'Todas las Ofertas' no se busca aparte, es un
 # agregado de todas las demás dentro de la propia app.
 KEYWORDS_BY_CATEGORY = {
-    'Bebés': ["bebé", "pañales", "juguetes bebé", "cuna", "carrito"],
+    'Bebés': [
+        "Chicco bebé", "Nuk bebé", "Bebeconfort", "Cybex bebé", "Jané bebé",
+        "Philips Avent", "Tommee Tippee", "Pampers", "Dodot", "Suavinex",
+        "Munchkin bebé", "Fisher-Price bebé",
+    ],
     'Moda Hombre': [
         "zapatillas de hombre", "polos de hombre", "Lacoste de hombre",
-        "converse de hombre", "Lee de hombre", "Lois de hombre", "bañador de hombre",
-        "camisetas de hombre", "perfume de hombre", "Tommy Hilfiger de hombre",
-        "Moschino de hombre", "Scalpers de hombre", "G-Star de hombre",
-        "New balance de hombre", "Puma de hombre", "Calvin klein de hombre",
-        "The north face de hombre", "Reebok de hombre", "Nike de hombre",
-        "Adidas de hombre", "Diesel de hombre", "Geox de hombre",
-        "Pepe Jeans de hombre", "ropa hombre", "zapatos hombre", "accesorios hombre",
+        "converse de hombre", "Lee de hombre", "Lois de hombre",
+        "bañador de hombre", "camisetas de hombre", "perfume de hombre",
+        "Tommy Hilfiger de hombre", "Moschino de hombre", "Scalpers de hombre",
+        "G-Star de hombre", "New balance de hombre", "Puma de hombre",
+        "Calvin klein de hombre", "The north face de hombre", "Reebok de hombre",
+        "Nike de hombre", "Adidas de hombre", "Diesel de hombre", "Geox de hombre",
+        "Pepe Jeans de hombre",
     ],
     'Moda Mujer': [
-        "zapatillas de mujer", "polos de mujer", "converse de mujer", "Lee de mujer",
-        "Lois de mujer", "bikini de mujer", "bañador de mujer", "camisetas de mujer",
-        "perfume de mujer", "bolso bimba y lola mujer", "Tous", "Nike de mujer",
-        "Adidas de mujer", "Tommy Hilfiger de mujer", "New balance de mujer",
-        "Desigual de mujer", "Calvin klein de mujer", "Roxy de mujer", "Geox de mujer",
-        "Women´secret de mujer", "Springfield de mujer", "Diesel de mujer",
-        "Moschino de mujer", "Pepe Jeans de mujer", "ropa mujer", "zapatos mujer",
-        "accesorios mujer",
+        "zapatillas de mujer", "polos de mujer", "converse de mujer",
+        "Lee de mujer", "Lois de mujer", "bikini de mujer", "bañador de mujer",
+        "camisetas de mujer", "perfume de mujer", "bolso bimba y lola mujer",
+        "Tous", "Nike de mujer", "Adidas de mujer", "Tommy Hilfiger de mujer",
+        "New balance de mujer", "Desigual de mujer", "Calvin klein de mujer",
+        "Roxy de mujer", "Geox de mujer", "Women´secret de mujer",
+        "Springfield de mujer", "Diesel de mujer", "Moschino de mujer",
+        "Pepe Jeans de mujer",
     ],
     'Hogar': [
-        "electrodomésticos", "utensilios", "muebles", "decoración", "nevera",
-        "lavavajillas", "microondas", "jardín", "terraza", "barbacoa", "piscina",
-        "almacenamiento", "cocina",
+        "Philips hogar", "Bosch electrodomésticos", "Balay", "Moulinex", "Tefal",
+        "Rowenta", "Cecotec", "Karcher", "Dyson", "Samsung electrodomésticos",
+        "LG electrodomésticos", "Braun hogar",
     ],
     'Juguetes': [
-        "LEGO", "Bandai Namco", "Fisher-Price", "Barbie", "Disney", "Nerf",
-        "Dragon Ball", "Pop! Funko", "Hot Wheels", "juguetes", "juegos", "muñecas",
-        "figuras acción",
+        "LEGO", "Playmobil", "Fisher-Price", "Barbie", "Hot Wheels", "Nerf",
+        "Hasbro", "Mattel", "Disney", "Pop! Funko", "Clementoni", "Famosa",
+        "Bandai Namco",
     ],
     'Tecnología': [
-        "tablets", "portátiles", "accesorios de informática", "monitores",
-        "Robot Aspirador", "Samsung", "Lg", "Xiaomi", "reloj inteligente",
-        "televisores", "tv box", "tecnología", "smartphone", "portátil", "tablet",
+        "Samsung tecnología", "Xiaomi", "Apple accesorios", "Sony electrónica",
+        "HP portátiles", "Lenovo", "Asus", "Logitech", "JBL tecnología", "Bose",
+        "Huawei", "LG tecnología",
     ],
     'Mascotas': [
-        "comida para mascotas", "juguetes para mascotas", "arnes", "comedero",
-        "camas para mascotas", "accesorios para mascotas", "mascotas", "comida perro",
-        "comida gato", "juguetes mascotas",
+        "Purina", "Royal Canin", "Hill's mascotas", "Pedigree", "Whiskas",
+        "Kong perro", "Trixie mascotas", "Ferplast", "Advance mascotas",
     ],
     'Deporte': [
-        "Deportes", "Fitness", "Gimnasio", "Entrenamiento", "Running", "Ciclismo",
-        "Natación", "Yoga", "Outdoor", "Equipamiento deportivo", "snow", "esquí",
-        "deporte", "fitness", "gimnasio", "running",
+        "Nike deporte", "Adidas deporte", "Puma fitness", "Under Armour",
+        "Reebok deporte", "New Balance running", "Salomon outdoor",
+        "Asics running", "Wilson deportes", "Columbia outdoor",
     ],
     'Gafas de Sol': [
         "gafas de sol Ray-Ban", "gafas de sol hawkers", "gafas de sol Versace",
-        "gafas de sol Carolina Herrera", "gafas de sol Oakley", "gafas de sol Guess",
-        "gafas de sol Lacoste", "gafas de sol Emporio Armani", "gafas de sol Vogue",
-        "gafas sol", "ray-ban", "oakley", "gafas protección solar",
+        "gafas de sol Carolina Herrera", "gafas de sol Oakley",
+        "gafas de sol Guess", "gafas de sol Lacoste",
+        "gafas de sol Emporio Armani", "gafas de sol Vogue",
+        "gafas de sol Polaroid", "gafas de sol Prada",
     ],
     'Gaming': [
-        "PS5", "Xbox Series X", "Nintendo Switch", "Juegos de PC", "Accesorios gaming",
-        "Mando PS5", "Juegos Amazon", "Auriculares gaming", "gaming", "consola",
-        "videojuegos", "playstation", "xbox",
+        "PS5 Sony", "Xbox Series X Microsoft", "Nintendo Switch", "Razer gaming",
+        "Logitech G gaming", "HyperX gaming", "SteelSeries", "Corsair gaming",
     ],
     'Música': [
-        "música", "instrumentos", "altavoces", "auriculares", "Guitarras",
-        "Bajos eléctricos", "Altavoces Bluetooth", "Cascos de música", "Vinilos",
-        "Pianos digitales", "Micrófonos", "Estudios de grabación",
+        "JBL altavoces", "Bose audio", "Sony auriculares", "Fender guitarras",
+        "Yamaha música", "Marshall altavoces", "Sennheiser auriculares",
+        "Shure micrófonos", "Roland pianos digitales",
     ],
-    'Libros': ["libros", "novelas", "cuentos", "educación"],
-    'Belleza': ["belleza", "maquillaje", "perfume", "cuidado piel"],
-    'Alimentación': ["alimentación", "comida", "snacks", "bebidas"],
-    'Jardín': ["jardín", "exterior", "plantas", "herramientas jardín"],
-    'Oficina': ["oficina", "papelería", "escritorio", "impresora"],
-    'Salud': ["salud", "cuidado", "vitaminas", "termómetro"],
-    'Viajes': ["viajes", "maletas", "equipaje", "neceser"],
-    'Automóviles': ["automóviles", "accesorios coche", "gps", "llantas"],
-    'Relojes': ["relojes", "smartwatch", "pulsera", "cronógrafo"],
+    'Libros': [
+        "Planeta libros", "Penguin Random House", "Alfaguara", "Anaya libros",
+        "Santillana", "Salamandra libros", "SM libros", "DeBolsillo",
+    ],
+    'Belleza': [
+        "L'Oréal", "Nivea", "Maybelline", "NYX cosmetics", "Garnier", "Revlon",
+        "La Roche-Posay", "CeraVe", "Neutrogena",
+    ],
+    'Alimentación': [
+        "Nestlé", "Danone", "Central Lechera Asturiana", "Gullón galletas",
+        "Cola Cao", "Lindt chocolate", "Ferrero", "Pascual",
+    ],
+    'Jardín': [
+        "Gardena jardín", "Bosch jardín", "Black+Decker jardín", "Fiskars",
+        "McCulloch", "Hozelock riego",
+    ],
+    'Oficina': [
+        "HP impresoras", "Epson", "Canon impresoras", "BIC", "Stabilo",
+        "Pilot bolígrafos", "Faber-Castell", "Leitz oficina",
+    ],
+    'Salud': [
+        "Braun salud", "Omron tensiómetro", "Beurer", "Compeed",
+        "Centrum vitaminas", "Vicks",
+    ],
+    'Viajes': [
+        "Samsonite maletas", "American Tourister", "Delsey", "Eastpak",
+        "Antler viajes", "Travelite",
+    ],
+    'Automóviles': [
+        "Bosch coche", "Michelin", "Osram automoción", "Philips coche", "Sparco",
+        "Thule", "Continental neumáticos",
+    ],
+    'Relojes': [
+        "Casio relojes", "Citizen relojes", "Seiko relojes", "Fossil relojes",
+        "Garmin smartwatch", "Amazfit", "Michael Kors relojes", "Lotus relojes",
+        "Viceroy relojes",
+    ],
 }
 
 
@@ -207,6 +268,188 @@ def notify_telegram(msg):
             r.read()
     except Exception as e:
         log(f"aviso: no se pudo notificar por Telegram: {e}")
+
+
+def _telegram_api(method, params, _retried=False):
+    """Llama a un método cualquiera de la Bot API de Telegram. Nunca lanza: cualquier fallo de
+    red/API se registra y se devuelve None, igual que notify_telegram(). Si Telegram responde
+    429 (demasiadas peticiones — visto en la primera prueba en vivo del 11 ago 2026 al crear 16
+    temas y mandar ~96 mensajes seguidos), espera el `retry_after` que indica la propia API y
+    reintenta UNA vez antes de rendirse."""
+    try:
+        data = urllib.parse.urlencode(params).encode()
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{method}"
+        with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=20) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        try:
+            body = json.loads(e.read().decode())
+        except Exception:
+            body = {}
+        retry_after = (body.get("parameters") or {}).get("retry_after", 5)
+        if e.code == 429 and not _retried:
+            log(f"  aviso: Telegram {method} limitado (429), espero {retry_after}s y reintento...")
+            time.sleep(retry_after + 1)
+            return _telegram_api(method, params, _retried=True)
+        log(f"  aviso: fallo llamando a Telegram {method}: HTTP {e.code} {body}")
+        return None
+    except Exception as e:
+        log(f"  aviso: fallo llamando a Telegram {method}: {e}")
+        return None
+
+
+def _html_escape(text):
+    return (text or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _is_standout_offer(offer):
+    """Mismo criterio que 'Ofertas del día'/Flash en la app — ver
+    OffersService.flashOffers/dailyDeals en lib/services/offers_service.dart. Si ese criterio
+    cambia ahí, cambiarlo también aquí para que el grupo de Telegram muestre lo mismo que la app."""
+    return bool(offer.get("is_flash")) or offer.get("discount_percent", 0) > TELEGRAM_DEAL_DISCOUNT_THRESHOLD
+
+
+def _load_telegram_topics_state():
+    try:
+        with open(TELEGRAM_TOPICS_STATE_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_telegram_topics_state(state):
+    try:
+        with open(TELEGRAM_TOPICS_STATE_PATH, "w", encoding="utf-8") as f:
+            json.dump(state, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        log(f"  aviso: no se pudo guardar el estado de temas de Telegram: {e}")
+
+
+def _discount_badge(discount):
+    """Cuadrito de color según lo fuerte que sea el descuento — Telegram no permite texto en
+    color de verdad en captions, así que el "color" se consigue con estos emoji (a petición del
+    usuario, 11 ago 2026: "que llame la atención" al entrar al grupo)."""
+    if discount >= 70:
+        return "🔴"
+    if discount >= 60:
+        return "🟠"
+    return "🟡"
+
+
+def _send_telegram_offer(offer, thread_id):
+    """Publica un producto destacado en el tema (message_thread_id) de su categoría, con foto
+    si hay imagen disponible (si sendPhoto falla, se reintenta como mensaje de texto normal)."""
+    title = _html_escape(offer.get("title", ""))
+    price = offer.get("price")
+    original_price = offer.get("original_price")
+    discount = offer.get("discount_percent", 0)
+    url = offer.get("url", "")
+    image = offer.get("image", "")
+    header = "⚡️ CHOLLO FLASH" if offer.get("is_flash") else "🎯 OFERTA DEL DÍA"
+    badge = _discount_badge(discount)
+    # Precio y precio anterior tachado en la MISMA línea (no uno debajo del otro): con el emoji
+    # de color delante, dos líneas seguidas no quedaban alineadas porque el tachado no lleva
+    # emoji propio (visto en la primera prueba en vivo, 11 ago 2026) — en una sola línea no
+    # depende de que el emoji mida igual en cada móvil.
+    price_line = ""
+    if isinstance(price, (int, float)):
+        price_line = f"{badge} <b>{price:.2f}€</b>"
+        if isinstance(original_price, (int, float)) and original_price > price:
+            price_line += f"  <s>{original_price:.2f}€</s>"
+        price_line += f"  (-{discount}%)"
+    # Formato "tarjeta" en vez de todo pegado (a petición del usuario, 11 ago 2026: que llame la
+    # atención y se vea "estilo profesional"): cabecera destacada, producto, precio, separador
+    # y por último el botón — cada bloque en su propio párrafo, con una línea divisoria antes
+    # del enlace para que no se confunda con el resto del texto.
+    caption = (
+        f"<b>{header}</b>\n\n"
+        f"🛍 <b>{title}</b>\n\n"
+        f"{price_line}\n\n"
+        f"▬▬▬▬▬▬▬▬▬▬\n"
+        f"👉 <a href=\"{url}\">Ver oferta en Amazon</a>"
+    )
+
+    params = {
+        "chat_id": TELEGRAM_GROUP_CHAT_ID,
+        "message_thread_id": thread_id,
+        "parse_mode": "HTML",
+    }
+    if image:
+        result = _telegram_api("sendPhoto", {**params, "photo": image, "caption": caption})
+        if result and result.get("ok"):
+            return True
+        log(f"  aviso: sendPhoto falló para {offer.get('id')}, se prueba como texto")
+    result = _telegram_api("sendMessage", {**params, "text": caption})
+    return bool(result and result.get("ok"))
+
+
+def sync_telegram_group_topics(all_offers):
+    """Sincroniza los temas del grupo público de Telegram con las ofertas destacadas
+    actuales (ver _is_standout_offer): crea el tema de una categoría en cuanto tiene alguna
+    oferta destacada y lo BORRA en cuanto se queda sin ninguna — nada permanente, a petición
+    del usuario (11 ago 2026). Nunca debe tumbar el script si algo falla aquí."""
+    try:
+        state = _load_telegram_topics_state()
+        by_category = {}
+        for offer in all_offers:
+            if _is_standout_offer(offer):
+                by_category.setdefault(offer.get("category") or "Otros", []).append(offer)
+
+        for category in set(KEYWORDS_BY_CATEGORY) | set(state) | set(by_category):
+            current = by_category.get(category, [])
+            current_ids = {o["id"] for o in current if o.get("id")}
+            entry = state.get(category) or {}
+            thread_id = entry.get("thread_id")
+            posted = set(entry.get("posted", []))
+
+            if not current:
+                if thread_id:
+                    _telegram_api(
+                        "deleteForumTopic",
+                        {"chat_id": TELEGRAM_GROUP_CHAT_ID, "message_thread_id": thread_id},
+                    )
+                    log(f"Telegram: tema '{category}' borrado (sin ofertas destacadas).")
+                state.pop(category, None)
+                continue
+
+            if not thread_id:
+                # Color estable por categoría (no aleatorio, ver TELEGRAM_TOPIC_ICON_COLORS) +
+                # emoji en el propio nombre — para que se note nada más entrar al grupo (a
+                # petición del usuario, 11 ago 2026).
+                icon_color = TELEGRAM_TOPIC_ICON_COLORS[
+                    zlib.crc32(category.encode()) % len(TELEGRAM_TOPIC_ICON_COLORS)
+                ]
+                result = _telegram_api(
+                    "createForumTopic",
+                    {
+                        "chat_id": TELEGRAM_GROUP_CHAT_ID,
+                        "name": f"🔥 {category}",
+                        "icon_color": icon_color,
+                    },
+                )
+                if not result or not result.get("ok"):
+                    log(f"  aviso: no se pudo crear el tema de Telegram para '{category}'")
+                    continue
+                thread_id = result["result"]["message_thread_id"]
+                posted = set()
+                log(f"Telegram: tema '{category}' creado (id {thread_id}).")
+                time.sleep(2.5)  # margen antes de empezar a publicar en el tema recién creado
+
+            for offer in current:
+                if not offer.get("id") or offer["id"] in posted:
+                    continue
+                if _send_telegram_offer(offer, thread_id):
+                    posted.add(offer["id"])
+                else:
+                    log(f"  aviso: no se pudo publicar {offer['id']} en '{category}', se "
+                        f"reintentará en la próxima ejecución")
+                time.sleep(2.5)  # margen frente a los límites de la Bot API (ver _telegram_api)
+
+            state[category] = {"thread_id": thread_id, "posted": sorted(posted & current_ids)}
+
+        _save_telegram_topics_state(state)
+    except Exception as e:
+        log(f"  aviso: fallo sincronizando temas de Telegram: {e}")
 
 
 def _next_group_index():
@@ -697,6 +940,11 @@ def main():
 
     log(f"Ofertas nuevas/actualizadas esta ejecución: {len(new_or_updated)}. "
         f"Catálogo final: {len(merged)}.")
+
+    # Se hace SIEMPRE que el catálogo final es válido, aunque no haya cambios que comitear a
+    # git (más abajo) — así los temas del grupo reflejan el catálogo real incluso en una
+    # ejecución "sin novedad" (p.ej. justo después de activar esta función por primera vez).
+    sync_telegram_group_topics(list(merged.values()))
 
     output = {
         "updated_at": now_iso,
