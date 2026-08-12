@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-12T17:15:02+02:00",
+  "updated_at": "2026-08-12T20:15:35+02:00",
   "affiliate_tag": "rebajasdiar05-21",
   "offers": [
     {
@@ -68,19 +68,6 @@
       "last_seen": "2026-08-12T17:15:02+02:00"
     },
     {
-      "id": "B00174VD90",
-      "title": "Polaroid",
-      "category": "Gafas de Sol",
-      "price": 37.98,
-      "original_price": 57.0,
-      "discount_percent": 33,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51P645wK5jL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B00174VD90?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T11:23:11+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
       "id": "B0CNXQCLSC",
       "title": "American Tourister",
       "category": "Viajes",
@@ -104,7 +91,7 @@
       "image": "https://m.media-amazon.com/images/I/71ESYGZ2jBL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0CLB7JTKQ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B06Y3FD2KQ",
@@ -117,7 +104,7 @@
       "image": "https://m.media-amazon.com/images/I/81zaxhWTQaL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B06Y3FD2KQ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B075X3RXH2",
@@ -131,71 +118,6 @@
       "url": "https://www.amazon.es/dp/B075X3RXH2?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T20:53:11+02:00",
       "last_seen": "2026-08-12T17:15:02+02:00"
-    },
-    {
-      "id": "B01ITRYZV0",
-      "title": "ColaCao, Cacao Soluble Natural con 0% Azúcares Añadidos con Fibra - 300g",
-      "category": "Alimentación",
-      "price": 4.96,
-      "original_price": 16.53,
-      "discount_percent": 70,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61zvXLJjveL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B01ITRYZV0?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B07B316JSD",
-      "title": "ColaCao, Cacao Soluble Natural con 0% Azúcares Añadidos - 700g",
-      "category": "Alimentación",
-      "price": 9.2,
-      "original_price": 13.14,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/710ndMWQtdL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07B316JSD?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B07PTSK2FG",
-      "title": "ColaCao Noir 0% Azúcares Añadidos, 300g",
-      "category": "Alimentación",
-      "price": 6.3,
-      "original_price": 21.0,
-      "discount_percent": 70,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71wDnZ82K3L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07PTSK2FG?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B07SJ82K2C",
-      "title": "ColaCao, Avena, Cacao Soluble Natural con Copos de Avena Integral con 0% Azúcares Añadidos - 300g",
-      "category": "Alimentación",
-      "price": 6.49,
-      "original_price": 21.63,
-      "discount_percent": 70,
-      "is_flash": true,
-      "image": "https://m.media-amazon.com/images/I/71ga-fg0R1L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07SJ82K2C?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0DCFZ7SKL",
-      "title": "Nesquik Nestlé Fresa, Bolsa de 350 g",
-      "category": "Alimentación",
-      "price": 3.87,
-      "original_price": 11.06,
-      "discount_percent": 65,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81tqHwEyVbL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DCFZ7SKL?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T20:53:11+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
     },
     {
       "id": "B0DGH26Q78",
@@ -390,7 +312,7 @@
       "image": "https://m.media-amazon.com/images/I/71eJQtkuJvL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0CGDQMT69?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T11:14:19+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0GH8GS38B",
@@ -471,97 +393,6 @@
       "last_seen": "2026-08-11T11:51:46+02:00"
     },
     {
-      "id": "B000EDMSEE",
-      "title": "Converse",
-      "category": "Moda Mujer",
-      "price": 45.0,
-      "original_price": 64.99,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51PbnHuHt0L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B000EDMSEE?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T14:25:05+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B000O517GW",
-      "title": "Converse",
-      "category": "Moda Mujer",
-      "price": 42.0,
-      "original_price": 73.95,
-      "discount_percent": 43,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51PbnHuHt0L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B000O517GW?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T14:25:05+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B07BTL18RB",
-      "title": "Converse",
-      "category": "Moda Mujer",
-      "price": 59.27,
-      "original_price": 103.95,
-      "discount_percent": 43,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61NDzK4fnCL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07BTL18RB?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T14:25:05+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B0F2VQYJ3X",
-      "title": "Converse",
-      "category": "Moda Mujer",
-      "price": 29.99,
-      "original_price": 49.99,
-      "discount_percent": 40,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/519MrbPLlPL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F2VQYJ3X?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T14:25:05+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B08PKH6MCF",
-      "title": "Converse",
-      "category": "Moda Mujer",
-      "price": 57.9,
-      "original_price": 85.0,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71jHt6HF8XL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08PKH6MCF?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T14:25:05+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B0B698T67K",
-      "title": "Pepe Jeans",
-      "category": "Moda Mujer",
-      "price": 38.17,
-      "original_price": 65.0,
-      "discount_percent": 41,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/41KoAk9s0bL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0B698T67K?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T14:25:05+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B000KUDKO8",
-      "title": "Converse",
-      "category": "Moda Mujer",
-      "price": 36.0,
-      "original_price": 64.99,
-      "discount_percent": 45,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/41JYpHcmPRL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B000KUDKO8?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T14:25:05+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
       "id": "B083MNJ3KJ",
       "title": "Tommy Hilfiger",
       "category": "Gafas de Sol",
@@ -573,32 +404,6 @@
       "url": "https://www.amazon.es/dp/B083MNJ3KJ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T17:22:34+02:00",
       "last_seen": "2026-08-12T08:18:22+02:00"
-    },
-    {
-      "id": "B0FKN1RM1N",
-      "title": "Sony INZONE H9 II: Auriculares Gaming inalámbricos con Noise Cancelling, Ligeros, Micrófono Cardioide Extraible con IA, 2,4 GHz y Bluetooth, Estuche Blando, para PC, PS5, Switch y ",
-      "category": "Gaming",
-      "price": 223.0,
-      "original_price": 329.0,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/41qKWBeGjJL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FKN1RM1N?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T17:22:34+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0CJ3F37F3",
-      "title": "Sony INZONE Buds, Auriculares True Wireless Gaming, Transceptor de Baja latencia, Compatible con PC y PS5, 360 Spatial Sound, Ligeros y cómodos, Noise Cancelling, Micrófono IA, 24 ",
-      "category": "Gaming",
-      "price": 131.98,
-      "original_price": 199.99,
-      "discount_percent": 34,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61er0HdWDNL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CJ3F37F3?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T17:22:34+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
     },
     {
       "id": "B07CGNDZR3",
@@ -770,19 +575,6 @@
       "last_seen": "2026-08-11T17:22:57+02:00"
     },
     {
-      "id": "B0D793B2WV",
-      "title": "dreame H12 Pro Ultra Aspirador en Seco y Húmedo, Succión 16.000 Pa",
-      "category": "Hogar",
-      "price": 179.0,
-      "original_price": 299.0,
-      "discount_percent": 40,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/619ZoDxYGOL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D793B2WV?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
       "id": "B079MG7JT6",
       "title": "Fisher-Price Ríe y Aprende Libro Interactivo de Aprendizaje Cancionero, Juguete con Luces y Sonidos para bebé +6 Meses, versión español (FRC69)",
       "category": "Juguetes",
@@ -820,19 +612,6 @@
       "url": "https://www.amazon.es/dp/B0D2P1ZVZ8?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T11:35:45+02:00",
       "last_seen": "2026-08-12T17:15:02+02:00"
-    },
-    {
-      "id": "B09R89BLYH",
-      "title": "L'Oréal Paris Revitalift Filler Sérum Ojos con Cafeína Antiarrugas, 20ml",
-      "category": "Belleza",
-      "price": 18.9,
-      "original_price": 94.5,
-      "discount_percent": 80,
-      "is_flash": true,
-      "image": "https://m.media-amazon.com/images/I/71WlnDhXcmL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09R89BLYH?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T11:35:45+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
     },
     {
       "id": "B094TYNC9T",
@@ -913,19 +692,6 @@
       "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
-      "id": "B0FWQQ6PB2",
-      "title": "NESTLÉ NESQUIK UP Cacao Soluble Instantáneo con Proteína 330g",
-      "category": "Alimentación",
-      "price": 4.84,
-      "original_price": 14.67,
-      "discount_percent": 67,
-      "is_flash": true,
-      "image": "https://m.media-amazon.com/images/I/71x1Xf8FZkL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FWQQ6PB2?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T11:35:45+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
       "id": "B0D3GXH1C4",
       "title": "Logitech G309 Ratón inalámbrico Lightspeed para Gaming, Ligero, interruptores híbridos LIGHTFORCE, Sensor Hero 25K, 300+ Horas con una batería AA, 6 Botones programables, PC y Mac ",
       "category": "Gaming",
@@ -988,7 +754,7 @@
       "image": "https://m.media-amazon.com/images/I/51b1vN5M0NL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09R7WGXDV?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B09R7WT75M",
@@ -1001,7 +767,7 @@
       "image": "https://m.media-amazon.com/images/I/51b1vN5M0NL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09R7WT75M?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0DNQKMG7Y",
@@ -1014,7 +780,7 @@
       "image": "https://m.media-amazon.com/images/I/81AEgSbK6rL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0DNQKMG7Y?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-11T08:31:27+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B08S6KLY6X",
@@ -1027,7 +793,7 @@
       "image": "https://m.media-amazon.com/images/I/71hyVs6SsmL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B08S6KLY6X?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-11T08:31:27+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0DNQJ48V9",
@@ -1040,20 +806,20 @@
       "image": "https://m.media-amazon.com/images/I/81XUgitUGZL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0DNQJ48V9?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-11T08:31:27+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B08S7C8HN5",
       "title": "STABILO - lápiz de color, acuarela y cera - woody 3 in 1 duo",
       "category": "Oficina",
-      "price": 6.22,
+      "price": 6.7,
       "original_price": 10.22,
-      "discount_percent": 39,
+      "discount_percent": 34,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71JhqNfWAhL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B08S7C8HN5?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-11T08:31:27+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0007OEESS",
@@ -1082,19 +848,6 @@
       "last_seen": "2026-08-11T17:22:57+02:00"
     },
     {
-      "id": "B01B0YRL4M",
-      "title": "Russell Hobbs 23470-56 Mix & Go - Mini batidora, 300 W, sin BPA",
-      "category": "Hogar",
-      "price": 40.5,
-      "original_price": 63.99,
-      "discount_percent": 37,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51RioOQmMGL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B01B0YRL4M?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
       "id": "B0CM28JNZN",
       "title": "Dyson 360 Vis Nav™ Robot aspiradora – Cepillo de Ancho Completo, diseñado para Todo Tipo de Suelos (Azul/Níquel)",
       "category": "Hogar",
@@ -1106,162 +859,6 @@
       "url": "https://www.amazon.es/dp/B0CM28JNZN?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T17:52:20+02:00",
       "last_seen": "2026-08-11T11:51:46+02:00"
-    },
-    {
-      "id": "B07J66L9YD",
-      "title": "Lee",
-      "category": "Moda Hombre",
-      "price": 38.38,
-      "original_price": 75.0,
-      "discount_percent": 49,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51Y0trYnD1L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07J66L9YD?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B08CXTYJFR",
-      "title": "Lee",
-      "category": "Moda Hombre",
-      "price": 37.5,
-      "original_price": 75.0,
-      "discount_percent": 50,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51KqP8B0GhL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08CXTYJFR?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B07J9Y8STC",
-      "title": "Lee",
-      "category": "Moda Hombre",
-      "price": 39.49,
-      "original_price": 75.0,
-      "discount_percent": 47,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51npg0ANDLL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07J9Y8STC?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B07TTTNYC6",
-      "title": "Lee",
-      "category": "Moda Hombre",
-      "price": 17.11,
-      "original_price": 25.0,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51tUYdmK18L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07TTTNYC6?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B07JB735LQ",
-      "title": "Lee",
-      "category": "Moda Hombre",
-      "price": 37.5,
-      "original_price": 75.0,
-      "discount_percent": 50,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/517BugBaqPL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07JB735LQ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B07FY6VS6S",
-      "title": "Lee",
-      "category": "Moda Hombre",
-      "price": 22.5,
-      "original_price": 45.0,
-      "discount_percent": 50,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51ZK2qGkm+L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07FY6VS6S?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B01LI4I2QU",
-      "title": "Lee",
-      "category": "Moda Hombre",
-      "price": 33.1,
-      "original_price": 75.0,
-      "discount_percent": 56,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61PlX2fgIXL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B01LI4I2QU?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B09JXVY48B",
-      "title": "Lee",
-      "category": "Moda Hombre",
-      "price": 47.77,
-      "original_price": 99.95,
-      "discount_percent": 52,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/5196OH86coL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09JXVY48B?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B09SPZGMLG",
-      "title": "Converse",
-      "category": "Moda Mujer",
-      "price": 45.0,
-      "original_price": 65.0,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61CFEEk3CML._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09SPZGMLG?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B099RWZHV4",
-      "title": "NUK Taza de aprendizaje Magic Cup | Borde 360° a prueba de fugas | 8+ meses | Libre BPA | 230ml | Erizo (azul) | 2 unidades",
-      "category": "Bebés",
-      "price": 14.69,
-      "original_price": 20.99,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81UNsIEOeYL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B099RWZHV4?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B0D3V7DRT4",
-      "title": "NUK Limpiador de lavavajillas para biberones | 500 ml | Ideal para la limpieza de biberones, chupitos y accesorios | Limpiador sin fragancias | pH neutro | Botella 100% reciclable",
-      "category": "Bebés",
-      "price": 6.06,
-      "original_price": 12.12,
-      "discount_percent": 50,
-      "is_flash": true,
-      "image": "https://m.media-amazon.com/images/I/61YHoSxW2QL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D3V7DRT4?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B01LX5ZT44",
-      "title": "NUK - Esterilizador del Biberón y Accesorios Eléctrico",
-      "category": "Bebés",
-      "price": 41.99,
-      "original_price": 59.99,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81K6i9dtiDL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B01LX5ZT44?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
     },
     {
       "id": "B007ZY4D0W",
@@ -1329,19 +926,6 @@
       "last_seen": "2026-08-12T14:36:09+02:00"
     },
     {
-      "id": "B0GPNHT7B4",
-      "title": "Chuches para Perros, Sticks Dentales de Pollo, 500 g",
-      "category": "Mascotas",
-      "price": 18.04,
-      "original_price": 36.08,
-      "discount_percent": 50,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81kkKzRt31L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GPNHT7B4?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
       "id": "B09Q853VJH",
       "title": "Pedigree Dentastix Chewy Chunx, Snack Dental de Pollo para Perros de Talla pequeña, 5 Bolsas de 68 g",
       "category": "Mascotas",
@@ -1366,19 +950,6 @@
       "url": "https://www.amazon.es/dp/B0DPXNDX28?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T17:52:20+02:00",
       "last_seen": "2026-08-11T20:18:52+02:00"
-    },
-    {
-      "id": "B08T9Y4H63",
-      "title": "Samsung Galaxy A32 5G (64 GB) Negro - Smartphone Android de 4GB RAM, Teléfono Móvil Libre con Carga rápida, Batería de 5000 mAh y pantalla de 6,5'' [Versión ES]",
-      "category": "Tecnología",
-      "price": 197.0,
-      "original_price": 289.0,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71I0yjfGNBS._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08T9Y4H63?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
     },
     {
       "id": "B0CVNDJV6N",
@@ -1407,110 +978,6 @@
       "last_seen": "2026-08-11T20:18:52+02:00"
     },
     {
-      "id": "B0GVJTRHZH",
-      "title": "XIAOMI POCO C81 Pro Smartphone 4+128 GB Negro Batería de 6000 mAh",
-      "category": "Tecnología",
-      "price": 129.99,
-      "original_price": 199.9,
-      "discount_percent": 35,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61UXAfWjpbL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GVJTRHZH?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B0F6Y8F3QD",
-      "title": "Nothing Phone (3) – Smartphone con Triple Cámara 50MP",
-      "category": "Tecnología",
-      "price": 499.0,
-      "original_price": 799.0,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61YbN9tT88L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F6Y8F3QD?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T17:52:20+02:00",
-      "last_seen": "2026-08-10T17:52:20+02:00"
-    },
-    {
-      "id": "B0FMGRBGD9",
-      "title": "JBL Grip, Altavoz Bluetooth Compacto, Azul",
-      "category": "Música",
-      "price": 69.0,
-      "original_price": 99.99,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71dBlw4OnwL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FMGRBGD9?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0DXKMWZ61",
-      "title": "JBL Charge 6, Altavoz Bluetooth Portátil Inalámbrico, Rojo",
-      "category": "Música",
-      "price": 131.99,
-      "original_price": 199.99,
-      "discount_percent": 34,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71Rc6uZLLvL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DXKMWZ61?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0DXKQLN6N",
-      "title": "JBL Charge 6, Altavoz Bluetooth Portátil Inalámbrico, Rosa",
-      "category": "Música",
-      "price": 129.0,
-      "original_price": 199.99,
-      "discount_percent": 35,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71kg01OfOrL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DXKQLN6N?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0CX94G62T",
-      "title": "JBL Clip 5, Altavoz Inalámbrico Portátil con Bluetooth, Negro",
-      "category": "Música",
-      "price": 47.99,
-      "original_price": 69.99,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/719vYMx4xWL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CX94G62T?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0FMGZD7FR",
-      "title": "JBL Grip, Altavoz Bluetooth Compacto, Violeta",
-      "category": "Música",
-      "price": 69.0,
-      "original_price": 99.99,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71moyaNS3dL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FMGZD7FR?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0DCFGBX72",
-      "title": "Energy Sistem Soundbliss Altavoz Bluetooth Potente 40W y Portatil TWS 12H Autonomia IPX6 Resistente al Agua Sostenible Plastico Reciclado Luces LED USB y MicroSD para Exterior e In",
-      "category": "Música",
-      "price": 39.9,
-      "original_price": 59.99,
-      "discount_percent": 33,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61b-tqtUJYL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DCFGBX72?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
       "id": "B0DHVV9FGH",
       "title": "adidas",
       "category": "Moda Hombre",
@@ -1537,97 +1004,6 @@
       "last_seen": "2026-08-11T20:18:52+02:00"
     },
     {
-      "id": "B0CYTC7FG5",
-      "title": "adidas",
-      "category": "Deporte",
-      "price": 46.16,
-      "original_price": 70.0,
-      "discount_percent": 34,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/411xIl5B3BL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CYTC7FG5?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0F1XGZ5GK",
-      "title": "adidas",
-      "category": "Deporte",
-      "price": 33.6,
-      "original_price": 70.0,
-      "discount_percent": 52,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61zmj8VUbXL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F1XGZ5GK?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0DHVW4HSW",
-      "title": "adidas",
-      "category": "Deporte",
-      "price": 35.75,
-      "original_price": 65.0,
-      "discount_percent": 45,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61XH0w-U8OL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DHVW4HSW?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0CKXSV44G",
-      "title": "adidas",
-      "category": "Deporte",
-      "price": 37.49,
-      "original_price": 60.0,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51tZGjMiXzL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CKXSV44G?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0F2G981NM",
-      "title": "adidas",
-      "category": "Deporte",
-      "price": 19.99,
-      "original_price": 40.0,
-      "discount_percent": 50,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61s27Zw46uL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F2G981NM?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B0CKXSHXGG",
-      "title": "adidas",
-      "category": "Deporte",
-      "price": 37.49,
-      "original_price": 60.0,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51i0CDvpYWL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CKXSHXGG?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B09RPNKVSC",
-      "title": "NESTLÉ NESQUIK Instantáneo Cacao Soluble 700g Lata",
-      "category": "Alimentación",
-      "price": 5.56,
-      "original_price": 7.94,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81yvBPl7cRL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09RPNKVSC?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
       "id": "B09V28HXGC",
       "title": "Polaroid",
       "category": "Gafas de Sol",
@@ -1652,32 +1028,6 @@
       "url": "https://www.amazon.es/dp/B01B1D12B0?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T20:12:58+02:00",
       "last_seen": "2026-08-12T08:18:22+02:00"
-    },
-    {
-      "id": "B09V299KHS",
-      "title": "Polaroid",
-      "category": "Gafas de Sol",
-      "price": 39.09,
-      "original_price": 69.0,
-      "discount_percent": 43,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/516n2csHu0L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09V299KHS?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
-    },
-    {
-      "id": "B083MM69SW",
-      "title": "Polaroid",
-      "category": "Gafas de Sol",
-      "price": 31.74,
-      "original_price": 59.0,
-      "discount_percent": 46,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/41HJHN0OSfL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B083MM69SW?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
     },
     {
       "id": "B0FXY61JZB",
@@ -1742,7 +1092,7 @@
       "image": "https://m.media-amazon.com/images/I/71wmcb6k+DL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B084RQWJHH?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T08:31:27+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0DRXL36WD",
@@ -2085,7 +1435,7 @@
     {
       "id": "B0FCSSNXT4",
       "title": "HP DeskJet 2920, Impresora Multifunción de Inyección de Tinta a Color",
-      "category": "Tecnología",
+      "category": "Oficina",
       "price": 39.0,
       "original_price": 64.9,
       "discount_percent": 40,
@@ -2093,7 +1443,7 @@
       "image": "https://m.media-amazon.com/images/I/61wNcsc0BIL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0FCSSNXT4?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T11:51:46+02:00",
-      "last_seen": "2026-08-11T11:51:46+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0B292NKQY",
@@ -2424,14 +1774,14 @@
       "id": "B00K695OGU",
       "title": "Philips 12496SVB2 SilverVision Bombilla PY21W para Luces Traseras, 2 unidades, 12 V, 21 W",
       "category": "Automóviles",
-      "price": 18.95,
+      "price": 18.9,
       "original_price": 27.99,
       "discount_percent": 32,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/61bBhFA+O-L._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B00K695OGU?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T17:22:57+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0GGGPT585",
@@ -2515,14 +1865,14 @@
       "id": "B0BW2HS9XH",
       "title": "American Tourister",
       "category": "Viajes",
-      "price": 110.15,
+      "price": 108.23,
       "original_price": 165.0,
-      "discount_percent": 33,
+      "discount_percent": 34,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/71bes2EjSVL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0BW2HS9XH?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T17:22:57+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0CSKQY1X1",
@@ -2574,7 +1924,7 @@
       "image": "https://m.media-amazon.com/images/I/61Qv97cjRsL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0DMF42MZK?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T17:22:57+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B018E0KW5K",
@@ -2587,7 +1937,7 @@
       "image": "https://m.media-amazon.com/images/I/71E4yurP-sL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B018E0KW5K?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T17:22:57+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0013BFCJ4",
@@ -2600,7 +1950,7 @@
       "image": "https://m.media-amazon.com/images/I/61XTPLHw4SL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0013BFCJ4?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T17:22:57+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B000092QYW",
@@ -2613,7 +1963,7 @@
       "image": "https://m.media-amazon.com/images/I/91-NI4R5rSL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B000092QYW?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T17:22:57+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0B985SFVD",
@@ -2626,7 +1976,7 @@
       "image": "https://m.media-amazon.com/images/I/51f3mkkKUGL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0B985SFVD?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T17:22:57+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0FJMJHTY4",
@@ -3809,7 +3159,7 @@
       "image": "https://m.media-amazon.com/images/I/71sKm7IBTEL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0GH89B6T8?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0CGDSFZGJ",
@@ -3848,12 +3198,12 @@
       "image": "https://m.media-amazon.com/images/I/61y5vQR6JUL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09LM833D1?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B06XQJMZFK",
       "title": "Bosch Hidrolimpiadora de Alta presión UniversalAquatak 125",
-      "category": "Hogar",
+      "category": "Jardín",
       "price": 111.03,
       "original_price": 159.99,
       "discount_percent": 31,
@@ -3861,7 +3211,7 @@
       "image": "https://m.media-amazon.com/images/I/61RMS-dSw7L._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B06XQJMZFK?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T14:36:09+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B008AXURAW",
@@ -3874,7 +3224,7 @@
       "image": "https://m.media-amazon.com/images/I/71IE52jjIjL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B008AXURAW?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B009LSKPYI",
@@ -3887,7 +3237,7 @@
       "image": "https://m.media-amazon.com/images/I/81YMhSXCrSL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B009LSKPYI?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B00TTY8OG0",
@@ -3900,7 +3250,7 @@
       "image": "https://m.media-amazon.com/images/I/619K51kBvZL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B00TTY8OG0?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B016DTHD92",
@@ -3913,7 +3263,7 @@
       "image": "https://m.media-amazon.com/images/I/61YoR6142xL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B016DTHD92?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B079DC27J5",
@@ -3926,7 +3276,7 @@
       "image": "https://m.media-amazon.com/images/I/71wOK91GrgL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B079DC27J5?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B006E4IQ8O",
@@ -3939,7 +3289,7 @@
       "image": "https://m.media-amazon.com/images/I/71wHi-EvkCL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B006E4IQ8O?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B0F24QB1T7",
@@ -3952,7 +3302,7 @@
       "image": "https://m.media-amazon.com/images/I/51BTw9g8bqL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0F24QB1T7?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B01BX5Q0X6",
@@ -3965,7 +3315,7 @@
       "image": "https://m.media-amazon.com/images/I/61wyCVgrPpL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B01BX5Q0X6?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T11:27:53+02:00",
-      "last_seen": "2026-08-12T11:27:53+02:00"
+      "last_seen": "2026-08-12T20:15:35+02:00"
     },
     {
       "id": "B007JRXOKU",
@@ -4967,6 +4317,214 @@
       "url": "https://www.amazon.es/dp/B0D5CLJN9X?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T17:15:02+02:00",
       "last_seen": "2026-08-12T17:15:02+02:00"
+    },
+    {
+      "id": "B0CJ2GHW2C",
+      "title": "Rotuladores Stabilo Arty Pastel Multicolor",
+      "category": "Oficina",
+      "price": 18.26,
+      "original_price": 61.08,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61rohCZEezL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CJ2GHW2C?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B000XGV4L0",
+      "title": "Papel fotográfico brillante Premium A4 de Epson, 255 g/m², 30 hojas",
+      "category": "Oficina",
+      "price": 19.9,
+      "original_price": 66.33,
+      "discount_percent": 70,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/619bilvEL1L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B000XGV4L0?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0FTG4P3KP",
+      "title": "American Tourister",
+      "category": "Viajes",
+      "price": 38.43,
+      "original_price": 64.95,
+      "discount_percent": 41,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71o0ZH4oYJL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FTG4P3KP?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0G24CN7K9",
+      "title": "American Tourister",
+      "category": "Viajes",
+      "price": 83.93,
+      "original_price": 119.95,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61uwXMA23kL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0G24CN7K9?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0B1V2S4D4",
+      "title": "DELSEY",
+      "category": "Viajes",
+      "price": 118.3,
+      "original_price": 169.0,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51jfAMTTgcL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0B1V2S4D4?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B007WQJSGM",
+      "title": "Samsonite",
+      "category": "Viajes",
+      "price": 149.99,
+      "original_price": 250.0,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81nKW2g0SPL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B007WQJSGM?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0CDCN9175",
+      "title": "DELSEY",
+      "category": "Viajes",
+      "price": 126.48,
+      "original_price": 199.0,
+      "discount_percent": 36,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61ByqAswqZL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CDCN9175?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0CX55DWYJ",
+      "title": "Samsonite",
+      "category": "Viajes",
+      "price": 160.98,
+      "original_price": 230.0,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71fY4fG1NAL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CX55DWYJ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0771KH8FL",
+      "title": "EASTPAK",
+      "category": "Viajes",
+      "price": 108.98,
+      "original_price": 160.0,
+      "discount_percent": 32,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61rQNLR7TeL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0771KH8FL?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B07TDMTGTG",
+      "title": "Samsonite",
+      "category": "Viajes",
+      "price": 138.0,
+      "original_price": 230.0,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71D9Zvb4I0L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07TDMTGTG?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0CDCNY73K",
+      "title": "DELSEY",
+      "category": "Viajes",
+      "price": 129.0,
+      "original_price": 199.0,
+      "discount_percent": 35,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/7148w0ODy5L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CDCNY73K?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0H1M5WYFZ",
+      "title": "Beurer EM 56 TENS/EMS digital, dispositivo de electroestimulación 3 en 1 para el alivio del dolor sin medicamentos mediante estimulación eléctrica nerviosa, entrenamiento muscular,",
+      "category": "Salud",
+      "price": 39.99,
+      "original_price": 59.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81cDej+zbzL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0H1M5WYFZ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0B4HXDZWZ",
+      "title": "Beurer BiteX Day&Night BR 90 Aparato contra picaduras de insectos, dispositivo térmico electrónico para tratar picaduras y mordeduras de insectos, con luz para uso en la oscuridad,",
+      "category": "Salud",
+      "price": 23.99,
+      "original_price": 39.99,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71M0Rw-VgFL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0B4HXDZWZ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0GXGDW89G",
+      "title": "Beurer BiteX Go Deep Black Aparato contra picaduras de insectos para smartphone, tratamiento de mordeduras y picaduras, alivia el picor, para móvil Android y iPhone (USB‑C), con lu",
+      "category": "Salud",
+      "price": 17.99,
+      "original_price": 29.99,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71zkAxSxDlL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GXGDW89G?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B089GRH43R",
+      "title": "Beurer BiteX Original Dispositivo para el tratamiento de mordeduras y picaduras de insectos BR 60, bolígrafo térmico eléctrico para picaduras de mosquitos que alivia picor, ideal v",
+      "category": "Salud",
+      "price": 24.99,
+      "original_price": 35.99,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71Jye41hURL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B089GRH43R?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
+    },
+    {
+      "id": "B0GV4XJ5WD",
+      "title": "Beurer PowerReload pistola de masaje, masaje de puntos gatillo para relajación y regeneración, potente dispositivo de masaje muscular con 5 cabezales, 5 niveles de intensidad,extre",
+      "category": "Salud",
+      "price": 39.99,
+      "original_price": 59.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81-X1FyeGOL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GV4XJ5WD?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T20:15:35+02:00",
+      "last_seen": "2026-08-12T20:15:35+02:00"
     }
   ]
 }
