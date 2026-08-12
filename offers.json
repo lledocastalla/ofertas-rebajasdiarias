@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-11T20:18:52+02:00",
+  "updated_at": "2026-08-12T08:18:22+02:00",
   "affiliate_tag": "rebajasdiar05-21",
   "offers": [
     {
@@ -13,7 +13,7 @@
       "image": "https://m.media-amazon.com/images/I/61CIEnUMsaL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B01BKO9VJ0?tag=rebajasdiar05-21",
       "first_seen": "2026-08-04T11:05:57+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B00ARLFRHS",
@@ -94,19 +94,6 @@
       "last_seen": "2026-08-11T08:31:27+02:00"
     },
     {
-      "id": "B0CLB4XMXC",
-      "title": "American Tourister",
-      "category": "Viajes",
-      "price": 64.85,
-      "original_price": 109.0,
-      "discount_percent": 41,
-      "is_flash": true,
-      "image": "https://m.media-amazon.com/images/I/51qiG2jyzpL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CLB4XMXC?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
       "id": "B0CLB7JTKQ",
       "title": "American Tourister",
       "category": "Viajes",
@@ -131,58 +118,6 @@
       "url": "https://www.amazon.es/dp/B06Y3FD2KQ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T14:22:15+02:00",
       "last_seen": "2026-08-11T17:22:57+02:00"
-    },
-    {
-      "id": "B0D4QSM4CL",
-      "title": "OSRAM NIGHT BREAKER 220, H7, 220% más brillo, lámpara de faro halógeno, 64210NB220-2HB, Caja plegable (2 lámparas) | 64210NB220-2HB, Caja plegable (2 lámparas)",
-      "category": "Automóviles",
-      "price": 32.27,
-      "original_price": 58.96,
-      "discount_percent": 45,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61WDKvfZtBL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D4QSM4CL?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B0D4QT2YGM",
-      "title": "OSRAM NIGHT BREAKER 220, H4, 220% más brillo, lámpara de faro halógeno, 64193NB220-2HB, Caja plegable (2 lámparas) | 64193NB220-2HB, Caja plegable (2 lámparas)",
-      "category": "Automóviles",
-      "price": 24.49,
-      "original_price": 50.83,
-      "discount_percent": 52,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61CoedH6dmL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D4QT2YGM?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B005R00UV2",
-      "title": "OSRAM ULTRA LIFE H7, lámpara para faros halógena, 64210ULT, automóvil de 12 V, estuche (1 unidad)",
-      "category": "Automóviles",
-      "price": 9.45,
-      "original_price": 16.05,
-      "discount_percent": 41,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61yqjHFI2rL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B005R00UV2?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B001QP5HA6",
-      "title": "OSRAM O2721 Original 2721 W2x4,6d 12V 1.2W, 1 Unidad",
-      "category": "Automóviles",
-      "price": 8.37,
-      "original_price": 15.15,
-      "discount_percent": 45,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51TDVJ2oRQL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B001QP5HA6?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
     },
     {
       "id": "B075X3RXH2",
@@ -315,19 +250,6 @@
       "last_seen": "2026-08-10T14:38:16+02:00"
     },
     {
-      "id": "B08GY4P2ND",
-      "title": "OSRAM LEDriving ROUND MX180-CB,luz de conducción LED, iluminación de campo cercano y lejano, combo,3000lm,haz de luz de ≤ 300m,faros LED redondo/luz de carretera aux.,luz de posici",
-      "category": "Automóviles",
-      "price": 180.37,
-      "original_price": 273.51,
-      "discount_percent": 34,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51zOCxO+1WL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08GY4P2ND?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
       "id": "B0FT1J2536",
       "title": "Multivitaminas Mujer y Hombre - Complejo Vitamínico Completo para Energía y Defensas con Ginseng, Minerales y Ashwagandha - Multivitamínico Líquido con Sabor Naranja, Vegano, 500ml",
       "category": "Salud",
@@ -339,19 +261,6 @@
       "url": "https://www.amazon.es/dp/B0FT1J2536?tag=rebajasdiar05-21",
       "first_seen": "2026-08-08T08:44:21+02:00",
       "last_seen": "2026-08-11T08:31:27+02:00"
-    },
-    {
-      "id": "B0DGLXK3B9",
-      "title": "HP Envy 6120e 714L8B, Impresora multifunción de inyección de Tinta A4 a Color, Conexión Wi-Fi, Impresión a Doble Cara automática, hasta 10 ppm, 3 Meses de impresión Instant Ink, Bl",
-      "category": "Oficina",
-      "price": 60.99,
-      "original_price": 89.0,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61wGd8Ja+eL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DGLXK3B9?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T08:44:21+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
     },
     {
       "id": "B08VDNCZT9",
@@ -523,32 +432,6 @@
       "last_seen": "2026-08-10T14:38:16+02:00"
     },
     {
-      "id": "B0017V5664",
-      "title": "Estuche de lámparas de repuesto H7 ORIGINAL de OSRAM, lámparas para faros halógenas, automóvil de 12 V, CLKM H7, kit de lámpara de repuesto completo (1 unidad)",
-      "category": "Automóviles",
-      "price": 10.94,
-      "original_price": 19.1,
-      "discount_percent": 43,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/613pMqL6yoL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0017V5664?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T17:38:53+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B007WQJSGM",
-      "title": "Samsonite",
-      "category": "Viajes",
-      "price": 149.99,
-      "original_price": 250.0,
-      "discount_percent": 40,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81nKW2g0SPL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B007WQJSGM?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T17:38:53+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
       "id": "B0771KH8FL",
       "title": "EASTPAK",
       "category": "Viajes",
@@ -650,7 +533,7 @@
       "image": "https://m.media-amazon.com/images/I/412Up3ex-QL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B01N9HMYMZ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T08:50:45+02:00",
-      "last_seen": "2026-08-10T11:35:45+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B09P185Y3H",
@@ -858,7 +741,7 @@
       "image": "https://m.media-amazon.com/images/I/61twDdpvUoL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B083MNJ3KJ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T17:22:34+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B0FKN1RM1N",
@@ -950,32 +833,6 @@
       "url": "https://www.amazon.es/dp/B00YUIM2J0?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T17:22:34+02:00",
       "last_seen": "2026-08-11T14:36:50+02:00"
-    },
-    {
-      "id": "B00HZDLDK6",
-      "title": "Canon PIXMA IX6850 Impresora A3+ Foto Sin Bordes, Oficina WiFi | Diseño creativo hasta A3+ sin bordes; 5 tanques de tinta separados, impresión inalámbrica AirPrint, impresión rápid",
-      "category": "Oficina",
-      "price": 160.62,
-      "original_price": 234.9,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61a1Ou5qPoL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B00HZDLDK6?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B0CH8G2JDB",
-      "title": "Canon PIXMA TS8751 Impresora Multifunción Inyección Tinta AirPrint WiFi | Multifunción para oficina en casa; imprime, escanea y copia; 15 páginas/min negro, impresión automática a ",
-      "category": "Oficina",
-      "price": 153.58,
-      "original_price": 249.0,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61lx6jrIjRL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CH8G2JDB?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
     },
     {
       "id": "B00U7GOZF8",
@@ -1080,97 +937,6 @@
       "url": "https://www.amazon.es/dp/B0GQLD8RQ2?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T20:24:10+02:00",
       "last_seen": "2026-08-11T17:22:57+02:00"
-    },
-    {
-      "id": "B0GFD38MB4",
-      "title": "YMZ VRPEFIT Smart Watch for Women Men, Whatsapp Notifications, 1.83\" HD Touchscreen with Bluetooth Calling, Heart Rate, Blood Oxygen, Sleep Monitor, 100+ Sports Modes, IP68 Waterpr",
-      "category": "Relojes",
-      "price": 49.99,
-      "original_price": 129.99,
-      "discount_percent": 62,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71p7JfGE8RL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GFD38MB4?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B007WQJSZI",
-      "title": "Samsonite",
-      "category": "Viajes",
-      "price": 147.95,
-      "original_price": 250.0,
-      "discount_percent": 41,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61S+s6VSh1L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B007WQJSZI?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B007WQJTJ8",
-      "title": "Samsonite",
-      "category": "Viajes",
-      "price": 147.95,
-      "original_price": 250.0,
-      "discount_percent": 41,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51OnuWC--2L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B007WQJTJ8?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B0CX54K6ZX",
-      "title": "Samsonite",
-      "category": "Viajes",
-      "price": 160.54,
-      "original_price": 270.0,
-      "discount_percent": 41,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/717GTtnwAPL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CX54K6ZX?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B0GHNXGFT8",
-      "title": "Samsonite",
-      "category": "Viajes",
-      "price": 149.99,
-      "original_price": 230.0,
-      "discount_percent": 35,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61lywQ7moIL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GHNXGFT8?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B06WP7NDXJ",
-      "title": "Samsonite",
-      "category": "Viajes",
-      "price": 119.98,
-      "original_price": 190.0,
-      "discount_percent": 37,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/711UhWqjaML._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B06WP7NDXJ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
-    },
-    {
-      "id": "B008508YFK",
-      "title": "Samsonite",
-      "category": "Viajes",
-      "price": 147.95,
-      "original_price": 250.0,
-      "discount_percent": 41,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81gmTROWdDL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B008508YFK?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-09T20:24:10+02:00",
-      "last_seen": "2026-08-09T20:24:10+02:00"
     },
     {
       "id": "B0DPQGBT1G",
@@ -1989,7 +1755,7 @@
       "image": "https://m.media-amazon.com/images/I/511cJae-XNL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09XBNBMV9?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T11:35:45+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B09KHGSLJB",
@@ -2002,7 +1768,7 @@
       "image": "https://m.media-amazon.com/images/I/51jO04aSG+L._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09KHGSLJB?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T11:35:45+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B09KHFKZ3Z",
@@ -2028,7 +1794,7 @@
       "image": "https://m.media-amazon.com/images/I/51rip7l1xgL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09XBP41VH?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T11:35:45+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B09KHHBCC5",
@@ -3061,14 +2827,14 @@
       "id": "B09V28HXGC",
       "title": "Polaroid",
       "category": "Gafas de Sol",
-      "price": 29.81,
+      "price": 32.34,
       "original_price": 69.0,
-      "discount_percent": 57,
+      "discount_percent": 53,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/51wmBi+dDdL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09V28HXGC?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B01B1D12B0",
@@ -3081,7 +2847,7 @@
       "image": "https://m.media-amazon.com/images/I/71O5aGXlBFL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B01B1D12B0?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T20:12:58+02:00",
-      "last_seen": "2026-08-10T20:12:58+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B09V299KHS",
@@ -3783,7 +3549,7 @@
       "image": "https://m.media-amazon.com/images/I/61vF-kz57OL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B07NMDYPVH?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T14:36:50+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B000EELFI8",
@@ -3835,7 +3601,7 @@
       "image": "https://m.media-amazon.com/images/I/41e+1xEkJTL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09YHWCDZK?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T14:36:50+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B0DFFP65PZ",
@@ -3848,7 +3614,7 @@
       "image": "https://m.media-amazon.com/images/I/41U5sG0-2gL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0DFFP65PZ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T14:36:50+02:00",
-      "last_seen": "2026-08-11T14:36:50+02:00"
+      "last_seen": "2026-08-12T08:18:22+02:00"
     },
     {
       "id": "B00K695OGU",
@@ -4629,6 +4395,513 @@
       "url": "https://www.amazon.es/dp/B09J5757KW?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T20:18:52+02:00",
       "last_seen": "2026-08-11T20:18:52+02:00"
+    },
+    {
+      "id": "B0DDCHNPBR",
+      "title": "BaByliss Smooth Finish 1200 – Cepillo de Aire Caliente 4?en?1 para Secar, Alisar, Dar Volumen y Moldear, Tecnología Iónica & Cerámica, 4 Accesorios, 1200W, Negro/Rosa, AS122E",
+      "category": "Belleza",
+      "price": 26.9,
+      "original_price": 59.9,
+      "discount_percent": 55,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71dqRF5naxL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DDCHNPBR?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B084QXY478",
+      "title": "ghd Helios - Secador de Pelo Profesional, Ligero, Secado Rápido",
+      "category": "Belleza",
+      "price": 142.99,
+      "original_price": 229.0,
+      "discount_percent": 38,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71wCGr8v2WL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B084QXY478?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B00VX6ULWM",
+      "title": "REVLON ColorStay Base de Maquillaje, piel normal/seca, 180 SAND BEIGE",
+      "category": "Belleza",
+      "price": 9.99,
+      "original_price": 33.3,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71pUZeQcj-L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00VX6ULWM?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B09KNP6P7B",
+      "title": "Amatller Caja de Mini Chocolate Surtido 5gr. 4 Variedades - 100 onzas",
+      "category": "Alimentación",
+      "price": 24.0,
+      "original_price": 48.0,
+      "discount_percent": 50,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71NfWOygxeL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09KNP6P7B?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0DP4YWG86",
+      "title": "EXCELLENCE BLOCK 70% DARK CHOCOLATE (Paquete de 3)",
+      "category": "Alimentación",
+      "price": 15.24,
+      "original_price": 50.8,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71WBhHuFq-L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DP4YWG86?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B001ULUCIS",
+      "title": "Lindt - Tableta Excellence Neg.Flor De Sal 100 g Tb",
+      "category": "Alimentación",
+      "price": 15.99,
+      "original_price": 39.98,
+      "discount_percent": 60,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81tdKAls2eL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B001ULUCIS?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B09GL92YN5",
+      "title": "Lindt Lindor - Caja doble de trufas de chocolate – Aproximadamente 16 bolas, 200 g – Trufas de chocolate con un relleno de fusión suave – Regalo de regalo – Pascua, cumpleaños, cel",
+      "category": "Alimentación",
+      "price": 15.0,
+      "original_price": 75.0,
+      "discount_percent": 80,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/714A4kKGwxL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09GL92YN5?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0CNQ41RN9",
+      "title": "XL Caja de regalo personalizada de chocolates Lindt - Personalizable con nombre y mensaje - Lindor de 500 g, ideal para cumpleaños, fiestas y ocasiones especiales (Mix)",
+      "category": "Alimentación",
+      "price": 27.95,
+      "original_price": 55.9,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81Wrlw7B5ML._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CNQ41RN9?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B01IHIERAK",
+      "title": "Lindt - Tableta Excellence 70% Suave 100 g Tb, pack de 5",
+      "category": "Alimentación",
+      "price": 21.29,
+      "original_price": 42.58,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81RJrB9dR5L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B01IHIERAK?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B07YLH7T83",
+      "title": "Lindt Chocolate con leche extrafino – 4 pastillas de 110 g",
+      "category": "Alimentación",
+      "price": 32.35,
+      "original_price": 73.52,
+      "discount_percent": 56,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61RdYx1GO7L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07YLH7T83?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0GDWDC6PM",
+      "title": "TRAPA COLLECTION|Chocolate Negro 85% Cacao | Tableta 85 g | Sin Gluten (Paquete de 3)",
+      "category": "Alimentación",
+      "price": 6.27,
+      "original_price": 24.59,
+      "discount_percent": 75,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81CbnGMfFpL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GDWDC6PM?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B078NCD3SG",
+      "title": "PASCUAL batido de chocolate pack 6 unidades 200 ml",
+      "category": "Alimentación",
+      "price": 14.15,
+      "original_price": 70.75,
+      "discount_percent": 80,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/7125MXl62sL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B078NCD3SG?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0BVKGS7WK",
+      "title": "CAROLINA HERRERA",
+      "category": "Gafas de Sol",
+      "price": 77.99,
+      "original_price": 149.0,
+      "discount_percent": 48,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51itcBriMeL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BVKGS7WK?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0D457ND7V",
+      "title": "D.Franklin",
+      "category": "Gafas de Sol",
+      "price": 34.99,
+      "original_price": 49.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41eyAxZ9VKL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D457ND7V?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B09Y2GBZKP",
+      "title": "Tommy Hilfiger",
+      "category": "Gafas de Sol",
+      "price": 69.0,
+      "original_price": 230.0,
+      "discount_percent": 70,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61GN5XXtAtL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09Y2GBZKP?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B09TPYRCHM",
+      "title": "D.Franklin",
+      "category": "Gafas de Sol",
+      "price": 22.49,
+      "original_price": 44.99,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41Q+Vca65RL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09TPYRCHM?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B09QSTVDY5",
+      "title": "D.Franklin",
+      "category": "Gafas de Sol",
+      "price": 34.99,
+      "original_price": 49.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41JO2OX+E7L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09QSTVDY5?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0FJ6NHPFJ",
+      "title": "Wilson Courtglide Wrs339750",
+      "category": "Deporte",
+      "price": 47.99,
+      "original_price": 80.0,
+      "discount_percent": 40,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/616vAmobM9L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0FJ6NHPFJ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0DKVGCX4R",
+      "title": "Wilson Rush Pro Ace Zapatillas de tenisHombre",
+      "category": "Deporte",
+      "price": 84.0,
+      "original_price": 120.0,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71jYAqtt2CL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DKVGCX4R?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0DKVHG71N",
+      "title": "Wilson Bela Tour Negro 2025 Wrs335330",
+      "category": "Deporte",
+      "price": 109.13,
+      "original_price": 160.0,
+      "discount_percent": 32,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61YPNBawXkL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DKVHG71N?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0CN364FVK",
+      "title": "Wilson Rush Pro Lite Wrs333210 Negro",
+      "category": "Deporte",
+      "price": 65.95,
+      "original_price": 100.0,
+      "discount_percent": 34,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71gVpBg0E9L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CN364FVK?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B00005LL1K",
+      "title": "Wilson Minibalón de Voleibol Cast Away",
+      "category": "Deporte",
+      "price": 15.99,
+      "original_price": 24.95,
+      "discount_percent": 36,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61STfs5e-YL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00005LL1K?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0CKS1X14L",
+      "title": "Adidas Hombre Runfalcon 5 Zapatillas de Correr",
+      "category": "Deporte",
+      "price": 37.49,
+      "original_price": 60.0,
+      "discount_percent": 38,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51tZGjMiXzL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CKS1X14L?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0GWGGR899",
+      "title": "Bose SoundLink Flex SE Portable Bluetooth Speaker (2nd Gen), Small Portable Wireless Outdoor Speaker with Hi-Fi Audio, Up to 12 Hours Battery Life, Waterproof and Dustproof, Black",
+      "category": "Música",
+      "price": 99.95,
+      "original_price": 159.95,
+      "discount_percent": 38,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/7192Qca-fUL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GWGGR899?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0D6WD2QSQ",
+      "title": "Bose SoundLink Flex (2.ª Gen.), Altavoz portátil inalámbrico con Bluetooth pequeño y Potente para Fiestas al Aire Libre, hasta 12 h de autonomía, Resistente al Agua IP67 y al Polvo",
+      "category": "Música",
+      "price": 123.43,
+      "original_price": 179.95,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/7192Qca-fUL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D6WD2QSQ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0F7HVC62G",
+      "title": "Bose SoundLink Plus Altavoz Bluetooth portátil, Altavoz para Exterior inalámbrico, hasta 20 Horas de autonomía, Resistente al Agua y al Polvo, Negro",
+      "category": "Música",
+      "price": 181.17,
+      "original_price": 279.95,
+      "discount_percent": 35,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61JGznUrf2L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0F7HVC62G?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0D8BZDPXB",
+      "title": "Bose QuietComfort Earbuds True Wireless, Auriculares con Bluetooth con cancelación de Ruido Activa y micrófono, Tecnología Deep Bass y clasificación IPX4, hasta 8,5 Horas de autono",
+      "category": "Música",
+      "price": 129.95,
+      "original_price": 199.95,
+      "discount_percent": 35,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51mVon5oCYL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0D8BZDPXB?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0039N4WNG",
+      "title": "Fender Monogrammed Strap, Fully adjustable length (36\",58\"), Red/Black/Blue",
+      "category": "Música",
+      "price": 15.9,
+      "original_price": 23.99,
+      "discount_percent": 34,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/713cSdyEzhL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0039N4WNG?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B07N6V5WRG",
+      "title": "Ernie Ball Cable De Instrumento Trenzado Recto/Ángulo 10ft - Negro/Verde",
+      "category": "Música",
+      "price": 17.9,
+      "original_price": 27.89,
+      "discount_percent": 36,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81nRwEUx2bL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B07N6V5WRG?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0B42XQNMH",
+      "title": "Razer Basilisk V3 Pro - Ratón Inalámbrico Personalizable para Juegos con Rueda Inclinable Hyperscroll (Sensor Óptico Focus Pro 30K, Iluminación Cromática de 13 Zonas, Botones Progr",
+      "category": "Gaming",
+      "price": 122.99,
+      "original_price": 179.99,
+      "discount_percent": 32,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71d4PhyAFPL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0B42XQNMH?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B08GM91TCC",
+      "title": "Razer Huntsman Mini (Purple Switch) - Teclado Gaming, compacto para juegos del 60% con interruptores opto-mecánicos (tapas de teclas PBT, cable USB-C desmontable) Teclado Español -",
+      "category": "Gaming",
+      "price": 89.99,
+      "original_price": 129.99,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71QGCjpHBBL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08GM91TCC?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B092R5MCB3",
+      "title": "Razer DeathAdder Essential - Ratón Gaming con sensor óptico, 6400 DPI (5 botones programables, interruptores mecánicos, agarres laterales de goma), Negro",
+      "category": "Gaming",
+      "price": 19.9,
+      "original_price": 39.99,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81Wl3jXuL6L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B092R5MCB3?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0BT4VRZGV",
+      "title": "Razer Basilisk V3 X HyperSpeed - Mouse da gioco Wireless personalizzabile (Forma ergonomica con 9 controlli personalizzabili, HyperSpeed Wireless, Bluetooth, Sensore Ottico avanzat",
+      "category": "Gaming",
+      "price": 52.16,
+      "original_price": 79.99,
+      "discount_percent": 35,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71jvxQ6NoqL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0BT4VRZGV?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B089SSFV85",
+      "title": "Razer BlackShark V2 X - Auriculares Gaming (Auriculares con cable con controlador de 50 mm, supresión de ruido para PC, Mac, PS4, Xbox One y Switch) Negro",
+      "category": "Gaming",
+      "price": 49.99,
+      "original_price": 79.99,
+      "discount_percent": 38,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61kchbxWJ5L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B089SSFV85?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0F2TGQFKW",
+      "title": "Razer Basilisk Mobile - Ratón inalámbrico ergonómico portátil para juegos - AI Prompt Master - Sensor Focus X 18K (conectividad tri-modo, hasta 105 horas, interruptores de ratón Ge",
+      "category": "Gaming",
+      "price": 66.97,
+      "original_price": 99.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71PzwGg6WhL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0F2TGQFKW?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B097F5QSTB",
+      "title": "Razer BlackWidow V3 Tenkeyless (Yellow Switch) - Teclado compacto para juegos con interruptores mecánicos (teclas ABS, iluminación RGB Chroma) Teclado Español - Negro",
+      "category": "Gaming",
+      "price": 79.9,
+      "original_price": 119.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/718iD3X13EL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B097F5QSTB?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B0H3QP4JR6",
+      "title": "El libro de la mitología: Grandes ideas, explicaciones sencillas",
+      "category": "Libros",
+      "price": 13.57,
+      "original_price": 19.39,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81FjO7nZajL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0H3QP4JR6?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B08FDPWH27",
+      "title": "La ladrona de libros",
+      "category": "Libros",
+      "price": 13.29,
+      "original_price": 18.99,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81rpsmtIYDL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B08FDPWH27?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "0385349947",
+      "title": "Lean In: Women, Work, and the Will to Lead",
+      "category": "Libros",
+      "price": 25.73,
+      "original_price": 41.6,
+      "discount_percent": 38,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71Kuj8o81jL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/0385349947?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T08:18:22+02:00",
+      "last_seen": "2026-08-12T08:18:22+02:00"
     }
   ]
 }
