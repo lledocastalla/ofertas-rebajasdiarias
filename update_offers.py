@@ -791,6 +791,43 @@ def scrape_product_page(driver, asin):
     }
 
 
+def diversify_order(offers):
+    """Reordena el catálogo (nunca elimina nada) para que ninguna categoría
+    lo domine visualmente en Flash/Ofertas del día — bug real reportado por
+    el usuario ("siempre me salen las maletas/el ColaCao"): esos productos
+    llevan varios ciclos con el mismo descuento activo, y como la app/web
+    simplemente pintan la lista en el orden del JSON, siempre salían primero.
+
+    Se hace aquí (en la Pi) y no solo en la app, para que el arreglo llegue
+    a todo el mundo en el próximo ciclo del cron sin depender de que nadie
+    actualice la app en Google Play ni de un redeploy de la web.
+
+    Dentro de cada categoría se conserva "más reciente primero" (first_seen
+    descendente, mismo criterio que ya usan la app y la web: al volver a
+    abrir la app, lo primero que se ve son cosas nuevas — lo viejo ya se
+    vio antes, importa menos), y luego se entrelazan las categorías en
+    orden aleatorio (round-robin) para que dos ofertas seguidas casi nunca
+    sean de la misma categoría.
+    """
+    by_category = {}
+    for offer in offers:
+        by_category.setdefault(offer.get("category", "Otros"), []).append(offer)
+    for group in by_category.values():
+        group.sort(key=lambda o: o.get("first_seen", ""), reverse=True)
+
+    categories = list(by_category.keys())
+    random.shuffle(categories)
+
+    result = []
+    while categories:
+        for category in list(categories):
+            group = by_category[category]
+            result.append(group.pop(0))
+            if not group:
+                categories.remove(category)
+    return result
+
+
 def main():
     log("=== Inicio ===")
 
@@ -1003,7 +1040,7 @@ def main():
     output = {
         "updated_at": now_iso,
         "affiliate_tag": AFFILIATE_TAG,
-        "offers": list(merged.values()),
+        "offers": diversify_order(list(merged.values())),
     }
 
     with open(OFFERS_PATH, "w", encoding="utf-8") as f:
