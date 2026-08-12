@@ -554,7 +554,14 @@ def notify_app_push(all_offers):
     ciclos sin cambios (11 ago 2026, ver RASPI_REBAJASDIARIAS.md §3.3: el usuario pidió que
     avisara "cuando actualice las ofertas, para que la gente no se las pierda"). Nunca debe
     tumbar el script si falla, igual que notify_telegram()."""
+    # Log de entrada incondicional (12 ago) — el ciclo del 12 ago 08:18 no dejó
+    # ningún rastro de esta función (ni éxito ni error), pese a que probado a mano
+    # en la Pi con el mismo entorno (venv) funcionaba bien — con este log al menos
+    # queda claro si la función llegó a entrar en algún momento, para diagnosticar
+    # si vuelve a pasar.
+    log("Intentando enviar push de catálogo actualizado a la app...")
     if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        log("  aviso: no se encuentra el archivo de credenciales de Firebase, se omite el push")
         return
     try:
         import firebase_admin
