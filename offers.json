@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-12T08:18:22+02:00",
+  "updated_at": "2026-08-12T11:27:53+02:00",
   "affiliate_tag": "rebajasdiar05-21",
   "offers": [
     {
@@ -104,20 +104,20 @@
       "image": "https://m.media-amazon.com/images/I/71ESYGZ2jBL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0CLB7JTKQ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B06Y3FD2KQ",
       "title": "American Tourister",
       "category": "Viajes",
-      "price": 134.81,
+      "price": 133.0,
       "original_price": 195.0,
-      "discount_percent": 31,
+      "discount_percent": 32,
       "is_flash": false,
       "image": "https://m.media-amazon.com/images/I/81zaxhWTQaL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B06Y3FD2KQ?tag=rebajasdiar05-21",
       "first_seen": "2026-08-07T14:22:15+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B075X3RXH2",
@@ -276,45 +276,6 @@
       "last_seen": "2026-08-10T20:12:58+02:00"
     },
     {
-      "id": "B0F4QKRWZ8",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Mujer",
-      "price": 27.96,
-      "original_price": 99.9,
-      "discount_percent": 72,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71BYeIhUg5L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4QKRWZ8?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T11:55:53+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0F4QNB393",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Mujer",
-      "price": 42.3,
-      "original_price": 129.9,
-      "discount_percent": 67,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71GoxwDLMJL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4QNB393?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T11:55:53+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0F4QPJG9V",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Mujer",
-      "price": 25.95,
-      "original_price": 79.9,
-      "discount_percent": 68,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71dV6Qz9gtL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4QPJG9V?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T11:55:53+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
       "id": "B0D1KCLVPX",
       "title": "VACTechPro Aspiradora sin Cable,35kPa Escoba aspiradora sin Cable",
       "category": "Hogar",
@@ -455,7 +416,7 @@
       "image": "https://m.media-amazon.com/images/I/71eLaWRDA9L._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0007OEGBI?tag=rebajasdiar05-21",
       "first_seen": "2026-08-08T17:38:53+02:00",
-      "last_seen": "2026-08-10T14:38:16+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B0DQQ64R3M",
@@ -469,45 +430,6 @@
       "url": "https://www.amazon.es/dp/B0DQQ64R3M?tag=rebajasdiar05-21",
       "first_seen": "2026-08-08T20:20:32+02:00",
       "last_seen": "2026-08-11T20:18:52+02:00"
-    },
-    {
-      "id": "B0CNH1DVWB",
-      "title": "HUAWEI FreeClip Auriculares Inalámbricos Bluetooth, Open-Ear, Negro | Clip Innovador, Gran Autonomía, Cancelación de Ruido en Llamadas por IA, IP54 Resistente al Polvo y a Salpicad",
-      "category": "Tecnología",
-      "price": 129.0,
-      "original_price": 199.0,
-      "discount_percent": 35,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71mZPquzotL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CNH1DVWB?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T20:20:32+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0CYCCTP5Y",
-      "title": "HUAWEI Band 9, 1.47”AMOLED, Larga Duración de 2 Semanas, Rosa | Ajuste de Brillo Automático, Mayor precisión de Medición, Altamente Compatible, 100 Modos de Entrenamiento Diferente",
-      "category": "Tecnología",
-      "price": 38.79,
-      "original_price": 59.0,
-      "discount_percent": 34,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61JdM9wv74L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0CYCCTP5Y?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T20:20:32+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B08M3ND3Y4",
-      "title": "HUAWEI P Smart 2021 - Smartphone con Pantalla de 6,67 Pulgadas Full HD, 4GB de RAM y 128 GB de ROM, 22.5W Supercharge, 5000 mAh de batería, Cuádruple cámara con IA de 48 MP, Negro",
-      "category": "Tecnología",
-      "price": 159.0,
-      "original_price": 229.0,
-      "discount_percent": 31,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51+mAHVzirL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08M3ND3Y4?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-08T20:20:32+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
     },
     {
       "id": "B0H7BNBQC1",
@@ -559,7 +481,7 @@
       "image": "https://m.media-amazon.com/images/I/71eJQtkuJvL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0CGDQMT69?tag=rebajasdiar05-21",
       "first_seen": "2026-08-09T11:14:19+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B0GH8GS38B",
@@ -939,149 +861,6 @@
       "last_seen": "2026-08-11T17:22:57+02:00"
     },
     {
-      "id": "B0DPQGBT1G",
-      "title": "Barbie Twinning Looks Muñeca con perrito y ropa vichy rosa a juego | y accesorios para ambos, como gafas de sol, collares y lazos, rubia, JFP36",
-      "category": "Juguetes",
-      "price": 17.95,
-      "original_price": 27.99,
-      "discount_percent": 36,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71fTTgVMooL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DPQGBT1G?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0DPQGS55Z",
-      "title": "Barbie Twinning Looks Muñeca y perrito con conjuntos a juego | Ropa y accesorios azules de lunares, como boinas y bolsos; pelo castaño, JFP38",
-      "category": "Juguetes",
-      "price": 17.95,
-      "original_price": 27.99,
-      "discount_percent": 36,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/612gizZVmmL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DPQGS55Z?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0DL6JLQBQ",
-      "title": "Barbie Pop Reveal Colección Dulces Muñeca de Moda y Accesorios, temática de Sweet Swirl, Mascota y 8 sorpresas, Incluye Cambio de Color, JFY62",
-      "category": "Juguetes",
-      "price": 13.89,
-      "original_price": 26.99,
-      "discount_percent": 49,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/714I1XxPmPL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0DL6JLQBQ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0D7PTN57X",
-      "title": "Barbie Fantasy Muñeca sirena con ropa y accesorios de moda | Muñeca de moda, conjuntos de moda con más de 10 looks, incluye 8 accesorios, a partir de 3 años, JCP74",
-      "category": "Juguetes",
-      "price": 19.98,
-      "original_price": 29.99,
-      "discount_percent": 33,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71PFru3GY2L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D7PTN57X?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B09BW3CP9V",
-      "title": "Barbie Muñeca y Mascotas con mamá Perra y Cachorros | Rubia, con mamá perra, 3 cachorros recién nacidos con cambio de color y accesorios para mascotas, HCK75",
-      "category": "Juguetes",
-      "price": 25.0,
-      "original_price": 36.99,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71uSLQjzJWL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09BW3CP9V?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0D2J1BNY2",
-      "title": "Rowenta X-Pert 7.60, Aspiradora Escoba Sin Cable, Lila | Batería 45 min, Motor 140W, Filtro HEPA, Diseño ergonómico, Limpieza multisuperficie con accesorios y luz LED, RH6A31",
-      "category": "Hogar",
-      "price": 104.99,
-      "original_price": 189.99,
-      "discount_percent": 45,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71qmmBeMoJL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0D2J1BNY2?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0GQVHQNNV",
-      "title": "Rowenta Clean It Hot & Cold, Aspiradora tapicerías 1150W, 5 Acc, Naranja | Tecnología Powerheat, Limpieza 3 en 1 para tapicerías y moquetas, Elimina manchas y suciedad con gran efi",
-      "category": "Hogar",
-      "price": 169.99,
-      "original_price": 249.99,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71BxdDTGXQL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GQVHQNNV?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0BY93HZHR",
-      "title": "Rowenta Pure Pop, Plancha de Vapor 1300 W para Viaje, Verde | Vapor continuo 20 g/min, Plancha y Purifica, Elimina pelusas, Cabezales reversibles, Elimina hasta el 99,99% de virus,",
-      "category": "Hogar",
-      "price": 34.99,
-      "original_price": 49.99,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/619-6t48fiL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0BY93HZHR?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0FT2WJTMF",
-      "title": "Rowenta Force Pro 500, Centro de planchado, Golpe de vapor de 600 g/min | 8 bares, 2 modos, Tecnología Quicksteam, Suela duradera, Compacto, Colector de cal, Mantenimiento sin esfu",
-      "category": "Hogar",
-      "price": 169.99,
-      "original_price": 249.99,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61ZKj0cYmfL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FT2WJTMF?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0FJFQLDTZ",
-      "title": "Rowenta Clean It Compact, Aspiradora tapicerías 400W, 3 Acc, Hasta 11,5 Kpa | Limpieza rápida de derrames y manchas, Potente succión, Portátil, Compacto, Ideal para suciedad de mas",
-      "category": "Hogar",
-      "price": 89.99,
-      "original_price": 139.99,
-      "discount_percent": 36,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61hy4Byl3VL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FJFQLDTZ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0GSVJFDRJ",
-      "title": "Rowenta X-Pert 6.80 Flex, Aspiradora Escoba Sin Cable, Burdeos | Autonomía hasta 60 Minutos, Con Luces LED, Limpieza 4 en 1, Ligera, Smart Control Display, Modelo Animal Flex, RH64",
-      "category": "Hogar",
-      "price": 149.99,
-      "original_price": 219.99,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71ly6uoIItL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GSVJFDRJ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
       "id": "B0D793B2WV",
       "title": "dreame H12 Pro Ultra Aspirador en Seco y Húmedo, Succión 16.000 Pa",
       "category": "Hogar",
@@ -1095,136 +874,6 @@
       "last_seen": "2026-08-10T17:52:20+02:00"
     },
     {
-      "id": "B0FL7PZL9J",
-      "title": "HUAWEI Freebuds 7i, Auriculares Inalámbricos, iOS y Android, IP54, Negro | Cancelación de Ruido Activo Inteligente 4.0, Audio Espacial Ilimitado, Llamada Estable y Clara, Garantía ",
-      "category": "Tecnología",
-      "price": 69.0,
-      "original_price": 99.0,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71Xh5MF4UgL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FL7PZL9J?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0GKV21Y5S",
-      "title": "Titanio Correa Compatible con Huawei Watch GT 6 Pro 46mm Avanzado Titanio Sin lagunas para Huawei Watch GT 6 Pro Smartwatch Ajustable sin herramientas Titanium Correas para Hombre ",
-      "category": "Tecnología",
-      "price": 48.99,
-      "original_price": 69.99,
-      "discount_percent": 30,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71OZyWTbehL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0GKV21Y5S?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B08PDK5K6C",
-      "title": "Levi's",
-      "category": "Moda Hombre",
-      "price": 25.0,
-      "original_price": 40.0,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71pSv7ktSaL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08PDK5K6C?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B07JYTYFTH",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Hombre",
-      "price": 32.84,
-      "original_price": 49.9,
-      "discount_percent": 34,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71sWIx8UfJL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07JYTYFTH?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0776XY7SS",
-      "title": "Tommy Jeans",
-      "category": "Moda Hombre",
-      "price": 14.95,
-      "original_price": 29.9,
-      "discount_percent": 50,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71ofYeIBLAL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0776XY7SS?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0776XXJMS",
-      "title": "Tommy Jeans",
-      "category": "Moda Hombre",
-      "price": 14.95,
-      "original_price": 29.9,
-      "discount_percent": 50,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81ndgkOb96L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0776XXJMS?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B09RMT1G8V",
-      "title": "Pepe Jeans",
-      "category": "Moda Hombre",
-      "price": 15.37,
-      "original_price": 24.99,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/41gQcqiPYCL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B09RMT1G8V?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0B52VQPMS",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Hombre",
-      "price": 25.95,
-      "original_price": 39.9,
-      "discount_percent": 35,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71KnTWt8QAL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0B52VQPMS?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0FVXXQK7Q",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Hombre",
-      "price": 27.0,
-      "original_price": 39.9,
-      "discount_percent": 32,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/51K4s83a6mL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FVXXQK7Q?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B071L5YZ5R",
-      "title": "Levi's",
-      "category": "Moda Hombre",
-      "price": 14.5,
-      "original_price": 30.0,
-      "discount_percent": 52,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/619zJ+spIUL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B071L5YZ5R?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
       "id": "B079MG7JT6",
       "title": "Fisher-Price Ríe y Aprende Libro Interactivo de Aprendizaje Cancionero, Juguete con Luces y Sonidos para bebé +6 Meses, versión español (FRC69)",
       "category": "Juguetes",
@@ -1236,123 +885,6 @@
       "url": "https://www.amazon.es/dp/B079MG7JT6?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T08:31:28+02:00",
       "last_seen": "2026-08-11T20:18:52+02:00"
-    },
-    {
-      "id": "B07N4B9PXS",
-      "title": "Purina Fortiflora Equilibrio Intestinale Cane, 30 Buste",
-      "category": "Mascotas",
-      "price": 29.9,
-      "original_price": 99.67,
-      "discount_percent": 70,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81PD2j00BuL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07N4B9PXS?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B015NXK56M",
-      "title": "Purina Plan Veterinary Diet Suplemento Alimentario para Gatos - 30 gr",
-      "category": "Mascotas",
-      "price": 29.9,
-      "original_price": 99.67,
-      "discount_percent": 70,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71g2XyPPQeL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B015NXK56M?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B08D3JKCZZ",
-      "title": "PROPLAN DIETA Canine HA HYPOALL 400GR, Negro, Estandar",
-      "category": "Mascotas",
-      "price": 4.55,
-      "original_price": 11.38,
-      "discount_percent": 60,
-      "is_flash": true,
-      "image": "https://m.media-amazon.com/images/I/61Dgt8YhfsL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B08D3JKCZZ?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B07H5WHVSK",
-      "title": "Purina ONE Bifensis Comida Húmeda para Gatito, Junior, bebé, de hasta 1 año con Salmón y Zanahorias, 4 Sobres de 85g",
-      "category": "Mascotas",
-      "price": 3.15,
-      "original_price": 9.26,
-      "discount_percent": 66,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71N0kWBXojL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B07H5WHVSK?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0F4QNFH1K",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Mujer",
-      "price": 38.5,
-      "original_price": 149.9,
-      "discount_percent": 74,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71eFCIga2XL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0F4QNFH1K?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0FDD9KSV7",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Mujer",
-      "price": 61.39,
-      "original_price": 129.9,
-      "discount_percent": 53,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/71F2zulSaoL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FDD9KSV7?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0FDDTCY3V",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Mujer",
-      "price": 75.15,
-      "original_price": 159.9,
-      "discount_percent": 53,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81-wlUFbsVL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FDDTCY3V?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0FDCP6BGN",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Mujer",
-      "price": 80.43,
-      "original_price": 129.9,
-      "discount_percent": 38,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81TC3fbvKnL._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0FDCP6BGN?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
-    },
-    {
-      "id": "B0C2J6W6XC",
-      "title": "Tommy Hilfiger",
-      "category": "Moda Mujer",
-      "price": 19.95,
-      "original_price": 49.9,
-      "discount_percent": 60,
-      "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/81vciirGM8L._AC_UL320_.jpg",
-      "url": "https://www.amazon.es/dp/B0C2J6W6XC?tag=rebajasdiar05-21",
-      "first_seen": "2026-08-10T08:31:28+02:00",
-      "last_seen": "2026-08-10T08:31:28+02:00"
     },
     {
       "id": "B08B21PRLM",
@@ -2054,7 +1586,7 @@
       "image": "https://m.media-amazon.com/images/I/5135CveaFvL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0G65M6L7Z?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-10T14:38:16+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B0H1M5WYFZ",
@@ -2158,7 +1690,7 @@
       "image": "https://m.media-amazon.com/images/I/71r4Aw5JRRL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0CSKS32Z1?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-11T08:31:27+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B09R7WGXDV",
@@ -2171,7 +1703,7 @@
       "image": "https://m.media-amazon.com/images/I/51b1vN5M0NL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09R7WGXDV?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-11T08:31:27+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B09R7WT75M",
@@ -2184,7 +1716,7 @@
       "image": "https://m.media-amazon.com/images/I/51b1vN5M0NL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B09R7WT75M?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-11T08:31:27+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B07S9S8NBK",
@@ -2262,7 +1794,7 @@
       "image": "https://m.media-amazon.com/images/I/71H6DBmVrmL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B0007OEESS?tag=rebajasdiar05-21",
       "first_seen": "2026-08-10T14:38:16+02:00",
-      "last_seen": "2026-08-10T14:38:16+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B01MYTIZ6W",
@@ -2935,10 +2467,10 @@
       "original_price": 165.0,
       "discount_percent": 32,
       "is_flash": false,
-      "image": "https://m.media-amazon.com/images/I/61AjgRzOtjL._AC_UL320_.jpg",
+      "image": "https://m.media-amazon.com/images/I/71wmcb6k+DL._AC_UL320_.jpg",
       "url": "https://www.amazon.es/dp/B084RQWJHH?tag=rebajasdiar05-21",
       "first_seen": "2026-08-11T08:31:27+02:00",
-      "last_seen": "2026-08-11T17:22:57+02:00"
+      "last_seen": "2026-08-12T11:27:53+02:00"
     },
     {
       "id": "B0DRXL36WD",
@@ -4902,6 +4434,266 @@
       "url": "https://www.amazon.es/dp/0385349947?tag=rebajasdiar05-21",
       "first_seen": "2026-08-12T08:18:22+02:00",
       "last_seen": "2026-08-12T08:18:22+02:00"
+    },
+    {
+      "id": "B002ZRQ4BA",
+      "title": "Bosch Limpiaparabrisas Trasero H 301, 30 cm",
+      "category": "Automóviles",
+      "price": 6.2,
+      "original_price": 14.25,
+      "discount_percent": 56,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61xyXh9qTeL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B002ZRQ4BA?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B00ES5Q63S",
+      "title": "BOSCH Heckwischerblatt H281 3397011428",
+      "category": "Automóviles",
+      "price": 5.3,
+      "original_price": 10.32,
+      "discount_percent": 49,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61FX5WGwLcL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00ES5Q63S?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B0068M0SAG",
+      "title": "Bosch Limpiaparabrisas Trasero A331H, 33 cm",
+      "category": "Automóviles",
+      "price": 6.9,
+      "original_price": 12.65,
+      "discount_percent": 45,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61-CcCXlDmL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0068M0SAG?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B000GCLA0Q",
+      "title": "Vicks BabyRub Soothing Ointment 1.76 oz (50 g) by Vicks",
+      "category": "Salud",
+      "price": 13.99,
+      "original_price": 27.98,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81nu+QJ3YCL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B000GCLA0Q?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B09KV8TZS8",
+      "title": "Netatmo Detector de Monóxido de Carbono Inteligente, WiFi, 10 años de batería, Alarma de 85dB, Pruebas automatizadas, Sin centralita domótica, Certificado EN 50291 y NF, NCO-EC",
+      "category": "Salud",
+      "price": 67.49,
+      "original_price": 99.99,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/41Cg2Mb+UML._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09KV8TZS8?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B0GCZPCMT4",
+      "title": "Braun Depiladora Luz Pulsada Silk·expert Pro 5, PL5311, Blanco/Oro",
+      "category": "Salud",
+      "price": 394.99,
+      "original_price": 669.99,
+      "discount_percent": 41,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71k0Xo4dsYL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GCZPCMT4?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B084J38SRL",
+      "title": "Braun ExactFit 5 Connect Smart Tensiómetro de brazo | BUA6350",
+      "category": "Salud",
+      "price": 58.0,
+      "original_price": 83.99,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61Mtx1wxkeL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B084J38SRL?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B0GH89B6T8",
+      "title": "American Tourister",
+      "category": "Viajes",
+      "price": 87.2,
+      "original_price": 159.0,
+      "discount_percent": 45,
+      "is_flash": true,
+      "image": "https://m.media-amazon.com/images/I/71sKm7IBTEL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0GH89B6T8?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B0CGDSFZGJ",
+      "title": "American Tourister",
+      "category": "Viajes",
+      "price": 31.5,
+      "original_price": 45.0,
+      "discount_percent": 30,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61fK0uhyb+L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0CGDSFZGJ?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B0DCZWNR35",
+      "title": "American Tourister",
+      "category": "Viajes",
+      "price": 102.77,
+      "original_price": 179.0,
+      "discount_percent": 43,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51SLT7ZByLL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0DCZWNR35?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B09LM833D1",
+      "title": "Bosch cortacésped a batería CityMower 18V-32-300",
+      "category": "Jardín",
+      "price": 209.99,
+      "original_price": 309.99,
+      "discount_percent": 32,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61y5vQR6JUL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B09LM833D1?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B06XQJMZFK",
+      "title": "Bosch Hidrolimpiadora de Alta presión UniversalAquatak 125",
+      "category": "Jardín",
+      "price": 111.03,
+      "original_price": 159.99,
+      "discount_percent": 31,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61RMS-dSw7L._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B06XQJMZFK?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B008AXURAW",
+      "title": "Fossil",
+      "category": "Relojes",
+      "price": 85.0,
+      "original_price": 169.0,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71IE52jjIjL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B008AXURAW?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B009LSKPYI",
+      "title": "Fossil",
+      "category": "Relojes",
+      "price": 110.0,
+      "original_price": 219.0,
+      "discount_percent": 50,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/81YMhSXCrSL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B009LSKPYI?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B00TTY8OG0",
+      "title": "Fossil",
+      "category": "Relojes",
+      "price": 102.0,
+      "original_price": 189.0,
+      "discount_percent": 46,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/619K51kBvZL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B00TTY8OG0?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B016DTHD92",
+      "title": "Fossil",
+      "category": "Relojes",
+      "price": 178.82,
+      "original_price": 269.0,
+      "discount_percent": 34,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61YoR6142xL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B016DTHD92?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B079DC27J5",
+      "title": "Fossil",
+      "category": "Relojes",
+      "price": 99.39,
+      "original_price": 169.0,
+      "discount_percent": 41,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71wOK91GrgL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B079DC27J5?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B006E4IQ8O",
+      "title": "Fossil",
+      "category": "Relojes",
+      "price": 134.91,
+      "original_price": 199.0,
+      "discount_percent": 32,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/71wHi-EvkCL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B006E4IQ8O?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B0F24QB1T7",
+      "title": "Fossil",
+      "category": "Relojes",
+      "price": 120.02,
+      "original_price": 179.0,
+      "discount_percent": 33,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/51BTw9g8bqL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B0F24QB1T7?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
+    },
+    {
+      "id": "B01BX5Q0X6",
+      "title": "Fossil",
+      "category": "Relojes",
+      "price": 176.16,
+      "original_price": 269.0,
+      "discount_percent": 35,
+      "is_flash": false,
+      "image": "https://m.media-amazon.com/images/I/61wyCVgrPpL._AC_UL320_.jpg",
+      "url": "https://www.amazon.es/dp/B01BX5Q0X6?tag=rebajasdiar05-21",
+      "first_seen": "2026-08-12T11:27:53+02:00",
+      "last_seen": "2026-08-12T11:27:53+02:00"
     }
   ]
 }
