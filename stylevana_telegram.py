@@ -31,7 +31,16 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-TELEGRAM_BOT_TOKEN = "8853076314:AAGld1wicuDIAgklHwrlq36frqihSOwLelo"
+# Token fuera de git desde el 14 ago 2026 (aviso de GitGuardian, estaba hardcodeado aquí) —
+# mismo archivo local que usa update_offers.py, para no duplicar el secreto en dos sitios.
+def _load_telegram_bot_token():
+    try:
+        return (Path.home() / ".rebajas_telegram_bot_token").read_text().strip()
+    except FileNotFoundError:
+        return None
+
+
+TELEGRAM_BOT_TOKEN = _load_telegram_bot_token()
 TELEGRAM_GROUP_CHAT_ID = "-1002409782408"
 TELEGRAM_BELLEZA_THREAD_ID = 112095  # tema fijo, todo Stylevana es belleza/cuidado personal hoy
 

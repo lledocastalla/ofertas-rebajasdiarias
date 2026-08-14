@@ -45,7 +45,21 @@ AFFILIATE_TAG = "rebajasdiar05-21"
 
 # Aviso por Telegram cuando se suben ofertas nuevas (bot creado 6 ago 2026, ver
 # RASPI_REBAJASDIARIAS.md). Sin librerías nuevas: urllib de la stdlib basta para un POST simple.
-TELEGRAM_BOT_TOKEN = "8853076314:AAGld1wicuDIAgklHwrlq36frqihSOwLelo"
+# Token fuera de git desde el 14 ago 2026 (aviso de GitGuardian, estaba hardcodeado aquí) —
+# mismo patrón que FIREBASE_CREDENTIALS_PATH: archivo local fuera del repo, con el token en
+# texto plano y nada más.
+TELEGRAM_BOT_TOKEN_PATH = f"{HOME}/.rebajas_telegram_bot_token"
+
+
+def _load_telegram_bot_token():
+    try:
+        with open(TELEGRAM_BOT_TOKEN_PATH) as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return None
+
+
+TELEGRAM_BOT_TOKEN = _load_telegram_bot_token()
 TELEGRAM_CHAT_ID = "1338347086"
 
 # Grupo público "REBAJAS DIARIAS" (supergrupo con Temas/forum activado), añadido 11 ago 2026 a
