@@ -369,22 +369,27 @@ def _send_telegram_offer(offer, thread_id):
         if isinstance(original_price, (int, float)) and original_price > price:
             price_line += f"  <s>{original_price:.2f}€</s>"
         price_line += f"  (-{discount}%)"
-    # Formato "tarjeta" en vez de todo pegado (a petición del usuario, 11 ago 2026: que llame la
-    # atención y se vea "estilo profesional"): cabecera destacada, producto, precio, separador
-    # y por último el botón — cada bloque en su propio párrafo, con una línea divisoria antes
-    # del enlace para que no se confunda con el resto del texto.
+    # Formato "tarjeta" (a petición del usuario, 11 ago 2026: que llame la atención y se vea
+    # "estilo profesional"): cabecera destacada, producto, precio y por último el botón.
+    # Boton real de Telegram (inline keyboard) en vez de enlace de texto enmascarado dentro
+    # del caption — a petición del usuario (14 ago 2026, probado primero con las ofertas de
+    # Stylevana): se ve más "de app" que un link suelto. El separador de antes ya no hace
+    # falta: el botón queda visualmente aparte del texto solo, es Telegram quien lo pinta
+    # debajo del mensaje.
     caption = (
         f"<b>{header}</b>\n\n"
         f"🛍 <b>{title}</b>\n\n"
-        f"{price_line}\n\n"
-        f"▬▬▬▬▬▬▬▬▬▬\n"
-        f"👉 <a href=\"{url}\">Ver oferta en Amazon</a>"
+        f"{price_line}"
     )
+    reply_markup = json.dumps({
+        "inline_keyboard": [[{"text": "👉 Ver oferta en Amazon", "url": url}]]
+    })
 
     params = {
         "chat_id": TELEGRAM_GROUP_CHAT_ID,
         "message_thread_id": thread_id,
         "parse_mode": "HTML",
+        "reply_markup": reply_markup,
     }
     if image:
         result = _telegram_api("sendPhoto", {**params, "photo": image, "caption": caption})
