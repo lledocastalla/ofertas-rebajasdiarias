@@ -138,6 +138,7 @@ def qualifying_offers(rows):
             out.append({
                 "id": pid,
                 "title": title,
+                "description": row.get("description") or "",
                 "price": price,
                 "orig": rrp,
                 "discount": discount,
@@ -152,6 +153,21 @@ def qualifying_offers(rows):
 
 def _html_escape(text):
     return (text or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _first_sentence(text, max_len=180):
+    """El campo product_name del feed viene siempre en inglés (nombre de marca/producto tal
+    cual lo da el fabricante) aunque se pida language/es — pero description sí viene traducida
+    de verdad al español. Detectado y arreglado el 14 ago 2026 (aviso del usuario: 'deben de
+    estar en español'). Se usa solo la primera frase para no alargar demasiado la tarjeta."""
+    text = (text or "").strip()
+    if not text:
+        return ""
+    idx = text.find(". ")
+    sentence = text[: idx + 1] if idx != -1 else text
+    if len(sentence) > max_len:
+        sentence = sentence[:max_len].rsplit(" ", 1)[0] + "…"
+    return sentence
 
 
 def _discount_badge(discount):
@@ -199,10 +215,20 @@ def post_offer(offer, with_intro=False):
         "🆕 A partir de hoy también traemos ofertas reales de otras tiendas, no solo Amazon 👇\n\n"
         if with_intro else ""
     )
+    desc = _first_sentence(offer.get("description", ""))
+    # Si la descripción viene vacía o es igual al nombre en inglés (pasa en algunos productos
+    # del feed), no se añade la línea — mejor sin descripción que repetir el inglés.
+    desc_line = (
+        f"{_html_escape(desc)}\n\n"
+        if desc and desc.strip().lower() != offer["title"].strip().lower()
+        else ""
+    )
+    title_sep = "\n" if desc_line else "\n\n"
     caption = (
         f"{intro}"
         f"<b>🎯 OFERTA DEL DÍA</b>\n\n"
-        f"🛍 <b>{_html_escape(offer['title'])}</b>\n\n"
+        f"🛍 <b>{_html_escape(offer['title'])}</b>{title_sep}"
+        f"{desc_line}"
         f"{price_line}"
     )
     reply_markup = json.dumps({
