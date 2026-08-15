@@ -149,6 +149,14 @@ CATEGORY_GROUPS = [
     ['Jardín', 'Oficina', 'Salud', 'Viajes', 'Automóviles', 'Relojes'],
 ]
 GROUP_STATE_PATH = f"{HOME}/.rebajas_group_state.json"
+
+# Moda Hombre y Moda Mujer son las categorías que más venden (petición del usuario, 15 ago 2026)
+# — se buscan en TODOS los ciclos además del grupo rotativo que toque ese turno, en vez de
+# aparecer solo 1 de cada 3 ejecuciones como el resto de categorías (ver PRIORITY_CATEGORIES más
+# abajo, en main()). No cambia la cadencia de avisos: el push a la app y la publicación en
+# Telegram ya saltan en cada ciclo con cambios reales, sea cual sea el grupo — esto solo hace que
+# más de esos ciclos traigan ofertas nuevas de estas dos categorías.
+PRIORITY_CATEGORIES = ['Moda Hombre', 'Moda Mujer']
 CAMPAIGN_PATH_CANDIDATES = ["campaign.json"]  # relativo a REPO_DIR (mismo repo que offers.json)
 
 # Favoritos vigilados (sesión 5 ago 2026, ver RASPI_REBAJASDIARIAS.md): la app reporta a
@@ -893,6 +901,12 @@ def main():
     run_categories = {name: KEYWORDS_BY_CATEGORY[name] for name in group_names}
     log(f"Grupo de categorías de esta ejecución ({group_idx + 1}/{len(CATEGORY_GROUPS)}): "
         f"{', '.join(group_names)}")
+
+    for priority_category in PRIORITY_CATEGORIES:
+        already_in_group = priority_category in run_categories
+        run_categories.setdefault(priority_category, KEYWORDS_BY_CATEGORY[priority_category])
+        if not already_in_group:
+            log(f"Categoría prioritaria añadida fuera de su grupo: '{priority_category}'")
 
     boost_category = _active_campaign_category()
     if boost_category and boost_category in KEYWORDS_BY_CATEGORY:
