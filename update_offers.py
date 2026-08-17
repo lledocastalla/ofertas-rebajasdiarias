@@ -677,7 +677,13 @@ return Array.from(document.querySelectorAll(
     var el = card.querySelector(sel);
     return el ? el.textContent : null;
   }
-  var titleEl = card.querySelector('h2 span');
+  // OJO: antes era 'h2 span' (solo el primer span dentro del h2) — cuando el
+  // título tiene varios spans anidados (marca en uno, resto en otro) eso
+  // capturaba solo la marca ("NIKE" a secas), no el título completo. Detectado
+  // el 17 ago 2026: el 56% del catálogo tenía títulos de 1-2 palabras por esto,
+  // rompiendo la búsqueda de la web (buscar "zapatillas" solo encontraba 1
+  // resultado real). 'h2' a secas junta el texto de todos los spans internos.
+  var titleEl = card.querySelector('h2');
   var imgEl = card.querySelector('img.s-image');
   var flashEl = card.querySelector(".s-coupon-highlight-color, [aria-label*='Flash' i]");
   return {
