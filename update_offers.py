@@ -272,10 +272,12 @@ KEYWORDS_BY_CATEGORY = {
         "Braun salud", "Omron tensiómetro", "Beurer", "Compeed",
         "Centrum vitaminas", "Vicks",
     ],
-    'Viajes': [
-        "Samsonite maletas", "American Tourister", "Delsey", "Eastpak",
-        "Antler viajes", "Travelite",
-    ],
+    # Categoria 'Viajes' quitada del todo (21 ago, peticion del usuario:
+    # "que no busque mas maletas de amazon, no se venden") - eran solo
+    # marcas de maletas (Samsonite, American Tourister, Delsey, Eastpak,
+    # Antler, Travelite), sin ninguna venta real pese a salir a menudo con
+    # descuentos altos. Las que ya estan en offers.json se iran cayendo
+    # solas por antiguedad (STALE_AFTER_DAYS), no se borran a mano.
     'Automóviles': [
         "Bosch coche", "Michelin", "Osram automoción", "Philips coche", "Sparco",
         "Thule", "Continental neumáticos",
