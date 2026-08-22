@@ -146,7 +146,7 @@ ACTIVE_HOUR_END = 23    # exclusive (última ejecución posible: 22:xx)
 CATEGORY_GROUPS = [
     ['Bebés', 'Moda Hombre', 'Moda Mujer', 'Hogar', 'Juguetes', 'Tecnología', 'Mascotas'],
     ['Deporte', 'Gafas de Sol', 'Gaming', 'Música', 'Libros', 'Belleza', 'Alimentación'],
-    ['Jardín', 'Oficina', 'Salud', 'Viajes', 'Automóviles', 'Relojes'],
+    ['Jardín', 'Oficina', 'Salud', 'Automóviles', 'Relojes'],
 ]
 GROUP_STATE_PATH = f"{HOME}/.rebajas_group_state.json"
 
