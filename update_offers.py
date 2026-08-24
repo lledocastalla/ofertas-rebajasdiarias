@@ -34,6 +34,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import WebDriverException, TimeoutException
 
+from multitienda_feeds import fetch_multitienda_offers
+
 # --- Configuración ---
 HOME = os.path.expanduser("~")
 PROFILE_DIR = f"{HOME}/.rebajas_chrome_profile"
@@ -405,8 +407,11 @@ def _send_telegram_offer(offer, thread_id):
         f"🛍 <b>{title}</b>\n\n"
         f"{price_line}"
     )
+    # store_label solo existe en ofertas que no son de Amazon (multi-tienda, ver
+    # multitienda_feeds.py) — si no está, es Amazon, mismo texto de siempre.
+    store_label = offer.get("store_label") or "Amazon"
     reply_markup = json.dumps({
-        "inline_keyboard": [[{"text": "👉 Ver oferta en Amazon", "url": url}]]
+        "inline_keyboard": [[{"text": f"👉 Ver oferta en {store_label}", "url": url}]]
     })
 
     params = {
@@ -981,10 +986,23 @@ def main():
         if driver is not None:
             driver.quit()
 
-    if scraped_count == 0:
+    # Multi-tienda (Leroy Merlin, Stylevana — ver multitienda_feeds.py): independiente del
+    # scraping de Amazon de arriba, nunca debe poder tumbar el ciclo entero. Se mezcla en el
+    # mismo new_or_updated para que app/web/Telegram lean todo del mismo offers.json (un solo
+    # catálogo, no pipelines paralelos) — ver sync_telegram_group_topics() más abajo, que ya
+    # publica por categoría sin distinguir tienda.
+    try:
+        multitienda_offers = fetch_multitienda_offers(log)
+    except Exception as e:
+        log(f"aviso: fallo en la ingesta multi-tienda, se continúa sin ella este ciclo: {e}")
+        multitienda_offers = {}
+    new_or_updated.update(multitienda_offers)
+
+    if len(new_or_updated) == 0:
         log(
-            "No se ha encontrado NINGUNA oferta nueva/actualizada en esta ejecución "
-            "(posible bloqueo de Amazon o cambio de HTML). Abortando sin tocar offers.json."
+            "No se ha encontrado NINGUNA oferta nueva/actualizada en esta ejecución, ni de "
+            "Amazon ni de multi-tienda (posible bloqueo de Amazon, cambio de HTML, o fallo de "
+            "red en los feeds de Awin). Abortando sin tocar offers.json."
         )
         sys.exit(1)
 
