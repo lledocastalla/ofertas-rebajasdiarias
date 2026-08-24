@@ -2,11 +2,15 @@
   "variants": [
     {
       "title": "Ofertas reales, verificadas",
-      "subtitle": "Buscamos entre miles de productos de Amazon las ofertas con descuento real de al menos un 30%, las organizamos por categoría y actualizamos el catálogo varias veces al día. Nada de descuentos falsos ni precios \"tachados\" artificialmente: el precio anterior es el que tenía el producto antes de la rebaja."
+      "subtitle": "Buscamos entre miles de productos de Amazon, Leroy Merlin y Stylevana las ofertas con descuento real de al menos un 30%, las organizamos por categoría y actualizamos el catálogo varias veces al día. Nada de descuentos falsos ni precios \"tachados\" artificialmente: el precio anterior es el que tenía el producto antes de la rebaja."
+    },
+    {
+      "title": "Ahora también Leroy Merlin y Stylevana 🛍️",
+      "subtitle": "Además de Amazon, ya puedes encontrar aquí ofertas reales de bricolaje y jardín (Leroy Merlin) y K-beauty (Stylevana), con el mismo filtro de siempre: descuento verificado de al menos un 30%, nunca precios inflados."
     },
     {
       "title": "Estamos empezando… ¡y esto promete! 🚀",
-      "subtitle": "Un proyecto que acaba de nacer, hecho con mimo: ofertas reales de Amazon, sin descuentos falsos ni precios inflados. Cuantos más seáis, más crece el catálogo — únete ahora, antes de que se corra la voz."
+      "subtitle": "Un proyecto que acaba de nacer, hecho con mimo: ofertas reales de varias tiendas, sin descuentos falsos ni precios inflados. Cuantos más seáis, más crece el catálogo — únete ahora, antes de que se corra la voz."
     }
   ],
   "_comment": "Editar aqui para cambiar el texto que rota en el banner del hero de la web y la app -sin necesidad de desplegar nada ni pasar por Play Store-. Cada variante necesita title y subtitle. Se lee cada carga de pagina/apertura de app, asi que el cambio se ve casi al momento."
