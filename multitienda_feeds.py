@@ -37,7 +37,7 @@ AWIN_API_KEY = "f239974da24e881acd5d3cdfa614a45e"
 # Leroy Merlin (7 feeds por categoría, rotación 1 por ciclo)
 # ---------------------------------------------------------------------------
 
-LEROY_MERLIN_MAX_PER_CYCLE = 30
+LEROY_MERLIN_MAX_PER_CYCLE = 50
 LEROY_MERLIN_STATE_PATH = f"{HOME}/.rebajas_leroy_feed_state.json"
 
 LEROY_MERLIN_FEEDS = [
@@ -109,9 +109,10 @@ def _download_feed_csv(url, log, timeout=180):
     return gzip.decompress(raw).decode("utf-8", errors="replace")
 
 
-def fetch_leroy_merlin_offers(log, local_test_file=None):
-    idx = _leroy_merlin_next_feed_index()
-    feed = LEROY_MERLIN_FEEDS[idx]
+def _fetch_leroy_merlin_feed(feed, log, local_test_file=None):
+    """Descarga y filtra UN feed concreto de Leroy Merlin (por su dict de LEROY_MERLIN_FEEDS).
+    Compartido por fetch_leroy_merlin_offers() (rotación normal, 1 por ciclo) y
+    fetch_leroy_merlin_offers_all() (catch-up manual, los 7 de golpe)."""
     columns = (
         "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
         "merchant_image_url,merchant_category,search_price,saving,in_stock"
@@ -178,11 +179,30 @@ def fetch_leroy_merlin_offers(log, local_test_file=None):
     return {o["id"]: o for o in top}
 
 
+def fetch_leroy_merlin_offers(log, local_test_file=None):
+    """Uso normal (dentro de main() en cada ciclo de la Pi): rota 1 de los 7 feeds."""
+    idx = _leroy_merlin_next_feed_index()
+    feed = LEROY_MERLIN_FEEDS[idx]
+    return _fetch_leroy_merlin_feed(feed, log, local_test_file)
+
+
+def fetch_leroy_merlin_offers_all(log):
+    """Catch-up manual (24 ago 2026): descarga los 7 feeds de golpe en vez de esperar a que
+    la rotación normal (1 por ciclo, ~1 feed/día) los cubra todos con el tiempo — para no
+    tener el catálogo cojo (solo Jardín/Bricolaje) mientras rota. No toca el índice de
+    rotación (_leroy_merlin_next_feed_index), así el ciclo normal de la Pi sigue su ritmo de
+    siempre después de este catch-up puntual."""
+    result = {}
+    for feed in LEROY_MERLIN_FEEDS:
+        result.update(_fetch_leroy_merlin_feed(feed, log))
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Stylevana (1 solo feed, sin rotación — 23.7k filas, ligero, se puede pedir entero cada ciclo)
 # ---------------------------------------------------------------------------
 
-STYLEVANA_MAX_PER_CYCLE = 30
+STYLEVANA_MAX_PER_CYCLE = 50
 STYLEVANA_FID = "88396"
 
 
@@ -259,14 +279,28 @@ def fetch_stylevana_offers(log, local_test_file=None):
 
 
 def fetch_multitienda_offers(log, local_test_files=None):
-    """Punto de entrada único, llamado desde main() de update_offers.py. local_test_files
-    (dict opcional {'leroymerlin': path, 'stylevana': path}) solo para pruebas locales sin
-    red — en producción se omite y se descarga de Awin de verdad."""
+    """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path})
+    solo para pruebas locales sin red — en producción se omite y se descarga de Awin de verdad."""
     local_test_files = local_test_files or {}
     result = {}
     result.update(fetch_leroy_merlin_offers(log, local_test_files.get("leroymerlin")))
     result.update(fetch_stylevana_offers(log, local_test_files.get("stylevana")))
     return result
+
+
+if __name__ == "__main__":
+    def _log(msg):
+        print(msg)
+
+    result = fetch_multitienda_offers(_log, local_test_files={
+        "leroymerlin": "/private/tmp/claude-501/-Users-lledo/5baec47c-9e26-4d09-8ab2-329e33f4fed3/scratchpad/leroy_merlin_resto.csv.gz",
+        "stylevana": "/private/tmp/claude-501/-Users-lledo/5baec47c-9e26-4d09-8ab2-329e33f4fed3/scratchpad/stylevana.csv.gz",
+    })
+    print(f"\nTotal ofertas multi-tienda construidas: {len(result)}")
+    by_store = {}
+    for o in result.values():
+        by_store[o["store"]] = by_store.get(o["store"], 0) + 1
+    print("Por tienda:", by_store)
     by_cat = {}
     for o in result.values():
         by_cat[o["category"]] = by_cat.get(o["category"], 0) + 1
