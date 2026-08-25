@@ -1,11 +1,11 @@
 {
-  "active": false,
-  "title": "",
+  "active": true,
+  "title": "Vuelta al Cole: mochilas y material escolar con descuento real",
   "subtitle": "",
-  "colorHex": "#FF8E34",
-  "icon": "local_offer",
-  "categoryTarget": null,
-  "startDate": null,
-  "endDate": null,
+  "colorHex": "#F2A93B",
+  "icon": "school",
+  "categoryTarget": "Vuelta al Cole",
+  "startDate": "2026-08-25",
+  "endDate": "2026-09-15",
   "_comment": "Plantilla. Para activar una campana (Vuelta al Cole, Black Friday...): active=true, rellena title/subtitle/colorHex/icon (school|bolt|gift|tree|cart|fire|sun), categoryTarget opcional (nombre exacto de categoria de la app) y startDate/endDate en formato YYYY-MM-DD. Al terminar, o vuelve a poner active=false o deja que pasen las fechas."
 }

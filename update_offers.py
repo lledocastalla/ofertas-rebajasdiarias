@@ -289,6 +289,21 @@ KEYWORDS_BY_CATEGORY = {
         "Garmin smartwatch", "Amazfit", "Michael Kors relojes", "Lotus relojes",
         "Viceroy relojes",
     ],
+    # Vuelta al Cole (25 ago 2026, pedido explícito del usuario: "que vaya actualizando también
+    # de vuelta al cole... y creariamos esa categoria") -- categoria ESTACIONAL, activada vía
+    # campaign.json (categoryTarget, ver _active_campaign_category) en vez de vivir en
+    # CATEGORY_GROUPS/PRIORITY_CATEGORIES: mientras la campaña esté activa se refuerza en TODOS
+    # los ciclos (3-4 keywords, ver CAMPAIGN_KEYWORDS_RANGE); al desactivarla, deja de buscarse
+    # y las ofertas ya encontradas se retiran solas por antigüedad (STALE_AFTER_DAYS), sin
+    # dejar una categoría "fantasma" el resto del año. Enfocada en mochilas/material escolar
+    # (evita solaparse demasiado con 'Oficina', que ya cubre BIC/Stabilo/Pilot/Faber-Castell
+    # genéricos).
+    'Vuelta al Cole': [
+        "mochila escolar", "Safta mochila", "Totto mochila", "Movom mochila",
+        "estuche escolar", "material escolar", "agenda escolar",
+        "calculadora científica", "Milan escolar", "Liderpapel", "Pelikan escolar",
+        "Faber-Castell escolar",
+    ],
 }
 
 
