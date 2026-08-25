@@ -1,11 +1,27 @@
 {
-  "active": true,
-  "title": "Vuelta al Cole: mochilas y material escolar con descuento real 🎒",
-  "subtitle": "Mochilas Totto, Safta y Movom, estuches, agendas y más, con el mismo filtro de siempre: descuento verificado de al menos un 30%, nunca precios inflados.",
-  "colorHex": "#F2A93B",
-  "icon": "school",
-  "categoryTarget": "Vuelta al Cole",
-  "startDate": "2026-08-25",
-  "endDate": "2026-09-15",
-  "_comment": "Plantilla. Para activar una campana (Vuelta al Cole, Black Friday...): active=true, rellena title/subtitle (obligatorios los dos, se muestran como una diapositiva mas en la rotacion del hero de la web y la app -- ver finalizeCampaign() en rebajasdiarias-web/js/app.js), categoryTarget opcional (nombre exacto de categoria de la app; con categoryTarget, solo se anuncia si hay 4+ ofertas reales de esa categoria en el catalogo) y startDate/endDate en formato YYYY-MM-DD. icon/colorHex quedan guardados por si algun dia hace falta un tratamiento visual distinto, hoy no se usan. Al terminar, o vuelve a poner active=false o deja que pasen las fechas."
+  "campaigns": [
+    {
+      "active": true,
+      "title": "Vuelta al Hogar: hasta 30% en Leroy Merlin 🏡",
+      "subtitle": "Renueva cada rincón de tu casa después del verano: bricolaje, decoración, cocinas y baños, muebles y jardín con descuento real. Solo hasta el 28 de septiembre.",
+      "colorHex": "#4A90A4",
+      "icon": "cart",
+      "categoryTarget": null,
+      "storeTarget": "leroymerlin",
+      "startDate": "2026-08-25",
+      "endDate": "2026-09-28"
+    },
+    {
+      "active": true,
+      "title": "Vuelta al Cole: mochilas y material escolar con descuento real 🎒",
+      "subtitle": "Mochilas Totto, Safta y Movom, estuches, agendas y más, con el mismo filtro de siempre: descuento verificado de al menos un 30%, nunca precios inflados.",
+      "colorHex": "#F2A93B",
+      "icon": "school",
+      "categoryTarget": "Vuelta al Cole",
+      "storeTarget": null,
+      "startDate": "2026-08-25",
+      "endDate": "2026-09-15"
+    }
+  ],
+  "_comment": "Esquema con varias campañas a la vez (25 ago 2026 -- antes un único objeto, hizo falta ampliarlo porque Vuelta al Cole y Vuelta al Hogar tienen fechas que se solapan). Cada campaña: active=true, title/subtitle obligatorios (se muestran como una diapositiva mas en la rotacion del hero de la web y la app -- ver finalizeCampaign() en rebajasdiarias-web/js/app.js y CampaignInfo en rebajasdiarias-app), categoryTarget O storeTarget opcional pero no los dos a la vez (con cualquiera de los dos, solo se anuncia si hay 4+ ofertas reales de esa categoria/tienda en el catalogo), startDate/endDate en YYYY-MM-DD. icon: school|bolt|gift|tree|cart|fire|sun (guardado por si algun dia hace falta un tratamiento visual distinto, hoy no se usa). El ORDEN del array es el orden en que aparecen las diapositivas (la primera del array es la primera diapositiva del hero). Al terminar una campaña, o vuelve a poner su active=false o deja que pasen las fechas -- no hace falta quitarla del array."
 }

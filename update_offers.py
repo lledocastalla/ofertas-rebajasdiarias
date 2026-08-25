@@ -112,7 +112,7 @@ KEYWORDS_PER_CATEGORY_RANGE = (1, 2)  # nº de keywords por categoría, aleatori
                                        # (Pi 3B con 1GB RAM: mejor pocas por ejecución y que la
                                        # fusión por ASIN vaya cubriendo el resto en el tiempo)
 CAMPAIGN_KEYWORDS_MAX = 12             # keywords para la categoría en "boost" durante una campaña
-                                        # activa (ver _active_campaign_category) -- barre hasta
+                                        # activa (ver _active_campaign_categories) -- barre hasta
                                         # esta cantidad de golpe (antes 3-4 al azar, "un ciclo
                                         # especial" pedido por el usuario para Vuelta al Cole:
                                         # con esto, una categoría de campaña con <=12 keywords
@@ -297,7 +297,7 @@ KEYWORDS_BY_CATEGORY = {
     ],
     # Vuelta al Cole (25 ago 2026, pedido explícito del usuario: "que vaya actualizando también
     # de vuelta al cole... y creariamos esa categoria") -- categoria ESTACIONAL, activada vía
-    # campaign.json (categoryTarget, ver _active_campaign_category) en vez de vivir en
+    # campaign.json (categoryTarget, ver _active_campaign_categories) en vez de vivir en
     # CATEGORY_GROUPS/PRIORITY_CATEGORIES: mientras la campaña esté activa se refuerza en TODOS
     # los ciclos, hasta CAMPAIGN_KEYWORDS_MAX keywords de golpe (con las 18 de aquí, cubre casi
     # todas en el primer ciclo, el resto en el segundo). Al desactivar la campaña, deja de
@@ -546,11 +546,15 @@ def _next_group_index():
     return idx
 
 
-def _active_campaign_category():
-    """Si hay una campaña activa en campaign.json (mismo repo que offers.json, ya actualizado
-    por el 'git pull' de main()) con categoryTarget, devuelve esa categoría para reforzarla con
-    más keywords esta ejecución. Nunca lanza: sin campaña o con el JSON mal formado, simplemente
-    no hay boost."""
+def _active_campaign_categories():
+    """campaign.json (mismo repo que offers.json, ya actualizado por el 'git pull' de main())
+    -- esquema con VARIAS campañas a la vez desde el 25 ago 2026 ({"campaigns": [ {...}, {...}
+    ]}), antes un único objeto: "Vuelta al Cole" y "Vuelta al Hogar" tienen fechas que se
+    solapan (15 sept / 28 sept), hacía falta poder tener las dos activas de golpe. Devuelve la
+    lista de categoryTarget de las campañas activas/dentro de fecha que tengan uno (storeTarget,
+    como el de "Vuelta al Hogar" -> Leroy Merlin entero, no necesita refuerzo de keywords aquí:
+    ese multi-tienda ya se descarga entero cada ciclo, sin búsqueda por palabra clave de por
+    medio). Nunca lanza: sin campañas o con el JSON mal formado, lista vacía, sin boost."""
     for rel_path in CAMPAIGN_PATH_CANDIDATES:
         path = os.path.join(REPO_DIR, rel_path)
         if not os.path.isfile(path):
@@ -558,23 +562,29 @@ def _active_campaign_category():
         try:
             with open(path, encoding="utf-8") as f:
                 data = json.load(f)
-            if data.get("active") is not True:
-                return None
-            category = data.get("categoryTarget")
-            if not category:
-                return None
+            campaigns = data.get("campaigns")
+            if not isinstance(campaigns, list):
+                return []
             now = datetime.now()
-            start = data.get("startDate")
-            end = data.get("endDate")
-            if start and now < datetime.fromisoformat(start):
-                return None
-            if end and now > datetime.fromisoformat(end) + timedelta(days=1):
-                return None
-            return category
+            categories = []
+            for campaign in campaigns:
+                if not isinstance(campaign, dict) or campaign.get("active") is not True:
+                    continue
+                category = campaign.get("categoryTarget")
+                if not category:
+                    continue
+                start = campaign.get("startDate")
+                end = campaign.get("endDate")
+                if start and now < datetime.fromisoformat(start):
+                    continue
+                if end and now > datetime.fromisoformat(end) + timedelta(days=1):
+                    continue
+                categories.append(category)
+            return categories
         except Exception as e:
             log(f"  aviso: no se pudo leer campaign.json: {e}")
-            return None
-    return None
+            return []
+    return []
 
 
 def _fetch_watched_asins():
@@ -950,15 +960,17 @@ def main():
         if not already_in_group:
             log(f"Categoría prioritaria añadida fuera de su grupo: '{priority_category}'")
 
-    boost_category = _active_campaign_category()
-    if boost_category and boost_category in KEYWORDS_BY_CATEGORY:
-        already_in_group = boost_category in run_categories
-        run_categories.setdefault(boost_category, KEYWORDS_BY_CATEGORY[boost_category])
-        log(f"Campaña activa: refuerzo de búsquedas en '{boost_category}'"
-            f"{' (ya estaba en el grupo de hoy)' if already_in_group else ''}")
-    elif boost_category:
-        log(f"  aviso: categoryTarget '{boost_category}' de la campaña no coincide con ninguna "
-            f"categoría conocida, se ignora el boost")
+    boost_categories = set()
+    for boost_category in _active_campaign_categories():
+        if boost_category in KEYWORDS_BY_CATEGORY:
+            already_in_group = boost_category in run_categories
+            run_categories.setdefault(boost_category, KEYWORDS_BY_CATEGORY[boost_category])
+            boost_categories.add(boost_category)
+            log(f"Campaña activa: refuerzo de búsquedas en '{boost_category}'"
+                f"{' (ya estaba en el grupo de hoy)' if already_in_group else ''}")
+        else:
+            log(f"  aviso: categoryTarget '{boost_category}' de una campaña no coincide con "
+                f"ninguna categoría conocida, se ignora el boost")
 
     driver = None
     scraped_count = 0
@@ -970,7 +982,7 @@ def main():
         categories = list(run_categories.items())
         random.shuffle(categories)
         for category, keywords in categories:
-            if category == boost_category:
+            if category in boost_categories:
                 n = CAMPAIGN_KEYWORDS_MAX
             else:
                 n = random.randint(*KEYWORDS_PER_CATEGORY_RANGE)
