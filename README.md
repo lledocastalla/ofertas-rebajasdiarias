@@ -52,7 +52,13 @@ Reglas:
   "Moda Hombre", "Moda Mujer" y "Deporte" según corresponda.
 - `category` debe ser una de: Bebés, Moda Hombre, Moda Mujer, Hogar, Juguetes,
   Tecnología, Mascotas, Deporte, Gafas de Sol, Gaming, Música, Libros, Belleza,
-  Alimentación, Jardín, Oficina, Salud, Viajes, Automóviles, Relojes.
+  Alimentación, Jardín, Oficina, Salud, Viajes, Automóviles, Relojes, Bricolaje,
+  Decoración, Cocinas y Baños, Muebles (estas últimas 4, multi-tienda vía Leroy
+  Merlin, ver `multitienda_feeds.py`), y Vuelta al Cole (25 ago 2026, categoría
+  **estacional**: solo se busca activamente mientras haya una campaña activa en
+  `campaign.json` con `categoryTarget: "Vuelta al Cole"` — ver `KEYWORDS_BY_CATEGORY`
+  en `update_offers.py`; fuera de esa ventana no se busca y las ofertas ya
+  encontradas se retiran solas por antigüedad).
 - Incluir tantos productos reales como sea razonable encontrar que cumplan el 30%
   mínimo, cubriendo el mayor número posible de categorías distintas. Es normal que
   algunas categorías (Hogar, Salud, Oficina...) tengan pocos o ningún producto si
