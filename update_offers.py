@@ -299,18 +299,24 @@ KEYWORDS_BY_CATEGORY = {
     # de vuelta al cole... y creariamos esa categoria") -- categoria ESTACIONAL, activada vía
     # campaign.json (categoryTarget, ver _active_campaign_category) en vez de vivir en
     # CATEGORY_GROUPS/PRIORITY_CATEGORIES: mientras la campaña esté activa se refuerza en TODOS
-    # los ciclos, hasta 12 keywords de golpe (ver CAMPAIGN_KEYWORDS_MAX) -- con las 12 de aquí,
-    # se cubren TODAS en el primer ciclo que le toque, no hace falta esperar varios ciclos al
-    # azar ("un ciclo especial" pedido por el usuario). Al desactivar la campaña, deja de buscarse
-    # y las ofertas ya encontradas se retiran solas por antigüedad (STALE_AFTER_DAYS), sin
-    # dejar una categoría "fantasma" el resto del año. Enfocada en mochilas/material escolar
-    # (evita solaparse demasiado con 'Oficina', que ya cubre BIC/Stabilo/Pilot/Faber-Castell
-    # genéricos).
+    # los ciclos, hasta CAMPAIGN_KEYWORDS_MAX keywords de golpe (con las 18 de aquí, cubre casi
+    # todas en el primer ciclo, el resto en el segundo). Al desactivar la campaña, deja de
+    # buscarse y las ofertas ya encontradas se retiran solas por antigüedad
+    # (STALE_AFTER_DAYS), sin dejar una categoría "fantasma" el resto del año.
+    # Ampliada el mismo día (25 ago, aviso real del usuario tras ver el primer barrido: "pero
+    # casi todo son mochilas debería haber más cosas") -- las 4 keywords de mochila (Safta/
+    # Totto/Movom/genérica) por sí solas ya daban 12 de las 25 ofertas encontradas, el resto de
+    # categoría escolar necesitaba más variedad de keywords propias para competir en las
+    # búsquedas, no solo "material escolar"/"estuche escolar" genéricos. Evita solaparse
+    # demasiado con 'Oficina' (BIC/Stabilo/Pilot/Faber-Castell genéricos) usando siempre el
+    # matiz "escolar"/"infantil".
     'Vuelta al Cole': [
         "mochila escolar", "Safta mochila", "Totto mochila", "Movom mochila",
         "estuche escolar", "material escolar", "agenda escolar",
-        "calculadora científica", "Milan escolar", "Liderpapel", "Pelikan escolar",
-        "Faber-Castell escolar",
+        "cuaderno escolar", "libreta escolar", "carpeta escolar",
+        "rotuladores escolares", "lápices de colores", "calculadora científica",
+        "Milan escolar", "Liderpapel", "Pelikan escolar", "Faber-Castell escolar",
+        "fiambrera infantil",
     ],
 }
 

@@ -1,11 +1,11 @@
 {
   "active": true,
-  "title": "Vuelta al Cole: mochilas y material escolar con descuento real",
-  "subtitle": "",
+  "title": "Vuelta al Cole: mochilas y material escolar con descuento real 🎒",
+  "subtitle": "Mochilas Totto, Safta y Movom, estuches, agendas y más, con el mismo filtro de siempre: descuento verificado de al menos un 30%, nunca precios inflados.",
   "colorHex": "#F2A93B",
   "icon": "school",
   "categoryTarget": "Vuelta al Cole",
   "startDate": "2026-08-25",
   "endDate": "2026-09-15",
-  "_comment": "Plantilla. Para activar una campana (Vuelta al Cole, Black Friday...): active=true, rellena title/subtitle/colorHex/icon (school|bolt|gift|tree|cart|fire|sun), categoryTarget opcional (nombre exacto de categoria de la app) y startDate/endDate en formato YYYY-MM-DD. Al terminar, o vuelve a poner active=false o deja que pasen las fechas."
+  "_comment": "Plantilla. Para activar una campana (Vuelta al Cole, Black Friday...): active=true, rellena title/subtitle (obligatorios los dos, se muestran como una diapositiva mas en la rotacion del hero de la web y la app -- ver finalizeCampaign() en rebajasdiarias-web/js/app.js), categoryTarget opcional (nombre exacto de categoria de la app; con categoryTarget, solo se anuncia si hay 4+ ofertas reales de esa categoria en el catalogo) y startDate/endDate en formato YYYY-MM-DD. icon/colorHex quedan guardados por si algun dia hace falta un tratamiento visual distinto, hoy no se usan. Al terminar, o vuelve a poner active=false o deja que pasen las fechas."
 }
