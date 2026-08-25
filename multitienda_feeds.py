@@ -15,6 +15,7 @@ veces viene en inglés sin traducir en el feed de origen).
 
 import csv
 import gzip
+import html
 import io
 import json
 import os
@@ -278,13 +279,145 @@ def fetch_stylevana_offers(log, local_test_file=None):
     return {o["id"]: o for o in top}
 
 
+# ---------------------------------------------------------------------------
+# Perfumería Comas (25 ago 2026, aprobada en Awin -- ver RASPI_REBAJASDIARIAS.md) -- 1 solo
+# feed, sin rotación, mismo patrón que Stylevana. IMPORTANTE: el feed NATIVO de Awin
+# ("Crea-un-feed", formato Awin/CSV normal) NO trae rrp_price ni saving poblados para este
+# anunciante en absoluto (comprobado 25 ago 2026: 0 de 6.859 filas) -- sin precio de
+# referencia no se puede calcular descuento real, así que en su lugar se usa el feed
+# alternativo en FORMATO GOOGLE SHOPPING que Awin genera para el mismo anunciante (fid Google
+# "F4298"), que sí trae price/sale_price reales (4.359 de 7.370 productos con ≥30% de
+# descuento real en la comprobación). URL de descarga distinta a _awin_feed_url() porque es
+# un feed pre-generado por Awin (Descargar lista / "Crea-un-feed"), no un feed nativo
+# parametrizable por columnas.
+# ---------------------------------------------------------------------------
+
+PERFUMERIA_COMAS_MAX_PER_CYCLE = 150  # "todos los más vendidos" (pedido explícito) -- feed
+                                       # entero se descarga igual cada ciclo (como Stylevana),
+                                       # así que subir el tope no cuesta red extra, solo da
+                                       # más variedad real por ciclo en vez de quedarse
+                                       # siempre con el mismo top-60 fijo
+PERFUMERIA_COMAS_GOOGLE_FEED_ID = "F4298"
+PERFUMERIA_COMAS_FEED_URL = (
+    f"https://ui.awin.com/productdata-darwin-download/publisher/3029543/"
+    f"{AWIN_API_KEY}/1/feed/{PERFUMERIA_COMAS_GOOGLE_FEED_ID}.csv.gz"
+)
+
+# "Quiero los mejores perfumes, todos los más vendidos en España" (pedido explícito del
+# usuario, 25 ago) -- igual que las búsquedas por marca de Amazon (KEYWORDS_BY_CATEGORY), se
+# filtra el feed a una lista curada de marcas de perfumería reconocidas/best-seller en España,
+# en vez de aceptar cualquier marca que traiga el feed sin filtrar. Comprobado contra el feed
+# real: Chanel/Dior/Guerlain NO aparecen en este anunciante (distribución propia, normal en
+# perfumería de lujo); las de abajo sí, con volumen real. Solo aplica a la categoría
+# "Perfumes" del feed -- maquillaje/cosmética/cabello no se filtran por marca, ahí interesa
+# más variedad que exclusividad.
+PERFUMERIA_COMAS_PERFUME_BRAND_ALLOWLIST = {
+    html.unescape(b).strip().upper()
+    for b in [
+        "Paco Rabanne", "Giorgio Armani", "Carolina Herrera", "Jean Paul Gaultier",
+        "Yves Saint Laurent", "Givenchy", "Dolce & Gabbana", "Dolce & Gabanna",
+        "Hermès", "Hugo Boss", "Lancôme", "Calvin Klein", "Issey Miyake", "Kenzo",
+        "Mugler", "Prada", "Narciso Rodriguez", "Versace", "Sisley", "Rochas",
+        "Cacharel", "Zadig & Voltaire", "Ralph Lauren", "Valentino", "Chloé",
+        "Gucci", "Viktor & Rolf", "Nina Ricci", "Elie Saab", "Montblanc",
+        "Jimmy Choo", "Azzaro", "Lacoste", "Diesel", "DKNY", "Moschino",
+        "Burberry", "Tom Ford",
+    ]
+}
+
+
+def _perfumeria_comas_map_category(product_type, brand_upper):
+    """product_type viene como 'Perfumes &gt; Perfumes de Mujer &gt; ...' (jerarquía separada
+    por '>', primer nivel es lo único que hace falta). Perfumería aparte de Belleza (pedido
+    explícito: 'perfumeria aparte pero también tienda' -- categoría Y filtro de tienda a la
+    vez, no una cosa u otra, ver store/store_label más abajo)."""
+    top = html.unescape(product_type or "").split(">")[0].strip().lower()
+    if top.startswith("perfum"):
+        return "Perfumería", brand_upper in PERFUMERIA_COMAS_PERFUME_BRAND_ALLOWLIST
+    if top == "parafarmacia":
+        return "Salud", True
+    return "Belleza", True  # maquillaje, cosmética, cabello, estuches, cualquier otro
+
+
+def fetch_perfumeria_comas_offers(log, local_test_file=None):
+    try:
+        if local_test_file:
+            with gzip.open(local_test_file, "rt", encoding="utf-8-sig", errors="replace") as f:
+                text = f.read()
+        else:
+            text = _download_feed_csv(PERFUMERIA_COMAS_FEED_URL, log)
+            if text.startswith("﻿"):
+                text = text[1:]
+    except Exception as e:
+        log(f"[perfumeria_comas] error descargando feed: {e}")
+        return {}
+
+    reader = csv.DictReader(io.StringIO(text))
+    candidates = []
+    for row in reader:
+        price_raw = (row.get("price") or "").split()[:1]
+        sale_raw = (row.get("sale_price") or "").split()[:1]
+        if not price_raw or not sale_raw:
+            continue
+        try:
+            original = float(price_raw[0])
+            actual = float(sale_raw[0])
+        except ValueError:
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        brand_upper = html.unescape(row.get("brand") or "").strip().upper()
+        category, keep = _perfumeria_comas_map_category(row.get("product_type"), brand_upper)
+        if not keep:
+            continue
+
+        # El campo "title" del feed es solo el nombre de la fragancia/producto, sin marca
+        # ("Girl", "One", "Boss In Motion 100 ml") -- ilegible suelto en una tarjeta, se le
+        # antepone la marca (ya en mayúsculas por brand_upper; .title() la deja legible, p.ej.
+        # "HUGO BOSS" -> "Hugo Boss", "DOLCE & GABBANA" -> "Dolce & Gabbana").
+        raw_title = html.unescape((row.get("title") or "").strip())
+        brand_display = brand_upper.title()
+        title = f"{brand_display} {raw_title}".strip() if brand_display else raw_title
+        pid = (row.get("id") or "").strip()
+        image = (row.get("image_link") or "").strip()
+        aff_url = (row.get("aw_deep_link") or row.get("link") or "").strip()
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"pc_{pid}",
+            "title": title[:180],
+            "category": category,
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "perfumeriacomas",
+            "store_label": "Perfumería Comas",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates[:PERFUMERIA_COMAS_MAX_PER_CYCLE]
+    log(f"[perfumeria_comas] {len(candidates)} candidatos 30-80% (tras filtro de marca en "
+        f"Perfumes), {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
 def fetch_multitienda_offers(log, local_test_files=None):
-    """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path})
-    solo para pruebas locales sin red — en producción se omite y se descarga de Awin de verdad."""
+    """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path,
+    'perfumeriacomas': path}) solo para pruebas locales sin red — en producción se omite y se
+    descarga de Awin de verdad."""
     local_test_files = local_test_files or {}
     result = {}
     result.update(fetch_leroy_merlin_offers(log, local_test_files.get("leroymerlin")))
     result.update(fetch_stylevana_offers(log, local_test_files.get("stylevana")))
+    result.update(fetch_perfumeria_comas_offers(log, local_test_files.get("perfumeriacomas")))
     return result
 
 
