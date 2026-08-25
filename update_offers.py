@@ -111,9 +111,15 @@ MAX_DISCOUNT_PERCENT = 80
 KEYWORDS_PER_CATEGORY_RANGE = (1, 2)  # nº de keywords por categoría, aleatorio cada ejecución
                                        # (Pi 3B con 1GB RAM: mejor pocas por ejecución y que la
                                        # fusión por ASIN vaya cubriendo el resto en el tiempo)
-CAMPAIGN_KEYWORDS_RANGE = (3, 4)      # keywords para la categoría en "boost" durante una campaña
-                                       # activa (ver _active_campaign_category) — más que el resto
-                                       # pero sin llegar a barrer la categoría entera
+CAMPAIGN_KEYWORDS_MAX = 12             # keywords para la categoría en "boost" durante una campaña
+                                        # activa (ver _active_campaign_category) -- barre hasta
+                                        # esta cantidad de golpe (antes 3-4 al azar, "un ciclo
+                                        # especial" pedido por el usuario para Vuelta al Cole:
+                                        # con esto, una categoría de campaña con <=12 keywords
+                                        # -- su caso -- se cubre ENTERA en el primer ciclo que
+                                        # toque en vez de necesitar varios ciclos al azar; para
+                                        # una categoría de campaña más grande, sigue acotado a
+                                        # 12 por ciclo, no la barre entera de golpe)
 MAX_PRODUCTS_PER_KEYWORD = 8
 MIN_TOTAL_OFFERS = 15           # si el catálogo final (tras fusionar) tiene menos, aborta
 PAGE_LOAD_TIMEOUT = 75           # medido en la propia Pi 3B: una búsqueda tarda ~50s de media
@@ -293,7 +299,9 @@ KEYWORDS_BY_CATEGORY = {
     # de vuelta al cole... y creariamos esa categoria") -- categoria ESTACIONAL, activada vía
     # campaign.json (categoryTarget, ver _active_campaign_category) en vez de vivir en
     # CATEGORY_GROUPS/PRIORITY_CATEGORIES: mientras la campaña esté activa se refuerza en TODOS
-    # los ciclos (3-4 keywords, ver CAMPAIGN_KEYWORDS_RANGE); al desactivarla, deja de buscarse
+    # los ciclos, hasta 12 keywords de golpe (ver CAMPAIGN_KEYWORDS_MAX) -- con las 12 de aquí,
+    # se cubren TODAS en el primer ciclo que le toque, no hace falta esperar varios ciclos al
+    # azar ("un ciclo especial" pedido por el usuario). Al desactivar la campaña, deja de buscarse
     # y las ofertas ya encontradas se retiran solas por antigüedad (STALE_AFTER_DAYS), sin
     # dejar una categoría "fantasma" el resto del año. Enfocada en mochilas/material escolar
     # (evita solaparse demasiado con 'Oficina', que ya cubre BIC/Stabilo/Pilot/Faber-Castell
@@ -956,8 +964,10 @@ def main():
         categories = list(run_categories.items())
         random.shuffle(categories)
         for category, keywords in categories:
-            kw_range = CAMPAIGN_KEYWORDS_RANGE if category == boost_category else KEYWORDS_PER_CATEGORY_RANGE
-            n = random.randint(*kw_range)
+            if category == boost_category:
+                n = CAMPAIGN_KEYWORDS_MAX
+            else:
+                n = random.randint(*KEYWORDS_PER_CATEGORY_RANGE)
             sample = random.sample(keywords, min(n, len(keywords)))
             for kw in sample:
                 log(f"Buscando '{kw}' ({category})...")
