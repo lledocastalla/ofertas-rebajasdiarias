@@ -1030,21 +1030,25 @@ def _fetch_pending_submissions(log):
 
 # Kindle Unlimited (26 ago 2026, pedido explícito: "si tienes el unlimited sí te sale gratis,
 # o marcar eso... que ponga eso en la descripción"). Caso real distinto de un descuento: el
-# selector de formato "Versión Kindle" de la ficha muestra "0,00€" + la palabra
-# "kindleunlimited" cuando el libro está incluido en la suscripción -- NUNCA un precio tachado
-# real para el comprador normal (ver #corePrice_feature_div, que sigue mostrando el precio de
-# venta de siempre). Por eso nunca se trata como un descuento fabricado: se marca con su propio
-# campo honesto (kindle_unlimited=True) para que la web/app lo etiqueten como "Gratis con
-# Kindle Unlimited" en vez de "Gratis" a secas -- comprobado en vivo en amazon.es (26 ago)
-# contra un caso real antes de escribir esto.
+# selector de formato "Versión Kindle" de la ficha muestra "0,00€" + un icono con clase
+# "a-icon-kindle-unlimited" (aria-label "Con Kindle Unlimited") cuando el libro está incluido
+# en la suscripción -- NUNCA un precio tachado real para el comprador normal (ver
+# #corePrice_feature_div, que sigue mostrando el precio de venta de siempre). Por eso nunca se
+# trata como un descuento fabricado: se marca con su propio campo honesto
+# (kindle_unlimited=True) para que la web/app lo etiqueten como "Gratis con Kindle Unlimited"
+# en vez de "Gratis" a secas. HTML real inspeccionado en la Pi (26 ago) antes de escribir
+# esto -- el icono es un <i> aparte, NO texto dentro de .slot-price (intento anterior fallaba
+# por buscar la palabra "kindleunlimited" como texto, que no existe en ningún sitio del DOM).
 _EXTRACT_KINDLE_SWATCH_JS = """
 var swatch = document.querySelector('#tmm-grid-swatch-KINDLE');
 if (!swatch) return null;
-var slot = swatch.querySelector('.slot-price');
+var priceEl = swatch.querySelector('.slot-price');
+var kuIcon = swatch.querySelector('.a-icon-kindle-unlimited, [aria-label*="Kindle Unlimited"]');
 var link = swatch.querySelector('a[href*="/dp/"]');
 var m = link ? link.getAttribute('href').match(/\\/dp\\/([A-Za-z0-9]{10})/) : null;
 return {
-  text: slot ? slot.textContent.replace(/\\s+/g, ' ').trim() : null,
+  priceText: priceEl ? priceEl.textContent.replace(/\\s+/g, ' ').trim() : null,
+  isKindleUnlimited: !!kuIcon,
   kindleAsin: m ? m[1] : null
 };
 """
@@ -1052,16 +1056,15 @@ return {
 
 def _check_kindle_unlimited_free(driver):
     """Si la ficha ya cargada en `driver` es un libro incluido gratis con Kindle Unlimited
-    (0,00€ + "kindleunlimited" en el selector de formato), devuelve el ASIN de la EDICIÓN
-    KINDLE concreta (puede ser distinto del ASIN de la URL sugerida, p.ej. si se sugirió la
-    tapa blanda -- el enlace de afiliado final debe llevar a la edición que de verdad es
-    gratis, no a la de tapa dura/blanda de pago). None si no aplica. Nunca lanza."""
+    (0,00€ + icono de Kindle Unlimited en el selector de formato), devuelve el ASIN de la
+    EDICIÓN KINDLE concreta (puede ser distinto del ASIN de la URL sugerida, p.ej. si se
+    sugirió la tapa blanda -- el enlace de afiliado final debe llevar a la edición que de
+    verdad es gratis, no a la de tapa dura/blanda de pago). None si no aplica. Nunca lanza."""
     try:
         data = driver.execute_script(_EXTRACT_KINDLE_SWATCH_JS)
-        if not data or not data.get("text"):
+        if not data or not data.get("priceText"):
             return None
-        normalized = data["text"].lower().replace(" ", "")
-        if "kindleunlimited" in normalized and "0,00" in data["text"]:
+        if data.get("isKindleUnlimited") and "0,00" in data["priceText"]:
             return data.get("kindleAsin")
         return None
     except Exception:
