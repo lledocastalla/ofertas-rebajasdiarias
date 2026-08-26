@@ -35,7 +35,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import WebDriverException, TimeoutException
 
-from multitienda_feeds import fetch_multitienda_offers, generate_extended_catalog
+from multitienda_feeds import fetch_multitienda_offers
 
 # --- Configuración ---
 HOME = os.path.expanduser("~")
@@ -1688,37 +1688,16 @@ def main():
     with open(OFFERS_PATH, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    # Catálogo ampliado (26 ago 2026): throttled a EXTENDED_CATALOG_MIN_HOURS, aislado con su
-    # propio try/except -- un fallo aquí no debe tocar offers.json ni el resto del ciclo.
-    extended_written = False
-    if _should_regenerate_extended_catalog():
-        try:
-            log("Generando catálogo ampliado (Leroy Merlin + Perfumería Comas, para el "
-                "buscador)...")
-            extended = generate_extended_catalog(log)
-            if len(extended) >= EXTENDED_CATALOG_MIN_ITEMS:
-                extended_output = {
-                    "updated_at": now_iso,
-                    "affiliate_tag": AFFILIATE_TAG,
-                    "offers": list(extended.values()),
-                }
-                with open(EXTENDED_CATALOG_PATH, "w", encoding="utf-8") as f:
-                    json.dump(extended_output, f, ensure_ascii=False, indent=2)
-                extended_written = True
-                _mark_extended_catalog_generated(now_iso)
-                log(f"Catálogo ampliado generado: {len(extended)} productos.")
-            else:
-                log(f"Catálogo ampliado descartado esta vez: solo {len(extended)} productos "
-                    f"(por debajo del mínimo de seguridad de {EXTENDED_CATALOG_MIN_ITEMS}).")
-        except Exception as e:
-            log(f"aviso: fallo generando el catálogo ampliado, se omite esta vez (no afecta a "
-                f"offers.json): {e!r}")
-
+    # Catálogo ampliado: YA NO se genera aquí (26 ago 2026, bug real: descargar los 7 feeds
+    # completos de Leroy Merlin dejaba la Pi sin memoria y el proceso entero moría por SIGKILL
+    # del kernel -- un try/except normal NO protege contra esto, el OOM killer no da opción a
+    # capturar nada, así que se perdía TAMBIÉN el commit/push de offers.json que venía después
+    # en el mismo proceso). Movido a generate_extended_catalog_cron.py, proceso aparte con su
+    # propio cron (ver crontab en la Pi / RASPI_REBAJASDIARIAS.md) -- si ese proceso muere, este
+    # ciclo normal ni se entera.
     git_paths = ["offers.json"]
     if watched_written:
         git_paths.append("watched_prices.json")
-    if extended_written:
-        git_paths.append("catalog_extended.json")
     if os.path.isfile(SUBMISSION_OFFERS_PATH):
         git_paths.append("submission_offers.json")
     subprocess.run(["git", "-C", REPO_DIR, "add"] + git_paths, check=True)
@@ -1730,7 +1709,6 @@ def main():
             f"Actualiza ofertas ({len(new_or_updated)} nuevas/actualizadas, "
             f"{len(merged)} totales)"
             + (", favoritos vigilados" if watched_written else "")
-            + (", catálogo ampliado" if extended_written else "")
             + f" — {output['updated_at']}"
         )
         subprocess.run(["git", "-C", REPO_DIR, "commit", "-m", commit_msg], check=True)

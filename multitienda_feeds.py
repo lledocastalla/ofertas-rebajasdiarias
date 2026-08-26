@@ -15,6 +15,7 @@ veces viene en inglés sin traducir en el feed de origen).
 
 import csv
 import gzip
+import heapq
 import html
 import io
 import json
@@ -131,8 +132,18 @@ def _fetch_leroy_merlin_feed(feed, log, local_test_file=None, cap=LEROY_MERLIN_M
         log(f"[leroy_merlin] error descargando feed '{feed['name']}': {e}")
         return {}
 
+    # Top-N acotado con un min-heap en vez de "meterlo todo en una lista y luego ordenar y
+    # recortar" (26 ago 2026, bug real: la Pi se quedaba sin memoria y el proceso entero moría
+    # a mitad de generar el catálogo ampliado -- algunos feeds tienen 150-180k candidatos
+    # cualificando, mantenerlos todos en memoria a la vez para acabar quedándose solo con 3000
+    # es un desperdicio real en una Pi con ~900MB de RAM). Con cap puesto, la memoria queda
+    # acotada a ~cap candidatos en todo momento, no al total de cualificantes del feed. El
+    # contador `n` como segundo elemento de la tupla evita que heapq intente comparar
+    # diccionarios cuando dos candidatos empatan en descuento (no son comparables entre sí).
     reader = csv.DictReader(io.StringIO(text))
-    candidates = []
+    heap = []  # [(discount_percent, n, candidate), ...] -- min-heap por discount_percent
+    n = 0
+    total_qualifying = 0
     for row in reader:
         # in_stock puede no venir informado en este feed (visto vacío en la muestra real del
         # 24 ago) — solo se descarta si viene explícitamente a "0", nunca por ausencia del dato.
@@ -160,8 +171,9 @@ def _fetch_leroy_merlin_feed(feed, log, local_test_file=None, cap=LEROY_MERLIN_M
         if not title or not pid or not aff_url:
             continue
 
+        total_qualifying += 1
         category = _leroy_merlin_map_category(feed["category"], row.get("merchant_category"))
-        candidates.append({
+        candidate = {
             "id": f"lm_{pid}",
             "title": title[:180],
             "category": category,
@@ -173,12 +185,16 @@ def _fetch_leroy_merlin_feed(feed, log, local_test_file=None, cap=LEROY_MERLIN_M
             "url": aff_url,
             "store": "leroymerlin",
             "store_label": "Leroy Merlin",
-        })
+        }
+        n += 1
+        if cap is None or len(heap) < cap:
+            heapq.heappush(heap, (candidate["discount_percent"], n, candidate))
+        elif candidate["discount_percent"] > heap[0][0]:
+            heapq.heapreplace(heap, (candidate["discount_percent"], n, candidate))
 
-    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
-    top = candidates if cap is None else candidates[:cap]
+    top = [c for _, _, c in sorted(heap, key=lambda t: t[0], reverse=True)]
     log(f"[leroy_merlin] feed '{feed['name']}' (fid {feed['fid']}) -> "
-        f"{len(candidates)} candidatos 30-80%, {len(top)} publicados esta vez")
+        f"{total_qualifying} candidatos 30-80%, {len(top)} publicados esta vez")
     return {o["id"]: o for o in top}
 
 
