@@ -216,6 +216,36 @@ MAX_WATCHED_DIRECT_VISITS_PER_RUN = 15  # límite de visitas directas por ejecuc
                                          # las búsquedas normales) — cinturón de seguridad por
                                          # si algún día hay muchos favoritos vigilados a la vez
 
+# "Sugerir una oferta" (26 ago 2026, pedido explícito del usuario: "los usuarios puedan subir
+# ofertas y que si realmente es una oferta el enlace se haga de afiliado mio automatico y sino
+# que no se publique" — necesita un admin, "eso lleva un admin"). Cualquier usuario logueado
+# escribe una URL en Firestore (colección submissions, ver firestore.rules en
+# rebajasdiarias-web); aquí, cada ciclo, se visita cada URL pendiente con el mismo Selenium ya
+# abierto para el scraping normal, se comprueba el descuento real (mismo umbral que el resto
+# del catálogo) y si cualifica se publica con el enlace de afiliado real — igual que cualquier
+# otra oferta, mezclada en el mismo new_or_updated. Si no cualifica, NUNCA se publica; se deja
+# constancia del motivo en Firestore para que el usuario que la sugirió sepa por qué.
+SUBMISSIONS_MAX_PER_CYCLE = 10  # cada una es una visita real a Amazon con Selenium -- tope
+                                 # para no alargar demasiado un ciclo normal en una Pi 3B
+SUBMISSION_CATEGORY = "Sugerencias"  # categoría propia para todo lo aprobado por este camino
+                                     # (aparece sola en la web/app en cuanto haya alguna real,
+                                     # el sistema de categorías ya es dinámico -- nada más que
+                                     # tocar ahí)
+SUBMISSION_ALLOWED_HOSTS = {"amazon.es", "www.amazon.es"}  # solo Amazon en esta primera
+                                                            # versión -- Leroy Merlin/Perfumería
+                                                            # Comas se podrían añadir más
+                                                            # adelante comprobando contra sus
+                                                            # feeds de Awin en vez de scraping
+
+# Rastro local de qué oferta viva viene de qué sugerencia aprobada -- {offer_id: doc_id} en
+# submission_offers.json (mismo repo, mismo patrón que watched_prices.json). Necesario para
+# "que ellos las puedan eliminar" (26 ago 2026): el usuario borra su propia sugerencia desde la
+# web/app en cualquier momento (firestore.rules ya lo permite), pero borrar el documento de
+# Firestore no toca offers.json solo -- este archivo es lo que le permite a la Pi, en el
+# siguiente ciclo, notar que el documento ya no existe y retirar esa oferta del catálogo
+# también (ver _reconcile_deleted_submissions()).
+SUBMISSION_OFFERS_PATH = f"{REPO_DIR}/submission_offers.json"
+
 # Mismas categorías y keywords que lib/categorias.json del proyecto Flutter.
 # IMPORTANTE: si cambian ahí, cambiar también aquí (los nombres de categoría deben ser
 # EXACTOS o la app no filtra bien). 'Todas las Ofertas' no se busca aparte, es un
@@ -914,6 +944,198 @@ def scrape_product_page(driver, asin):
     }
 
 
+def _fetch_pending_submissions(log):
+    """Sugerencias de usuarios pendientes de revisar (colección submissions, ver
+    firestore.rules en rebajasdiarias-web) -- mismo patrón de credenciales que
+    _fetch_watched_asins()/notify_app_push() de abajo, MISMO archivo de credenciales
+    (FIREBASE_CREDENTIALS_PATH). Nunca lanza: si Firestore no responde, se devuelve [] y este
+    ciclo simplemente no revisa sugerencias, no aborta nada."""
+    if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        return []
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, firestore
+        from google.cloud.firestore_v1.base_query import FieldFilter
+
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+        db = firestore.client()
+
+        query = (
+            db.collection("submissions")
+            .where(filter=FieldFilter("status", "==", "pending"))
+            .limit(SUBMISSIONS_MAX_PER_CYCLE)
+        )
+        return [(doc.id, doc.to_dict() or {}) for doc in query.stream()]
+    except Exception as e:
+        log(f"  aviso: no se pudo consultar Firestore de sugerencias: {e}")
+        return []
+
+
+def _resolve_submission(driver, url):
+    """Comprueba si una URL sugerida por un usuario es una oferta real publicable. Reutiliza la
+    misma extracción que scrape_product_page() (favoritos vigilados), pero a diferencia de esa
+    SÍ exige el mismo umbral de descuento que el resto del catálogo (30-80%) -- aquí el objetivo
+    es publicar solo ofertas reales, no vigilar un precio tenga o no descuento. Nunca lanza:
+    devuelve (oferta, None) si cualifica, o (None, motivo) si se rechaza -- el motivo se guarda
+    en Firestore para que quien la sugirió sepa por qué."""
+    try:
+        parsed = urllib.parse.urlparse((url or "").strip())
+    except Exception:
+        return None, "la URL no es válida"
+    host = (parsed.hostname or "").lower()
+    if host not in SUBMISSION_ALLOWED_HOSTS:
+        return None, "de momento solo se admiten enlaces de productos de amazon.es"
+
+    m = re.search(r"/(?:dp|gp/product)/([A-Za-z0-9]{10})", parsed.path)
+    if not m:
+        m = re.search(r"[?&]asin=([A-Za-z0-9]{10})", url, re.IGNORECASE)
+    if not m:
+        return None, ("no se ha podido identificar el producto en la URL -- usa el enlace "
+                       "directo del producto (amazon.es/dp/XXXXXXXXXX)")
+    asin = m.group(1).upper()
+
+    result = scrape_product_page(driver, asin)
+    if result is None:
+        return None, ("no se ha podido comprobar el precio ahora mismo (producto no "
+                       "disponible, o página con un formato inesperado)")
+
+    price = result["price"]
+    original_price = result["original_price"]
+    if original_price <= price:
+        return None, "no tiene ningún descuento real ahora mismo"
+    discount = round((original_price - price) / original_price * 100)
+    if discount < MIN_DISCOUNT_PERCENT:
+        return None, (f"el descuento real es de solo un {discount}% (hace falta al menos "
+                       f"{MIN_DISCOUNT_PERCENT}%)")
+    if price > 0 and discount > MAX_DISCOUNT_PERCENT:
+        return None, "el descuento calculado no parece creíble (precio de referencia inflado)"
+
+    offer = dict(result)
+    offer["category"] = SUBMISSION_CATEGORY
+    offer["discount_percent"] = int(discount)
+    return offer, None
+
+
+def _load_submission_offers():
+    try:
+        with open(SUBMISSION_OFFERS_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_submission_offers(mapping):
+    try:
+        with open(SUBMISSION_OFFERS_PATH, "w", encoding="utf-8") as f:
+            json.dump(mapping, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass  # no crítico -- en el peor caso, se reintenta la próxima vez que haya cambios
+
+
+def _process_submissions(driver, log):
+    """Revisa las sugerencias de usuarios pendientes este ciclo y actualiza su estado en
+    Firestore (approved/rejected + motivo). Devuelve un dict {id: oferta} con las aprobadas,
+    listo para mezclarse en new_or_updated como cualquier otra fuente. Se llama DENTRO del
+    mismo try/except que ya protege el resto del scraping de Amazon en main() -- un fallo aquí
+    no debe impedir que el ciclo normal termine bien."""
+    pending = _fetch_pending_submissions(log)
+    if not pending:
+        return {}
+    log(f"{len(pending)} sugerencia(s) de usuarios pendientes de revisar...")
+
+    from firebase_admin import firestore
+    db = firestore.client()
+    submission_offers = _load_submission_offers()
+
+    approved = {}
+    changed = False
+    for doc_id, data in pending:
+        url = (data.get("url") or "").strip()
+        offer, reason = _resolve_submission(driver, url)
+        try:
+            if offer:
+                # Campos denormalizados (título/precio/imagen) además de status/offerId: para
+                # que "mis sugerencias" en el perfil de web/app pueda pintar una tarjeta con
+                # información real sin tener que ir a buscarla aparte en offers.json (26 ago
+                # 2026, pedido explícito: "que se vea en el perfil de cada uno las ofertas
+                # subidas").
+                db.collection("submissions").document(doc_id).update({
+                    "status": "approved",
+                    "offerId": offer["id"],
+                    "title": offer["title"],
+                    "price": offer["price"],
+                    "originalPrice": offer["original_price"],
+                    "discountPercent": offer["discount_percent"],
+                    "image": offer["image"],
+                    "reviewedAt": firestore.SERVER_TIMESTAMP,
+                })
+                log(f"  sugerencia aprobada: {offer['title'][:60]!r} ({offer['discount_percent']}%)")
+                approved[offer["id"]] = offer
+                submission_offers[offer["id"]] = doc_id
+                changed = True
+            else:
+                db.collection("submissions").document(doc_id).update({
+                    "status": "rejected",
+                    "reason": reason,
+                    "reviewedAt": firestore.SERVER_TIMESTAMP,
+                })
+                log(f"  sugerencia rechazada ({url}): {reason}")
+        except Exception as e:
+            log(f"  aviso: no se pudo actualizar el estado de la sugerencia {doc_id}: {e}")
+        time.sleep(random.uniform(*INTER_SEARCH_DELAY_RANGE))  # mismo respeto de ritmo que el resto
+
+    if changed:
+        _save_submission_offers(submission_offers)
+    return approved
+
+
+def _reconcile_deleted_submissions(log):
+    """'Que ellos las puedan eliminar' (26 ago 2026): el usuario puede borrar su propia
+    sugerencia desde la web/app en cualquier momento (firestore.rules ya lo permite
+    directamente, sin pasar por la Pi). Si esa sugerencia ya estaba aprobada y viva en el
+    catálogo, el borrado del documento de Firestore por sí solo no la retira de offers.json --
+    aquí es donde se nota: para cada oferta que sepamos que viene de una sugerencia
+    (submission_offers.json), se comprueba si su documento sigue existiendo en Firestore; si ya
+    no existe, se devuelve su id para que main() la retire del catálogo en este mismo ciclo.
+    Nunca lanza -- si Firestore no responde, no se retira nada esta vez (más seguro que
+    arriesgarse a borrar de más por un fallo de red)."""
+    submission_offers = _load_submission_offers()
+    if not submission_offers:
+        return set()
+    if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        return set()
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, firestore
+
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+        db = firestore.client()
+
+        to_remove = set()
+        remaining = dict(submission_offers)
+        for offer_id, doc_id in submission_offers.items():
+            try:
+                if not db.collection("submissions").document(doc_id).get().exists:
+                    to_remove.add(offer_id)
+                    remaining.pop(offer_id, None)
+            except Exception as e:
+                log(f"  aviso: no se pudo comprobar la sugerencia {doc_id} de la oferta "
+                    f"{offer_id}: {e}")
+
+        if to_remove:
+            log(f"{len(to_remove)} oferta(s) sugerida(s) retirada(s) por su propio autor: "
+                f"{', '.join(sorted(to_remove))}")
+            _save_submission_offers(remaining)
+        return to_remove
+    except Exception as e:
+        log(f"  aviso: no se pudo comprobar sugerencias borradas: {e}")
+        return set()
+
+
 def diversify_order(offers):
     """Reordena el catálogo (nunca elimina nada) para que ninguna categoría
     lo domine visualmente en Flash/Ofertas del día — bug real reportado por
@@ -1066,6 +1288,16 @@ def main():
                     time.sleep(random.uniform(*INTER_SEARCH_DELAY_RANGE))
             elif watched_asins is not None:
                 log("  ningún favorito vigilado activo ahora mismo")
+
+        # "Sugerir una oferta" (26 ago 2026): aislado en su propio try/except -- un fallo aquí
+        # (Firestore caído, sugerencia con formato raro...) nunca debe impedir que el resto del
+        # ciclo (que ya ha ido bien si se ha llegado hasta aquí) termine y publique con
+        # normalidad.
+        try:
+            submission_offers = _process_submissions(driver, log)
+            new_or_updated.update(submission_offers)
+        except Exception as e:
+            log(f"aviso: fallo revisando sugerencias de usuarios, se omite esta vez: {e}")
     except Exception as e:
         log(f"ERROR fatal durante el scraping: {e}. Aborto sin tocar offers.json.")
         sys.exit(1)
@@ -1105,6 +1337,18 @@ def main():
         new_offer["first_seen"] = prior["first_seen"] if prior else now_iso
         new_offer["last_seen"] = now_iso
         merged[asin] = new_offer
+
+    # "Que ellos las puedan eliminar" (26 ago 2026): retira del catálogo las ofertas cuyo autor
+    # ha borrado su propia sugerencia desde entonces (ver _reconcile_deleted_submissions()). Se
+    # hace aquí, ya con `merged` construido, para que gane siempre sobre cualquier otra fuente
+    # que la hubiera vuelto a traer este mismo ciclo (aunque no debería pasar -- Amazon ya no la
+    # sugiere ninguna búsqueda por keyword porque no tiene keyword asociada).
+    try:
+        removed_by_author = _reconcile_deleted_submissions(log)
+        for offer_id in removed_by_author:
+            merged.pop(offer_id, None)
+    except Exception as e:
+        log(f"aviso: fallo comprobando sugerencias borradas por su autor, se omite esta vez: {e}")
 
     # Favoritos vigilados: si se ha podido preguntar a Firestore esta vez (watched_asins no es
     # None), se reconstruye watched_prices.json entero a partir de la lista actual — así un
@@ -1223,6 +1467,8 @@ def main():
         git_paths.append("watched_prices.json")
     if extended_written:
         git_paths.append("catalog_extended.json")
+    if os.path.isfile(SUBMISSION_OFFERS_PATH):
+        git_paths.append("submission_offers.json")
     subprocess.run(["git", "-C", REPO_DIR, "add"] + git_paths, check=True)
     diff = subprocess.run(["git", "-C", REPO_DIR, "diff", "--cached", "--quiet"])
     if diff.returncode == 0:

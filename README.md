@@ -123,3 +123,35 @@ real).
   Total real medido: ~24.700 productos, ~10.8 MB JSON / ~1.5 MB gzip.
 - Se comitea junto a `offers.json` en el mismo commit cuando toca regenerarse (no genera un
   commit aparte).
+
+## "Sugerir una oferta" — colección `submissions` de Firestore (26 ago 2026)
+
+Cualquier usuario logueado en la web/app puede sugerir la URL de un producto de Amazon.es.
+Se guarda en Firestore (proyecto `rebajasdiarias-8958a`, colección `submissions`, reglas en
+`rebajasdiarias-web/firestore.rules`) con `status: "pending"`. Este script, cada ciclo:
+
+- Lee hasta `SUBMISSIONS_MAX_PER_CYCLE` (10) sugerencias pendientes (Admin SDK, mismo
+  `firebase-service-account.json` que ya usa `watched_offers`/el push de FCM — sin infraestructura
+  nueva, sin plan de pago).
+- Visita cada URL con el mismo Selenium ya abierto para el scraping normal
+  (`_resolve_submission()`, reutiliza `scrape_product_page()` de los favoritos vigilados).
+- Solo admite `amazon.es`/`www.amazon.es` por ahora (`SUBMISSION_ALLOWED_HOSTS`) — Leroy
+  Merlin/Perfumería Comas se podrían añadir más adelante comprobando contra sus feeds de Awin
+  en vez de scraping.
+- Si el descuento real cualifica (mismo umbral 30-80% que el resto del catálogo): se publica
+  con el enlace de afiliado real, categoría **"Sugerencias"** (categoría propia, no se intenta
+  adivinar la categoría real del producto), y el documento de Firestore pasa a
+  `status: "approved"` con los datos denormalizados (`title`/`price`/`image`...) para que el
+  perfil del usuario pueda mostrar una tarjeta sin consultar `offers.json` aparte.
+- Si no cualifica (dominio no soportado, sin descuento real, error al cargar la página...):
+  **nunca se publica** — el documento pasa a `status: "rejected"` con un `reason` legible.
+- **"Que ellos las puedan eliminar"**: el propio autor puede borrar su sugerencia desde la
+  web/app en cualquier momento (lo permiten las reglas). Si ya estaba publicada,
+  `submission_offers.json` (mismo repo, mismo patrón que `watched_prices.json`) guarda
+  `{offerId: submissionDocId}`; cada ciclo, `_reconcile_deleted_submissions()` comprueba si esos
+  documentos siguen existiendo y retira del catálogo los que ya no.
+- Administradores (correo en `isAdmin()` de `firestore.rules`, hoy `rebajasdiarias21@gmail.com`
+  y `lledocastalla@gmail.com`): panel en el perfil de la web/app con TODAS las sugerencias,
+  botón de rechazo manual (nunca de aprobación manual — publicar de verdad solo lo hace la Pi
+  tras comprobar el descuento real) y accesos directos a Firebase Console/Google Analytics en
+  tiempo real.
