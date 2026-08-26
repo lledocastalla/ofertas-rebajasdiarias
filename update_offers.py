@@ -732,9 +732,23 @@ return Array.from(document.querySelectorAll(
   var titleEl = card.querySelector('h2');
   var imgEl = card.querySelector('img.s-image');
   var flashEl = card.querySelector(".s-coupon-highlight-color, [aria-label*='Flash' i]");
+  // 26 ago 2026, variante del mismo bug detectada por el usuario ("se van repitiendo las
+  // ofertas muchas veces"): en ciertas tarjetas (vistas en búsquedas por marca, ej. "gafas de
+  // sol Tommy Hilfiger") el propio <h2> SOLO contiene la marca de verdad, sin truncar nada --
+  // "h2 a secas" ya no basta porque el resto del título ni está dentro del h2. El alt del
+  // img.s-image sí trae siempre el nombre completo real del producto (Amazon lo usa para
+  // accesibilidad, más fiable que el texto visible en estas tarjetas) -- se usa cuando es más
+  // largo que el del h2, dejando el h2 como estaba para el resto de tarjetas donde ya es
+  // completo.
+  var h2Text = titleEl ? titleEl.textContent.trim() : '';
+  // El alt de los resultados patrocinados empieza con "Anuncio patrocinado: " (etiqueta de
+  // accesibilidad de Amazon, no parte del nombre del producto) -- se quita antes de usarlo,
+  // si no se cuela tal cual en el título ("Anuncio patrocinado: Adidas Hombre Run 70S 2.0").
+  var imgAlt = imgEl ? (imgEl.getAttribute('alt') || '').replace(/^Anuncio patrocinado:\s*/i, '').trim() : '';
+  var title = imgAlt.length > h2Text.length ? imgAlt : h2Text;
   return {
     asin: card.getAttribute('data-asin'),
-    title: titleEl ? titleEl.textContent : null,
+    title: title || null,
     price_text: text('span.a-price span.a-offscreen'),
     original_price_text: text('span.a-price.a-text-price span.a-offscreen'),
     image: imgEl ? imgEl.getAttribute('src') : '',

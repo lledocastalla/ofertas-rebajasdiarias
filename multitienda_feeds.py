@@ -354,53 +354,67 @@ def fetch_perfumeria_comas_offers(log, local_test_file=None):
 
     reader = csv.DictReader(io.StringIO(text))
     candidates = []
+    row_errors = 0
     for row in reader:
-        price_raw = (row.get("price") or "").split()[:1]
-        sale_raw = (row.get("sale_price") or "").split()[:1]
-        if not price_raw or not sale_raw:
-            continue
+        # Fila a fila, sin dejar que UNA fila rara (formato inesperado en un campo concreto,
+        # distinto al de la muestra usada al construir esto) tumbe el lote entero de 150 -- 26
+        # ago 2026, ver comentario de fetch_multitienda_offers() sobre el bug real que causó
+        # esto en producción.
         try:
-            original = float(price_raw[0])
-            actual = float(sale_raw[0])
-        except ValueError:
-            continue
-        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
-            continue
-        pct = (original - actual) / original * 100
-        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            price_raw = (row.get("price") or "").split()[:1]
+            sale_raw = (row.get("sale_price") or "").split()[:1]
+            if not price_raw or not sale_raw:
+                continue
+            try:
+                original = float(price_raw[0])
+                actual = float(sale_raw[0])
+            except ValueError:
+                continue
+            if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+                continue
+            pct = (original - actual) / original * 100
+            if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+                continue
+
+            brand_upper = html.unescape(row.get("brand") or "").strip().upper()
+            category, keep = _perfumeria_comas_map_category(row.get("product_type"), brand_upper)
+            if not keep:
+                continue
+
+            # El campo "title" del feed es solo el nombre de la fragancia/producto, sin marca
+            # ("Girl", "One", "Boss In Motion 100 ml") -- ilegible suelto en una tarjeta, se le
+            # antepone la marca (ya en mayúsculas por brand_upper; .title() la deja legible,
+            # p.ej. "HUGO BOSS" -> "Hugo Boss", "DOLCE & GABBANA" -> "Dolce & Gabbana").
+            raw_title = html.unescape((row.get("title") or "").strip())
+            brand_display = brand_upper.title()
+            title = f"{brand_display} {raw_title}".strip() if brand_display else raw_title
+            pid = (row.get("id") or "").strip()
+            image = (row.get("image_link") or "").strip()
+            aff_url = (row.get("aw_deep_link") or row.get("link") or "").strip()
+            if not title or not pid or not aff_url:
+                continue
+
+            candidates.append({
+                "id": f"pc_{pid}",
+                "title": title[:180],
+                "category": category,
+                "price": round(actual, 2),
+                "original_price": round(original, 2),
+                "discount_percent": int(round(pct)),
+                "is_flash": False,
+                "image": image,
+                "url": aff_url,
+                "store": "perfumeriacomas",
+                "store_label": "Perfumería Comas",
+            })
+        except Exception as e:
+            row_errors += 1
+            if row_errors <= 3:  # unas pocas de muestra, no inundar el log si se repite mucho
+                log(f"[perfumeria_comas] aviso: fila descartada por error de parseo: {e!r}")
             continue
 
-        brand_upper = html.unescape(row.get("brand") or "").strip().upper()
-        category, keep = _perfumeria_comas_map_category(row.get("product_type"), brand_upper)
-        if not keep:
-            continue
-
-        # El campo "title" del feed es solo el nombre de la fragancia/producto, sin marca
-        # ("Girl", "One", "Boss In Motion 100 ml") -- ilegible suelto en una tarjeta, se le
-        # antepone la marca (ya en mayúsculas por brand_upper; .title() la deja legible, p.ej.
-        # "HUGO BOSS" -> "Hugo Boss", "DOLCE & GABBANA" -> "Dolce & Gabbana").
-        raw_title = html.unescape((row.get("title") or "").strip())
-        brand_display = brand_upper.title()
-        title = f"{brand_display} {raw_title}".strip() if brand_display else raw_title
-        pid = (row.get("id") or "").strip()
-        image = (row.get("image_link") or "").strip()
-        aff_url = (row.get("aw_deep_link") or row.get("link") or "").strip()
-        if not title or not pid or not aff_url:
-            continue
-
-        candidates.append({
-            "id": f"pc_{pid}",
-            "title": title[:180],
-            "category": category,
-            "price": round(actual, 2),
-            "original_price": round(original, 2),
-            "discount_percent": int(round(pct)),
-            "is_flash": False,
-            "image": image,
-            "url": aff_url,
-            "store": "perfumeriacomas",
-            "store_label": "Perfumería Comas",
-        })
+    if row_errors:
+        log(f"[perfumeria_comas] {row_errors} fila(s) descartadas por error de parseo de {reader.line_num} totales")
 
     candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
     top = candidates[:PERFUMERIA_COMAS_MAX_PER_CYCLE]
@@ -412,12 +426,32 @@ def fetch_perfumeria_comas_offers(log, local_test_file=None):
 def fetch_multitienda_offers(log, local_test_files=None):
     """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path,
     'perfumeriacomas': path}) solo para pruebas locales sin red — en producción se omite y se
-    descarga de Awin de verdad."""
+    descarga de Awin de verdad.
+
+    26 ago 2026, bug real encontrado en producción: Perfumería Comas nunca llegó a publicarse
+    en ningún ciclo desde que se integró (24h+ después, 0 ofertas), pese a que la misma función
+    probada a mano en local funcionaba perfectamente. Causa raíz: fetch_perfumeria_comas_offers()
+    solo tenía try/except alrededor de la DESCARGA, no del bucle de parseo entero -- cualquier
+    excepción ahí (fila rara del feed real, distinta a la muestra usada al construirlo) subía
+    sin capturar hasta el try/except genérico de update_offers.py ("fallo en la ingesta
+    multi-tienda"), que descarta TODO el resultado de fetch_multitienda_offers() de golpe --
+    Leroy Merlin y Stylevana también se perdían ese ciclo entero, no solo Comas (se notaba
+    menos porque sus ofertas previas seguían vivas dentro de STALE_AFTER_DAYS). Cada tienda va
+    ahora en su propio try/except: un fallo en una nunca se lleva a las demás por delante,
+    mismo principio que ya protege multi-tienda frente a un fallo del scraping de Amazon."""
     local_test_files = local_test_files or {}
     result = {}
-    result.update(fetch_leroy_merlin_offers(log, local_test_files.get("leroymerlin")))
-    result.update(fetch_stylevana_offers(log, local_test_files.get("stylevana")))
-    result.update(fetch_perfumeria_comas_offers(log, local_test_files.get("perfumeriacomas")))
+    stores = [
+        ("leroy_merlin", fetch_leroy_merlin_offers, "leroymerlin"),
+        ("stylevana", fetch_stylevana_offers, "stylevana"),
+        ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
+    ]
+    for name, fetch_fn, key in stores:
+        try:
+            result.update(fetch_fn(log, local_test_files.get(key)))
+        except Exception as e:
+            log(f"[{name}] aviso: fallo inesperado, se omite esta tienda este ciclo "
+                f"(las demás no se ven afectadas): {e!r}")
     return result
 
 
