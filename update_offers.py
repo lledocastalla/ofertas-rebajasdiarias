@@ -1068,6 +1068,35 @@ def _check_kindle_unlimited_free(driver):
         return None
 
 
+def _build_kindle_unlimited_offer(driver, asin, kindle_asin):
+    """Construye la oferta de un libro Kindle Unlimited cuando scrape_product_page() no ha
+    podido sacar título/precio del buybox principal (visto en real, 26 ago 2026: pasa cuando la
+    página no trae ningún formato preseleccionado). Reutiliza la misma extracción de
+    título/imagen de _EXTRACT_PRODUCT_PAGE_JS -- la página ya está cargada, no hace falta
+    volver a navegar. Devuelve None si ni siquiera el título se puede sacar."""
+    try:
+        data = driver.execute_script(_EXTRACT_PRODUCT_PAGE_JS)
+    except Exception:
+        return None
+    title = (data.get("title") or "").strip() if data else ""
+    if not title:
+        return None
+    offer_id = f"{asin}_ku" if kindle_asin == asin else kindle_asin
+    return {
+        "id": offer_id,
+        "title": title[:180],
+        "category": SUBMISSION_CATEGORY,
+        "price": 0.0,
+        "original_price": 0.0,
+        "discount_percent": 0,
+        "is_flash": False,
+        "image": (data.get("image") or ""),
+        "url": f"https://www.amazon.es/dp/{kindle_asin}?tag={AFFILIATE_TAG}",
+        "kindle_unlimited": True,
+        "pinned": offer_id in PINNED_OFFER_IDS,
+    }
+
+
 def _resolve_submission(driver, url):
     """Comprueba si una URL sugerida por un usuario es una oferta real publicable. Reutiliza la
     misma extracción que scrape_product_page() (favoritos vigilados), pero a diferencia de esa
@@ -1093,6 +1122,18 @@ def _resolve_submission(driver, url):
 
     result = scrape_product_page(driver, asin)
     if result is None:
+        # Antes de rechazar del todo: la página SÍ se ha cargado (scrape_product_page navega
+        # primero y solo devuelve None si no consigue extraer título+precio del buybox
+        # principal después) -- se puede seguir intentando el camino de Kindle Unlimited, que
+        # lee un selector totalmente distinto (el swatch de formato, no el buybox) y puede
+        # funcionar aunque el buybox no dé nada útil (visto en real, 26 ago 2026: un libro sin
+        # ningún formato preseleccionado no rellena el buybox principal, pero el swatch de
+        # Kindle sí muestra su precio).
+        kindle_asin = _check_kindle_unlimited_free(driver)
+        if kindle_asin:
+            offer = _build_kindle_unlimited_offer(driver, asin, kindle_asin)
+            if offer:
+                return offer, None
         return None, ("no se ha podido comprobar el precio ahora mismo (producto no "
                        "disponible, o página con un formato inesperado)")
 
@@ -1105,9 +1146,6 @@ def _resolve_submission(driver, url):
         kindle_asin = _check_kindle_unlimited_free(driver)
         if kindle_asin:
             offer = dict(result)
-            # El ASIN sugerido puede ser de otro formato (tapa blanda/dura) -- el enlace final
-            # tiene que llevar a la edición Kindle concreta que es gratis con la suscripción,
-            # no a la de pago.
             offer["id"] = f"{asin}_ku" if kindle_asin == asin else kindle_asin
             offer["url"] = f"https://www.amazon.es/dp/{kindle_asin}?tag={AFFILIATE_TAG}"
             offer["price"] = 0.0
