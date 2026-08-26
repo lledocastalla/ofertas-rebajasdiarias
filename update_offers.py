@@ -34,7 +34,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import WebDriverException, TimeoutException
 
-from multitienda_feeds import fetch_multitienda_offers
+from multitienda_feeds import fetch_multitienda_offers, generate_extended_catalog
 
 # --- Configuración ---
 HOME = os.path.expanduser("~")
@@ -44,6 +44,36 @@ OFFERS_PATH = f"{REPO_DIR}/offers.json"
 CHROMEDRIVER_PATH = "/usr/bin/chromedriver"
 CHROMIUM_PATH = "/usr/bin/chromium"
 AFFILIATE_TAG = "rebajasdiar05-21"
+
+# Catálogo ampliado para el buscador (26 ago 2026, ver generate_extended_catalog() en
+# multitienda_feeds.py y RASPI_REBAJASDIARIAS.md §8 punto 17): archivo APARTE de offers.json,
+# no se fusiona ni se poda como el catálogo normal -- cada vez que se regenera se sustituye
+# entero (es un volcado del feed de origen filtrado por descuento, no algo que "se descubra"
+# progresivamente). Solo se regenera cada EXTENDED_CATALOG_MIN_HOURS (descargar los 7 feeds
+# completos de Leroy Merlin tarda ~2 minutos, no es para cada ciclo de 3 horas) -- throttle por
+# archivo de estado, mismo patrón que NEW_BADGE_MIN_GAP_HOURS.
+EXTENDED_CATALOG_PATH = f"{REPO_DIR}/catalog_extended.json"
+EXTENDED_CATALOG_STATE_PATH = f"{HOME}/.rebajas_catalog_extended_state.json"
+EXTENDED_CATALOG_MIN_HOURS = 20
+EXTENDED_CATALOG_MIN_ITEMS = 500  # red de seguridad: si algo raro pasa y sale casi vacío, no
+                                   # se publica (mismo espíritu que MIN_TOTAL_OFFERS de abajo)
+
+
+def _should_regenerate_extended_catalog():
+    try:
+        with open(EXTENDED_CATALOG_STATE_PATH) as f:
+            last = datetime.fromisoformat(json.load(f)["last_generated"])
+    except Exception:
+        return True
+    return (datetime.now().astimezone() - last).total_seconds() >= EXTENDED_CATALOG_MIN_HOURS * 3600
+
+
+def _mark_extended_catalog_generated(now_iso):
+    try:
+        with open(EXTENDED_CATALOG_STATE_PATH, "w") as f:
+            json.dump({"last_generated": now_iso}, f)
+    except Exception:
+        pass
 
 # Aviso por Telegram cuando se suben ofertas nuevas (bot creado 6 ago 2026, ver
 # RASPI_REBAJASDIARIAS.md). Sin librerías nuevas: urllib de la stdlib basta para un POST simple.
@@ -1162,9 +1192,37 @@ def main():
     with open(OFFERS_PATH, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
+    # Catálogo ampliado (26 ago 2026): throttled a EXTENDED_CATALOG_MIN_HOURS, aislado con su
+    # propio try/except -- un fallo aquí no debe tocar offers.json ni el resto del ciclo.
+    extended_written = False
+    if _should_regenerate_extended_catalog():
+        try:
+            log("Generando catálogo ampliado (Leroy Merlin + Perfumería Comas, para el "
+                "buscador)...")
+            extended = generate_extended_catalog(log)
+            if len(extended) >= EXTENDED_CATALOG_MIN_ITEMS:
+                extended_output = {
+                    "updated_at": now_iso,
+                    "affiliate_tag": AFFILIATE_TAG,
+                    "offers": list(extended.values()),
+                }
+                with open(EXTENDED_CATALOG_PATH, "w", encoding="utf-8") as f:
+                    json.dump(extended_output, f, ensure_ascii=False, indent=2)
+                extended_written = True
+                _mark_extended_catalog_generated(now_iso)
+                log(f"Catálogo ampliado generado: {len(extended)} productos.")
+            else:
+                log(f"Catálogo ampliado descartado esta vez: solo {len(extended)} productos "
+                    f"(por debajo del mínimo de seguridad de {EXTENDED_CATALOG_MIN_ITEMS}).")
+        except Exception as e:
+            log(f"aviso: fallo generando el catálogo ampliado, se omite esta vez (no afecta a "
+                f"offers.json): {e!r}")
+
     git_paths = ["offers.json"]
     if watched_written:
         git_paths.append("watched_prices.json")
+    if extended_written:
+        git_paths.append("catalog_extended.json")
     subprocess.run(["git", "-C", REPO_DIR, "add"] + git_paths, check=True)
     diff = subprocess.run(["git", "-C", REPO_DIR, "diff", "--cached", "--quiet"])
     if diff.returncode == 0:
@@ -1174,6 +1232,7 @@ def main():
             f"Actualiza ofertas ({len(new_or_updated)} nuevas/actualizadas, "
             f"{len(merged)} totales)"
             + (", favoritos vigilados" if watched_written else "")
+            + (", catálogo ampliado" if extended_written else "")
             + f" — {output['updated_at']}"
         )
         subprocess.run(["git", "-C", REPO_DIR, "commit", "-m", commit_msg], check=True)

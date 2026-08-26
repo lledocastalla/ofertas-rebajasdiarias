@@ -110,10 +110,12 @@ def _download_feed_csv(url, log, timeout=180):
     return gzip.decompress(raw).decode("utf-8", errors="replace")
 
 
-def _fetch_leroy_merlin_feed(feed, log, local_test_file=None):
+def _fetch_leroy_merlin_feed(feed, log, local_test_file=None, cap=LEROY_MERLIN_MAX_PER_CYCLE):
     """Descarga y filtra UN feed concreto de Leroy Merlin (por su dict de LEROY_MERLIN_FEEDS).
-    Compartido por fetch_leroy_merlin_offers() (rotación normal, 1 por ciclo) y
-    fetch_leroy_merlin_offers_all() (catch-up manual, los 7 de golpe)."""
+    Compartido por fetch_leroy_merlin_offers() (rotación normal, 1 por ciclo),
+    fetch_leroy_merlin_offers_all() (catch-up manual, los 7 de golpe) y
+    fetch_leroy_merlin_extended() (catálogo ampliado para el buscador, 26 ago 2026, cap más
+    alto). `cap=None` = sin tope, todos los candidatos que cualifiquen."""
     columns = (
         "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
         "merchant_image_url,merchant_category,search_price,saving,in_stock"
@@ -174,7 +176,7 @@ def _fetch_leroy_merlin_feed(feed, log, local_test_file=None):
         })
 
     candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
-    top = candidates[:LEROY_MERLIN_MAX_PER_CYCLE]
+    top = candidates if cap is None else candidates[:cap]
     log(f"[leroy_merlin] feed '{feed['name']}' (fid {feed['fid']}) -> "
         f"{len(candidates)} candidatos 30-80%, {len(top)} publicados esta vez")
     return {o["id"]: o for o in top}
@@ -196,6 +198,27 @@ def fetch_leroy_merlin_offers_all(log):
     result = {}
     for feed in LEROY_MERLIN_FEEDS:
         result.update(_fetch_leroy_merlin_feed(feed, log))
+    return result
+
+
+# Catálogo ampliado para el buscador (26 ago 2026, "por que no podimaos meter todo el catalogo
+# de leroy y de comas en algún sitio... que el buscador lo pueda encontrar el producto"):
+# comprobado con los 7 feeds reales sin tope -> 682.332 productos cualificando (30-80% dto.) en
+# total, inviable como archivo único (decenas de MB, mal para datos móviles y para el historial
+# de git si se reescribe cada día). Recorte pragmático: top N por descuento de CADA feed (no
+# el catálogo 100% completo, pero ~40x más que el ~50/ciclo normal, y sigue siendo "lo más
+# rebajado de verdad" de cada categoría, que es lo que de verdad importa para una búsqueda).
+EXTENDED_CATALOG_LEROY_CAP_PER_FEED = 3000
+
+
+def fetch_leroy_merlin_extended(log):
+    """Catálogo ampliado (no la rotación normal de 1 feed/ciclo): los 7 feeds de golpe, top
+    EXTENDED_CATALOG_LEROY_CAP_PER_FEED por feed. Se llama solo de vez en cuando (ver throttle
+    en update_offers.py), nunca en cada ciclo normal -- descargar los 7 feeds completos tarda
+    ~2 minutos, no es para cada pasada de 3 horas."""
+    result = {}
+    for feed in LEROY_MERLIN_FEEDS:
+        result.update(_fetch_leroy_merlin_feed(feed, log, cap=EXTENDED_CATALOG_LEROY_CAP_PER_FEED))
     return result
 
 
@@ -339,7 +362,7 @@ def _perfumeria_comas_map_category(product_type, brand_upper):
     return "Belleza", True  # maquillaje, cosmética, cabello, estuches, cualquier otro
 
 
-def fetch_perfumeria_comas_offers(log, local_test_file=None):
+def fetch_perfumeria_comas_offers(log, local_test_file=None, cap=PERFUMERIA_COMAS_MAX_PER_CYCLE):
     try:
         if local_test_file:
             with gzip.open(local_test_file, "rt", encoding="utf-8-sig", errors="replace") as f:
@@ -417,10 +440,17 @@ def fetch_perfumeria_comas_offers(log, local_test_file=None):
         log(f"[perfumeria_comas] {row_errors} fila(s) descartadas por error de parseo de {reader.line_num} totales")
 
     candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
-    top = candidates[:PERFUMERIA_COMAS_MAX_PER_CYCLE]
+    top = candidates if cap is None else candidates[:cap]
     log(f"[perfumeria_comas] {len(candidates)} candidatos 30-80% (tras filtro de marca en "
         f"Perfumes), {len(top)} publicados esta vez")
     return {o["id"]: o for o in top}
+
+
+def fetch_perfumeria_comas_extended(log):
+    """Catálogo ampliado (26 ago 2026): a diferencia de Leroy Merlin, aquí SÍ cabe el catálogo
+    entero sin recorte -- ~4.359 productos cualificando de una comprobación real, unos
+    1-1.5 MB en JSON, nada que ver con el volumen de Leroy."""
+    return fetch_perfumeria_comas_offers(log, cap=None)
 
 
 def fetch_multitienda_offers(log, local_test_files=None):
@@ -452,6 +482,26 @@ def fetch_multitienda_offers(log, local_test_files=None):
         except Exception as e:
             log(f"[{name}] aviso: fallo inesperado, se omite esta tienda este ciclo "
                 f"(las demás no se ven afectadas): {e!r}")
+    return result
+
+
+def generate_extended_catalog(log):
+    """Catálogo ampliado para el buscador de la web/app (26 ago 2026, ver
+    RASPI_REBAJASDIARIAS.md §8 punto 17): Leroy Merlin (top 3.000/feed) + Perfumería Comas
+    (catálogo entero). NO se mezcla con offers.json -- es un archivo aparte
+    (catalog_extended.json) que la web/app solo piden cuando una búsqueda no encuentra nada en
+    el catálogo curado normal. Aislado por tienda igual que fetch_multitienda_offers(): un
+    fallo en una no debe tirar la otra."""
+    result = {}
+    for name, fetch_fn in [
+        ("leroy_merlin_extended", fetch_leroy_merlin_extended),
+        ("perfumeria_comas_extended", fetch_perfumeria_comas_extended),
+    ]:
+        try:
+            result.update(fetch_fn(log))
+        except Exception as e:
+            log(f"[{name}] aviso: fallo inesperado generando el catálogo ampliado, se omite "
+                f"esta tienda esta vez: {e!r}")
     return result
 
 

@@ -101,3 +101,25 @@ Reglas:
   `id` (no se sobrescribe el array entero de golpe) — una oferta se retira sola cuando
   `last_seen` lleva más de `STALE_AFTER_DAYS` (2 días) sin actualizarse, no por edad de
   `first_seen`.
+
+## `catalog_extended.json` (buscador ampliado, 26 ago 2026)
+
+Archivo APARTE de `offers.json`, mismo repo/patrón (subido a GitHub, sin servidor nuevo). Lo
+consume la web/app SOLO cuando una búsqueda no encuentra nada en el catálogo curado normal —
+da acceso a mucho más catálogo real de Leroy Merlin y Perfumería Comas sin publicarlo todo en
+la portada. Mismo esquema exacto que `offers.json` (mismos campos, mismo enlace de afiliado
+real).
+
+- Generado por `generate_extended_catalog()` en `multitienda_feeds.py`, llamado desde
+  `update_offers.py` con throttle propio (`EXTENDED_CATALOG_MIN_HOURS = 20` — no se regenera en
+  cada ciclo de 3h, descargar los 7 feeds completos de Leroy tarda ~2 min).
+- **No se fusiona ni se poda con el tiempo** como `offers.json`: cada vez que toca regenerarse,
+  se sustituye entero (volcado fresco del feed de origen, filtrado por descuento 30-80% igual
+  que siempre).
+- Leroy Merlin: top 3.000 por descuento de cada uno de los 7 feeds (no el 100% del catálogo —
+  comprobado el 26 ago 2026 que sin tope son **682.332 productos** cualificando, inviable como
+  archivo único; el recorte sigue siendo "lo más rebajado de verdad" de cada categoría).
+  Perfumería Comas: catálogo entero, sin recorte (cabe de sobra, unos pocos miles de productos).
+  Total real medido: ~24.700 productos, ~10.8 MB JSON / ~1.5 MB gzip.
+- Se comitea junto a `offers.json` en el mismo commit cuando toca regenerarse (no genera un
+  commit aparte).
