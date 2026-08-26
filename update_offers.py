@@ -200,8 +200,26 @@ GROUP_STATE_PATH = f"{HOME}/.rebajas_group_state.json"
 # abajo, en main()). No cambia la cadencia de avisos: el push a la app y la publicación en
 # Telegram ya saltan en cada ciclo con cambios reales, sea cual sea el grupo — esto solo hace que
 # más de esos ciclos traigan ofertas nuevas de estas dos categorías.
-PRIORITY_CATEGORIES = ['Moda Hombre', 'Moda Mujer']
+PRIORITY_CATEGORIES = ['Moda Hombre', 'Moda Mujer', 'Libros']
 CAMPAIGN_PATH_CANDIDATES = ["campaign.json"]  # relativo a REPO_DIR (mismo repo que offers.json)
+
+# Libros gratis (26 ago 2026, pedido explícito del usuario: "te dije que buscar libros gratis
+# y todo eso y no tengo ninguno... sigue buscando aparte de las ofertas libros gratis").
+# KEYWORDS_BY_CATEGORY['Libros'] son nombres de editorial -- eso nunca saca libros Kindle
+# realmente gratis, es pura coincidencia si sale alguno. Comprobado en vivo en amazon.es (26
+# ago): buscar "kindle gratis" SÍ saca libros con precio real 0,00€ y un PVP tachado real
+# (p.ej. "La chica sola" — 0,00€, PVP ed. digital: 2,99€) -- exactamente lo que exige el filtro
+# de descuento de scrape_keyword() (price==0 con original_price>0 real, no fabricado). Se
+# añaden SIEMPRE (no sujetos al muestreo aleatorio de 1-2 keywords de KEYWORDS_PER_CATEGORY_RANGE,
+# ver el bucle de main()) para que esto no dependa de la suerte del sorteo cada ciclo.
+LIBROS_GRATIS_KEYWORDS = ["kindle gratis", "ebook gratis", "libro gratis kindle", "novela gratis kindle"]
+
+# "Que esté siempre el primero" (26 ago 2026, libro de un familiar sugerido por el usuario,
+# gratis con Kindle Unlimited -- ver _check_kindle_unlimited_free). Lista corta y visible a
+# propósito, no escondida en ningún sitio dentro de la lógica de sugerencias -- añadir aquí un
+# id de oferta es lo único que hace falta para fijarlo siempre primero en su sección (web:
+# renderCatalog() en js/app.js; app: _buildCategorySections() en offers_screen.dart).
+PINNED_OFFER_IDS = {"B0CTYHNVSD"}  # "Pierde el Miedo de Alquilar tu Inmueble" (edición Kindle)
 
 # Favoritos vigilados (sesión 5 ago 2026, ver RASPI_REBAJASDIARIAS.md): la app reporta a
 # Firestore, de forma anónima, qué ASINs tiene la gente en favoritos (colección
@@ -1010,6 +1028,46 @@ def _fetch_pending_submissions(log):
         return []
 
 
+# Kindle Unlimited (26 ago 2026, pedido explícito: "si tienes el unlimited sí te sale gratis,
+# o marcar eso... que ponga eso en la descripción"). Caso real distinto de un descuento: el
+# selector de formato "Versión Kindle" de la ficha muestra "0,00€" + la palabra
+# "kindleunlimited" cuando el libro está incluido en la suscripción -- NUNCA un precio tachado
+# real para el comprador normal (ver #corePrice_feature_div, que sigue mostrando el precio de
+# venta de siempre). Por eso nunca se trata como un descuento fabricado: se marca con su propio
+# campo honesto (kindle_unlimited=True) para que la web/app lo etiqueten como "Gratis con
+# Kindle Unlimited" en vez de "Gratis" a secas -- comprobado en vivo en amazon.es (26 ago)
+# contra un caso real antes de escribir esto.
+_EXTRACT_KINDLE_SWATCH_JS = """
+var swatch = document.querySelector('#tmm-grid-swatch-KINDLE');
+if (!swatch) return null;
+var slot = swatch.querySelector('.slot-price');
+var link = swatch.querySelector('a[href*="/dp/"]');
+var m = link ? link.getAttribute('href').match(/\\/dp\\/([A-Za-z0-9]{10})/) : null;
+return {
+  text: slot ? slot.textContent.replace(/\\s+/g, ' ').trim() : null,
+  kindleAsin: m ? m[1] : null
+};
+"""
+
+
+def _check_kindle_unlimited_free(driver):
+    """Si la ficha ya cargada en `driver` es un libro incluido gratis con Kindle Unlimited
+    (0,00€ + "kindleunlimited" en el selector de formato), devuelve el ASIN de la EDICIÓN
+    KINDLE concreta (puede ser distinto del ASIN de la URL sugerida, p.ej. si se sugirió la
+    tapa blanda -- el enlace de afiliado final debe llevar a la edición que de verdad es
+    gratis, no a la de tapa dura/blanda de pago). None si no aplica. Nunca lanza."""
+    try:
+        data = driver.execute_script(_EXTRACT_KINDLE_SWATCH_JS)
+        if not data or not data.get("text"):
+            return None
+        normalized = data["text"].lower().replace(" ", "")
+        if "kindleunlimited" in normalized and "0,00" in data["text"]:
+            return data.get("kindleAsin")
+        return None
+    except Exception:
+        return None
+
+
 def _resolve_submission(driver, url):
     """Comprueba si una URL sugerida por un usuario es una oferta real publicable. Reutiliza la
     misma extracción que scrape_product_page() (favoritos vigilados), pero a diferencia de esa
@@ -1041,6 +1099,24 @@ def _resolve_submission(driver, url):
     price = result["price"]
     original_price = result["original_price"]
     if original_price <= price:
+        # Antes de rechazar del todo: ¿es un libro incluido gratis con Kindle Unlimited? Caso
+        # real distinto de un descuento (ver _check_kindle_unlimited_free arriba) -- se publica
+        # igual, pero SIN fabricar ningún % de descuento, marcado con su propio campo honesto.
+        kindle_asin = _check_kindle_unlimited_free(driver)
+        if kindle_asin:
+            offer = dict(result)
+            # El ASIN sugerido puede ser de otro formato (tapa blanda/dura) -- el enlace final
+            # tiene que llevar a la edición Kindle concreta que es gratis con la suscripción,
+            # no a la de pago.
+            offer["id"] = f"{asin}_ku" if kindle_asin == asin else kindle_asin
+            offer["url"] = f"https://www.amazon.es/dp/{kindle_asin}?tag={AFFILIATE_TAG}"
+            offer["price"] = 0.0
+            offer["original_price"] = 0.0
+            offer["discount_percent"] = 0
+            offer["category"] = SUBMISSION_CATEGORY
+            offer["kindle_unlimited"] = True
+            offer["pinned"] = offer["id"] in PINNED_OFFER_IDS
+            return offer, None
         return None, "no tiene ningún descuento real ahora mismo"
     discount = round((original_price - price) / original_price * 100)
     if discount < MIN_DISCOUNT_PERCENT:
@@ -1052,6 +1128,7 @@ def _resolve_submission(driver, url):
     offer = dict(result)
     offer["category"] = SUBMISSION_CATEGORY
     offer["discount_percent"] = int(discount)
+    offer["pinned"] = offer["id"] in PINNED_OFFER_IDS
     return offer, None
 
 
@@ -1313,6 +1390,9 @@ def main():
             else:
                 n = random.randint(*KEYWORDS_PER_CATEGORY_RANGE)
             sample = random.sample(keywords, min(n, len(keywords)))
+            if category == 'Libros':
+                # Siempre, no sujeto al sorteo de arriba -- ver LIBROS_GRATIS_KEYWORDS.
+                sample = list(dict.fromkeys(sample + LIBROS_GRATIS_KEYWORDS))
             for kw in sample:
                 log(f"Buscando '{kw}' ({category})...")
                 try:
