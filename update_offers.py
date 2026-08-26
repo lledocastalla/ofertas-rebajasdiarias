@@ -16,6 +16,7 @@ Diseño (ver RASPI_REBAJASDIARIAS.md):
   tocar offers.json ni hacer commit/push. Nunca se deja la app sin ofertas por un fallo puntual.
 """
 
+import fcntl
 import json
 import os
 import random
@@ -41,6 +42,11 @@ HOME = os.path.expanduser("~")
 PROFILE_DIR = f"{HOME}/.rebajas_chrome_profile"
 REPO_DIR = f"{HOME}/ofertas-rebajasdiarias"
 OFFERS_PATH = f"{REPO_DIR}/offers.json"
+# Candado compartido con check_submissions.py (26 ago 2026, ver ese archivo): evita que los dos
+# procesos hagan git pull/commit/push sobre el mismo repo a la vez -- este script (ciclo normal
+# de 3h) espera su turno (lock bloqueante); check_submissions.py, que dispara cada pocos
+# minutos, se sale sin más si lo encuentra ocupado y lo reintenta en su próximo disparo.
+REPO_LOCK_PATH = f"{HOME}/.rebajas_update_lock"
 CHROMEDRIVER_PATH = "/usr/bin/chromedriver"
 CHROMIUM_PATH = "/usr/bin/chromium"
 AFFILIATE_TAG = "rebajasdiar05-21"
@@ -726,6 +732,37 @@ def notify_app_push(all_offers):
         log(f"aviso: no se pudo enviar el push del catálogo a la app: {e}")
 
 
+def notify_submitter_push(uid, offer):
+    """Aviso personal al autor de una sugerencia en cuanto se publica (26 ago 2026, pedido
+    explícito: "que si alguien ha publicado una oferta que salte una notificación") --
+    aparte del push genérico de notify_app_push() de arriba, que es para todo el mundo. Mismo
+    mecanismo de topics de Firebase Cloud Messaging que ya usa esa función, sin gestionar
+    tokens por dispositivo: cada usuario logueado se suscribe solo a "user_<uid>" (ver
+    PushService en la app), así que basta con mandar el mensaje a ese topic -- ni siquiera hay
+    que saber en qué dispositivo está. Nunca debe tumbar _process_submissions() si falla."""
+    if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        return
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, messaging
+
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title="¡Tu oferta ya está publicada! 🎉",
+                body=f"{offer['title'][:80]} — {offer['discount_percent']}% de descuento",
+            ),
+            topic=f"user_{uid}",
+        )
+        messaging.send(message)
+        log(f"  push personal enviado al autor de la sugerencia ({uid}).")
+    except Exception as e:
+        log(f"  aviso: no se pudo enviar el push personal al autor: {e}")
+
+
 def build_driver():
     options = Options()
     options.binary_location = CHROMIUM_PATH
@@ -1056,6 +1093,13 @@ def _process_submissions(driver, log):
         offer, reason = _resolve_submission(driver, url)
         try:
             if offer:
+                # "Que se vea el usuario que lo ha publicado" (26 ago 2026): solo el primer
+                # nombre, nunca el correo ni el nombre completo en una tarjeta pública -- el
+                # correo/nombre completo solo lo ve el propio usuario (Mis sugerencias) y el
+                # administrador (panel), nunca el resto del catálogo.
+                display_name = (data.get("submittedByName") or "").strip()
+                offer["submitted_by"] = display_name.split()[0] if display_name else None
+
                 # Campos denormalizados (título/precio/imagen) además de status/offerId: para
                 # que "mis sugerencias" en el perfil de web/app pueda pintar una tarjeta con
                 # información real sin tener que ir a buscarla aparte en offers.json (26 ago
@@ -1075,6 +1119,14 @@ def _process_submissions(driver, log):
                 approved[offer["id"]] = offer
                 submission_offers[offer["id"]] = doc_id
                 changed = True
+
+                # "Que si alguien ha publicado una oferta que salte una notificación" (26 ago
+                # 2026): aviso personal al autor, aparte del push genérico de "catálogo
+                # actualizado" -- nunca debe poder tumbar la aprobación en sí (ya hecha arriba)
+                # si falla.
+                submitted_by_uid = data.get("submittedBy")
+                if submitted_by_uid:
+                    notify_submitter_push(submitted_by_uid, offer)
             else:
                 db.collection("submissions").document(doc_id).update({
                     "status": "rejected",
@@ -1192,6 +1244,14 @@ def main():
         log(f"ERROR: no existe {REPO_DIR}, aborto")
         sys.exit(1)
 
+    # Candado compartido con check_submissions.py (26 ago 2026, ver REPO_LOCK_PATH): este ciclo
+    # puede tardar varios minutos tocando git, así que espera su turno (bloqueante) en vez de
+    # arriesgarse a pisar un commit/push a medias de check_submissions.py, que dispara cada
+    # pocos minutos. No hace falta soltarlo a mano -- el propio proceso lo libera solo al
+    # terminar (aquí main() se llama una única vez por ejecución del script).
+    _repo_lock_file = open(REPO_LOCK_PATH, "w")
+    fcntl.flock(_repo_lock_file, fcntl.LOCK_EX)
+
     subprocess.run(["git", "-C", REPO_DIR, "pull", "--quiet"], check=False)
 
     try:
@@ -1288,16 +1348,6 @@ def main():
                     time.sleep(random.uniform(*INTER_SEARCH_DELAY_RANGE))
             elif watched_asins is not None:
                 log("  ningún favorito vigilado activo ahora mismo")
-
-        # "Sugerir una oferta" (26 ago 2026): aislado en su propio try/except -- un fallo aquí
-        # (Firestore caído, sugerencia con formato raro...) nunca debe impedir que el resto del
-        # ciclo (que ya ha ido bien si se ha llegado hasta aquí) termine y publique con
-        # normalidad.
-        try:
-            submission_offers = _process_submissions(driver, log)
-            new_or_updated.update(submission_offers)
-        except Exception as e:
-            log(f"aviso: fallo revisando sugerencias de usuarios, se omite esta vez: {e}")
     except Exception as e:
         log(f"ERROR fatal durante el scraping: {e}. Aborto sin tocar offers.json.")
         sys.exit(1)
