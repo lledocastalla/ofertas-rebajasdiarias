@@ -200,8 +200,19 @@ GROUP_STATE_PATH = f"{HOME}/.rebajas_group_state.json"
 # abajo, en main()). No cambia la cadencia de avisos: el push a la app y la publicación en
 # Telegram ya saltan en cada ciclo con cambios reales, sea cual sea el grupo — esto solo hace que
 # más de esos ciclos traigan ofertas nuevas de estas dos categorías.
-PRIORITY_CATEGORIES = ['Moda Hombre', 'Moda Mujer']
+PRIORITY_CATEGORIES = ['Moda Hombre', 'Moda Mujer', 'Libros']
 CAMPAIGN_PATH_CANDIDATES = ["campaign.json"]  # relativo a REPO_DIR (mismo repo que offers.json)
+
+# Libros gratis (26 ago 2026, pedido explícito del usuario: "te dije que buscar libros gratis
+# y todo eso y no tengo ninguno... sigue buscando aparte de las ofertas libros gratis").
+# KEYWORDS_BY_CATEGORY['Libros'] son nombres de editorial -- eso nunca saca libros Kindle
+# realmente gratis, es pura coincidencia si sale alguno. Comprobado en vivo en amazon.es (26
+# ago): buscar "kindle gratis" SÍ saca libros con precio real 0,00€ y un PVP tachado real
+# (p.ej. "La chica sola" — 0,00€, PVP ed. digital: 2,99€) -- exactamente lo que exige el filtro
+# de descuento de scrape_keyword() (price==0 con original_price>0 real, no fabricado). Se
+# añaden SIEMPRE (no sujetos al muestreo aleatorio de 1-2 keywords de KEYWORDS_PER_CATEGORY_RANGE,
+# ver el bucle de main()) para que esto no dependa de la suerte del sorteo cada ciclo.
+LIBROS_GRATIS_KEYWORDS = ["kindle gratis", "ebook gratis", "libro gratis kindle", "novela gratis kindle"]
 
 # Favoritos vigilados (sesión 5 ago 2026, ver RASPI_REBAJASDIARIAS.md): la app reporta a
 # Firestore, de forma anónima, qué ASINs tiene la gente en favoritos (colección
@@ -1313,6 +1324,9 @@ def main():
             else:
                 n = random.randint(*KEYWORDS_PER_CATEGORY_RANGE)
             sample = random.sample(keywords, min(n, len(keywords)))
+            if category == 'Libros':
+                # Siempre, no sujeto al sorteo de arriba -- ver LIBROS_GRATIS_KEYWORDS.
+                sample = list(dict.fromkeys(sample + LIBROS_GRATIS_KEYWORDS))
             for kw in sample:
                 log(f"Buscando '{kw}' ({category})...")
                 try:
