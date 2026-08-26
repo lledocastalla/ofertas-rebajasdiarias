@@ -111,6 +111,26 @@ def _download_feed_csv(url, log, timeout=180):
     return gzip.decompress(raw).decode("utf-8", errors="replace")
 
 
+def _stream_feed_rows(url_or_path, log, timeout=180, is_local_file=False):
+    """Generador que va dando filas de un feed CSV.GZ SIN materializar nunca el texto
+    descomprimido entero en memoria de una vez (26 ago 2026, bug real: la Pi se quedaba sin
+    memoria -- y el kernel mataba el proceso con SIGKILL -- procesando el feed más grande de
+    Leroy Merlin, ~490k filas/~100MB de CSV descomprimido, aunque el top-N ya estuviera acotado
+    con un heap; el propio texto entero + el DictReader sobre él ya era demasiado en una Pi con
+    ~900MB de RAM). gzip.GzipFile + TextIOWrapper descomprimen y decodifican en streaming según
+    csv.DictReader va pidiendo líneas, así que la huella real es solo el búfer de red/E-S, no
+    el feed entero."""
+    if is_local_file:
+        with gzip.open(url_or_path, "rt", encoding="utf-8", errors="replace", newline="") as f:
+            yield from csv.DictReader(f)
+        return
+    req = urllib.request.Request(url_or_path, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with gzip.GzipFile(fileobj=resp) as gz:
+            text_stream = io.TextIOWrapper(gz, encoding="utf-8", errors="replace", newline="")
+            yield from csv.DictReader(text_stream)
+
+
 def _fetch_leroy_merlin_feed(feed, log, local_test_file=None, cap=LEROY_MERLIN_MAX_PER_CYCLE):
     """Descarga y filtra UN feed concreto de Leroy Merlin (por su dict de LEROY_MERLIN_FEEDS).
     Compartido por fetch_leroy_merlin_offers() (rotación normal, 1 por ciclo),
@@ -121,16 +141,11 @@ def _fetch_leroy_merlin_feed(feed, log, local_test_file=None, cap=LEROY_MERLIN_M
         "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
         "merchant_image_url,merchant_category,search_price,saving,in_stock"
     )
-    try:
-        if local_test_file:
-            with gzip.open(local_test_file, "rt", encoding="utf-8", errors="replace") as f:
-                text = f.read()
-        else:
-            url = _awin_feed_url(AWIN_API_KEY, feed["fid"], columns)
-            text = _download_feed_csv(url, log)
-    except Exception as e:
-        log(f"[leroy_merlin] error descargando feed '{feed['name']}': {e}")
-        return {}
+    if local_test_file:
+        reader = _stream_feed_rows(local_test_file, log, is_local_file=True)
+    else:
+        url = _awin_feed_url(AWIN_API_KEY, feed["fid"], columns)
+        reader = _stream_feed_rows(url, log)
 
     # Top-N acotado con un min-heap en vez de "meterlo todo en una lista y luego ordenar y
     # recortar" (26 ago 2026, bug real: la Pi se quedaba sin memoria y el proceso entero moría
@@ -140,57 +155,63 @@ def _fetch_leroy_merlin_feed(feed, log, local_test_file=None, cap=LEROY_MERLIN_M
     # acotada a ~cap candidatos en todo momento, no al total de cualificantes del feed. El
     # contador `n` como segundo elemento de la tupla evita que heapq intente comparar
     # diccionarios cuando dos candidatos empatan en descuento (no son comparables entre sí).
-    reader = csv.DictReader(io.StringIO(text))
     heap = []  # [(discount_percent, n, candidate), ...] -- min-heap por discount_percent
     n = 0
     total_qualifying = 0
-    for row in reader:
-        # in_stock puede no venir informado en este feed (visto vacío en la muestra real del
-        # 24 ago) — solo se descarta si viene explícitamente a "0", nunca por ausencia del dato.
-        if (row.get("in_stock") or "1").strip() == "0":
-            continue
-        sp = row.get("search_price") or ""
-        sv = row.get("saving") or ""
-        if not sv.strip():
-            continue
-        try:
-            original = float(sp)
-            actual = float(re.sub(r"[^0-9.]", "", sv))
-        except ValueError:
-            continue
-        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
-            continue
-        pct = (original - actual) / original * 100
-        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
-            continue
+    try:
+        for row in reader:
+            # in_stock puede no venir informado en este feed (visto vacío en la muestra real
+            # del 24 ago) — solo se descarta si viene explícitamente a "0", nunca por ausencia
+            # del dato.
+            if (row.get("in_stock") or "1").strip() == "0":
+                continue
+            sp = row.get("search_price") or ""
+            sv = row.get("saving") or ""
+            if not sv.strip():
+                continue
+            try:
+                original = float(sp)
+                actual = float(re.sub(r"[^0-9.]", "", sv))
+            except ValueError:
+                continue
+            if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+                continue
+            pct = (original - actual) / original * 100
+            if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+                continue
 
-        title = (row.get("product_name") or "").strip()
-        pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
-        image = (row.get("merchant_image_url") or "").strip()
-        aff_url = (row.get("aw_deep_link") or "").strip()
-        if not title or not pid or not aff_url:
-            continue
+            title = (row.get("product_name") or "").strip()
+            pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
+            image = (row.get("merchant_image_url") or "").strip()
+            aff_url = (row.get("aw_deep_link") or "").strip()
+            if not title or not pid or not aff_url:
+                continue
 
-        total_qualifying += 1
-        category = _leroy_merlin_map_category(feed["category"], row.get("merchant_category"))
-        candidate = {
-            "id": f"lm_{pid}",
-            "title": title[:180],
-            "category": category,
-            "price": round(actual, 2),
-            "original_price": round(original, 2),
-            "discount_percent": int(round(pct)),
-            "is_flash": False,
-            "image": image,
-            "url": aff_url,
-            "store": "leroymerlin",
-            "store_label": "Leroy Merlin",
-        }
-        n += 1
-        if cap is None or len(heap) < cap:
-            heapq.heappush(heap, (candidate["discount_percent"], n, candidate))
-        elif candidate["discount_percent"] > heap[0][0]:
-            heapq.heapreplace(heap, (candidate["discount_percent"], n, candidate))
+            total_qualifying += 1
+            category = _leroy_merlin_map_category(feed["category"], row.get("merchant_category"))
+            candidate = {
+                "id": f"lm_{pid}",
+                "title": title[:180],
+                "category": category,
+                "price": round(actual, 2),
+                "original_price": round(original, 2),
+                "discount_percent": int(round(pct)),
+                "is_flash": False,
+                "image": image,
+                "url": aff_url,
+                "store": "leroymerlin",
+                "store_label": "Leroy Merlin",
+            }
+            n += 1
+            if cap is None or len(heap) < cap:
+                heapq.heappush(heap, (candidate["discount_percent"], n, candidate))
+            elif candidate["discount_percent"] > heap[0][0]:
+                heapq.heapreplace(heap, (candidate["discount_percent"], n, candidate))
+    except Exception as e:
+        log(f"[leroy_merlin] error descargando/procesando feed '{feed['name']}': {e}")
+        if n == 0:
+            return {}
+        log(f"[leroy_merlin] se sigue con los {len(heap)} candidatos ya vistos antes del fallo")
 
     top = [c for _, _, c in sorted(heap, key=lambda t: t[0], reverse=True)]
     log(f"[leroy_merlin] feed '{feed['name']}' (fid {feed['fid']}) -> "
