@@ -1163,7 +1163,7 @@ def _build_kindle_unlimited_offer(driver, asin, kindle_asin):
     return {
         "id": offer_id,
         "title": title[:180],
-        "category": SUBMISSION_CATEGORY,
+        "category": _detect_amazon_category(driver) or SUBMISSION_CATEGORY,
         "price": 0.0,
         "original_price": 0.0,
         "discount_percent": 0,
