@@ -189,7 +189,7 @@ ACTIVE_HOUR_END = 23    # exclusive (última ejecución posible: 22:xx)
 # ejecuciones (aprox. 1 día con el cron actual) se cubren las 20 categorías igualmente.
 CATEGORY_GROUPS = [
     ['Bebés', 'Moda Hombre', 'Moda Mujer', 'Hogar', 'Juguetes', 'Tecnología', 'Mascotas'],
-    ['Deporte', 'Gafas de Sol', 'Gaming', 'Música', 'Libros', 'Belleza', 'Alimentación'],
+    ['Deporte', 'Gafas de Sol', 'Gaming', 'Música', 'Libros', 'Belleza', 'Alimentación', 'Perfumería'],
     ['Jardín', 'Oficina', 'Salud', 'Automóviles', 'Relojes'],
 ]
 GROUP_STATE_PATH = f"{HOME}/.rebajas_group_state.json"
@@ -251,10 +251,74 @@ MAX_WATCHED_DIRECT_VISITS_PER_RUN = 15  # límite de visitas directas por ejecuc
 # constancia del motivo en Firestore para que el usuario que la sugirió sepa por qué.
 SUBMISSIONS_MAX_PER_CYCLE = 10  # cada una es una visita real a Amazon con Selenium -- tope
                                  # para no alargar demasiado un ciclo normal en una Pi 3B
-SUBMISSION_CATEGORY = "Sugerencias"  # categoría propia para todo lo aprobado por este camino
-                                     # (aparece sola en la web/app en cuanto haya alguna real,
-                                     # el sistema de categorías ya es dinámico -- nada más que
-                                     # tocar ahí)
+SUBMISSION_CATEGORY = "Sugerencias"  # solo como último recurso si no se puede identificar la
+                                     # categoría real del producto (ver _detect_amazon_category
+                                     # más abajo) -- 26 ago 2026, pedido explícito: "aparte de
+                                     # lo que el usuario proponga que vaya a sugerencias que
+                                     # vaya a su seccion" -- el libro debe estar en "Libros" de
+                                     # verdad, "Sugerencias" pasa a ser un distintivo aparte
+                                     # (offer['submitted_by'], ver más abajo), no la categoría.
+
+# Primer nivel de las migas de pan de Amazon (#wayfinding-breadcrumbs_feature_div) -> nuestra
+# taxonomía de categorías. Comprobado en vivo el 26 ago 2026 contra un caso real ("Libros" tal
+# cual). Solo se usa para sugerencias de usuarios -- si no hay coincidencia clara, se cae a
+# SUBMISSION_CATEGORY en vez de adivinar mal (mismo principio que el resto del proyecto: nunca
+# fabricar algo que no se sabe seguro).
+AMAZON_BREADCRUMB_CATEGORY_MAP = {
+    "libros": "Libros",
+    "electrónica": "Tecnología",
+    "informática": "Tecnología",
+    "videojuegos": "Gaming",
+    "hogar y cocina": "Hogar",
+    "bricolaje, construcción y herramientas": "Bricolaje",
+    "jardín": "Jardín",
+    "salud y cuidado personal": "Salud",
+    "belleza": "Belleza",
+    "juguetes y juegos": "Juguetes",
+    "bebé": "Bebés",
+    "deportes y aire libre": "Deporte",
+    "coche y moto": "Automóviles",
+    "alimentación y bebidas": "Alimentación",
+    "instrumentos musicales": "Música",
+    "oficina y papelería": "Oficina",
+    "productos para mascotas": "Mascotas",
+    "relojes": "Relojes",
+    "equipaje": "Viajes",
+}
+# "Ropa, calzado y joyería" -> ambiguo sin más contexto (Moda Hombre/Mujer/Gafas de Sol...) --
+# se mira el SEGUNDO nivel de la miga de pan para desambiguar en vez de adivinar a ciegas.
+AMAZON_BREADCRUMB_GENDER_MAP = {
+    "hombre": "Moda Hombre",
+    "mujer": "Moda Mujer",
+}
+
+
+def _detect_amazon_category(driver):
+    """Intenta identificar la categoría real del producto ya cargado en `driver` a partir de
+    sus migas de pan de Amazon. Devuelve el nombre de nuestra categoría si hay una
+    correspondencia razonablemente segura, o None si no (mejor no adivinar que adivinar mal).
+    Nunca lanza."""
+    try:
+        segments = driver.execute_script(
+            "var el = document.querySelector('#wayfinding-breadcrumbs_feature_div');"
+            "if (!el) return null;"
+            "return Array.from(el.querySelectorAll('a, .a-color-state')).map("
+            "  function(n) { return n.textContent.trim(); }"
+            ").filter(Boolean);"
+        )
+        if not segments:
+            return None
+        top = segments[0].strip().lower()
+        if top.startswith("ropa, calzado y joyería") or top == "moda":
+            for segment in segments[1:3]:
+                seg_lower = segment.strip().lower()
+                for keyword, category in AMAZON_BREADCRUMB_GENDER_MAP.items():
+                    if keyword in seg_lower:
+                        return category
+            return None  # ambiguo, no se adivina
+        return AMAZON_BREADCRUMB_CATEGORY_MAP.get(top)
+    except Exception:
+        return None
 SUBMISSION_ALLOWED_HOSTS = {"amazon.es", "www.amazon.es"}  # solo Amazon en esta primera
                                                             # versión -- Leroy Merlin/Perfumería
                                                             # Comas se podrían añadir más
@@ -283,7 +347,7 @@ KEYWORDS_BY_CATEGORY = {
     'Moda Hombre': [
         "zapatillas de hombre", "polos de hombre", "Lacoste de hombre",
         "converse de hombre", "Lee de hombre", "Lois de hombre",
-        "bañador de hombre", "camisetas de hombre", "perfume de hombre",
+        "bañador de hombre", "camisetas de hombre",
         "Tommy Hilfiger de hombre", "Moschino de hombre", "Scalpers de hombre",
         "G-Star de hombre", "New balance de hombre", "Puma de hombre",
         "Calvin klein de hombre", "The north face de hombre", "Reebok de hombre",
@@ -293,7 +357,7 @@ KEYWORDS_BY_CATEGORY = {
     'Moda Mujer': [
         "zapatillas de mujer", "polos de mujer", "converse de mujer",
         "Lee de mujer", "Lois de mujer", "bikini de mujer", "bañador de mujer",
-        "camisetas de mujer", "perfume de mujer", "bolso bimba y lola mujer",
+        "camisetas de mujer", "bolso bimba y lola mujer",
         "Tous", "Nike de mujer", "Adidas de mujer", "Tommy Hilfiger de mujer",
         "New balance de mujer", "Desigual de mujer", "Calvin klein de mujer",
         "Roxy de mujer", "Geox de mujer", "Women´secret de mujer",
@@ -347,6 +411,17 @@ KEYWORDS_BY_CATEGORY = {
     'Belleza': [
         "L'Oréal", "Nivea", "Maybelline", "NYX cosmetics", "Garnier", "Revlon",
         "La Roche-Posay", "CeraVe", "Neutrogena",
+    ],
+    # Perfumería (26 ago 2026, pedido explícito: "en perfumeria solo salen de comas también
+    # hay perfumes en amazon que están en moda") -- "perfume de hombre"/"perfume de mujer"
+    # vivían en Moda Hombre/Moda Mujer, así que sus resultados se etiquetaban con esa categoría
+    # en vez de "Perfumería" (que hasta ahora solo tenía productos de Perfumería Comas, ver
+    # multitienda_feeds.py). Movidos aquí para que Amazon y Comas compartan categoría de
+    # verdad.
+    'Perfumería': [
+        "perfume de hombre", "perfume de mujer", "colonia de hombre", "eau de parfum mujer",
+        "Carolina Herrera perfume", "Paco Rabanne perfume", "Giorgio Armani perfume",
+        "Hugo Boss perfume", "Calvin Klein perfume", "Lancôme perfume",
     ],
     'Alimentación': [
         "Nestlé", "Danone", "Central Lechera Asturiana", "Gullón galletas",
@@ -1154,7 +1229,7 @@ def _resolve_submission(driver, url):
             offer["price"] = 0.0
             offer["original_price"] = 0.0
             offer["discount_percent"] = 0
-            offer["category"] = SUBMISSION_CATEGORY
+            offer["category"] = _detect_amazon_category(driver) or SUBMISSION_CATEGORY
             offer["kindle_unlimited"] = True
             offer["pinned"] = offer["id"] in PINNED_OFFER_IDS
             return offer, None
@@ -1167,7 +1242,13 @@ def _resolve_submission(driver, url):
         return None, "el descuento calculado no parece creíble (precio de referencia inflado)"
 
     offer = dict(result)
-    offer["category"] = SUBMISSION_CATEGORY
+    # 26 ago 2026, pedido explícito ("aparte de lo que el usuario proponga que vaya a
+    # sugerencias que vaya a su seccion"): categoría real detectada de las migas de pan de
+    # Amazon si es posible (ver _detect_amazon_category) -- "Sugerencias" ahora es solo el
+    # último recurso, no la categoría de todo lo aprobado por este camino. Lo que SÍ distingue
+    # siempre una sugerencia del resto del catálogo es offer['submitted_by'] (ver más abajo),
+    # que ya se usa para la sección transversal "Sugerencias de usuarios" en la web/app.
+    offer["category"] = _detect_amazon_category(driver) or SUBMISSION_CATEGORY
     offer["discount_percent"] = int(discount)
     offer["pinned"] = offer["id"] in PINNED_OFFER_IDS
     return offer, None
