@@ -240,6 +240,17 @@ MAX_WATCHED_DIRECT_VISITS_PER_RUN = 15  # límite de visitas directas por ejecuc
                                          # las búsquedas normales) — cinturón de seguridad por
                                          # si algún día hay muchos favoritos vigilados a la vez
 
+# Alertas por palabra clave (27 ago 2026, pedido explícito: "si lo que tenemos en alertas lo
+# hacemos que entre dentro del ciclo de la Pi"). Hasta ahora notify_keyword_alerts() solo
+# comparaba contra lo que YA salía de las búsquedas normales por categoría -- si alguien pone
+# una alerta que no coincide con ningún KEYWORDS_BY_CATEGORY existente (ej. "PS5", "freidora de
+# aire"), nunca se buscaba de verdad, así que casi nunca podía llegar a coincidir con nada.
+# Ahora se buscan de verdad, como una categoría más ("Alertas") -- tope aparte, no sujeto al
+# sorteo de 1-2 por categoría normal (aquí interesa cubrir TODAS las alertas activas, no una
+# muestra), pero con límite propio para no multiplicar peticiones a Amazon sin control si un
+# día hay muchas alertas distintas a la vez.
+MAX_ALERT_KEYWORDS_PER_RUN = 20
+
 # "Sugerir una oferta" (26 ago 2026, pedido explícito del usuario: "los usuarios puedan subir
 # ofertas y que si realmente es una oferta el enlace se haga de afiliado mio automatico y sino
 # que no se publique" — necesita un admin, "eso lleva un admin"). Cualquier usuario logueado
@@ -778,6 +789,38 @@ def _fetch_watched_asins():
     except Exception as e:
         log(f"  aviso: no se pudo consultar Firestore de favoritos vigilados: {e}")
         return None
+
+
+def _fetch_alert_keywords():
+    """Palabras clave que algún usuario tiene guardadas en users/{uid}.keywordAlerts (27 ago
+    2026) -- se buscan de verdad cada ciclo (ver run_categories['Alertas'] en main()), no solo
+    se comparan contra lo que ya salió por las categorías normales, para que una alerta que no
+    coincide con ningún KEYWORDS_BY_CATEGORY existente tenga opción real de aparecer alguna vez.
+    Deduplicada sin importar mayúsculas (misma palabra escrita distinto por dos usuarios cuenta
+    una vez). Nunca lanza: sin credenciales, sin red o cualquier fallo aquí no debe afectar al
+    resto del ciclo."""
+    if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        return []
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, firestore
+
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        seen_lower = set()
+        keywords = []
+        for doc in db.collection("users").stream():
+            for kw in (doc.to_dict() or {}).get("keywordAlerts") or []:
+                kw = kw.strip()
+                if kw and kw.lower() not in seen_lower:
+                    seen_lower.add(kw.lower())
+                    keywords.append(kw)
+        return keywords
+    except Exception as e:
+        log(f"  aviso: no se pudo consultar Firestore de alertas de usuarios: {e}")
+        return []
 
 
 def notify_app_push(all_offers):
@@ -1650,6 +1693,18 @@ def main():
         if not already_in_group:
             log(f"Categoría prioritaria añadida fuera de su grupo: '{priority_category}'")
 
+    # Alertas de usuarios (27 ago 2026): se buscan de verdad como una categoría más, no solo se
+    # comparan contra lo que ya salga de las demás -- ver _fetch_alert_keywords() y el trato
+    # especial de "sample = keywords" (sin sorteo) más abajo en el bucle de scraping.
+    alert_keywords = _fetch_alert_keywords()
+    if alert_keywords:
+        if len(alert_keywords) > MAX_ALERT_KEYWORDS_PER_RUN:
+            random.shuffle(alert_keywords)
+            alert_keywords = alert_keywords[:MAX_ALERT_KEYWORDS_PER_RUN]
+        run_categories["Alertas"] = alert_keywords
+        log(f"Alertas de usuarios añadidas a la búsqueda de hoy: {len(alert_keywords)} "
+            f"palabra(s) -- {', '.join(alert_keywords)}")
+
     boost_categories = set()
     for boost_category in _active_campaign_categories():
         if boost_category in KEYWORDS_BY_CATEGORY:
@@ -1672,11 +1727,16 @@ def main():
         categories = list(run_categories.items())
         random.shuffle(categories)
         for category, keywords in categories:
-            if category in boost_categories:
+            if category == 'Alertas':
+                # Todas, no una muestra -- aquí interesa cubrir TODAS las alertas activas de
+                # los usuarios, ya topadas a MAX_ALERT_KEYWORDS_PER_RUN antes de llegar aquí.
+                sample = keywords
+            elif category in boost_categories:
                 n = CAMPAIGN_KEYWORDS_MAX
+                sample = random.sample(keywords, min(n, len(keywords)))
             else:
                 n = random.randint(*KEYWORDS_PER_CATEGORY_RANGE)
-            sample = random.sample(keywords, min(n, len(keywords)))
+                sample = random.sample(keywords, min(n, len(keywords)))
             if category == 'Libros':
                 # Siempre, no sujeto al sorteo de arriba -- ver LIBROS_GRATIS_KEYWORDS.
                 sample = list(dict.fromkeys(sample + LIBROS_GRATIS_KEYWORDS))
