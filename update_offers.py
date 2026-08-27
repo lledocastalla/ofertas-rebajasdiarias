@@ -909,6 +909,62 @@ def notify_favorite_price_changes(price_changes, merged):
         log(f"  aviso: no se pudo comprobar cambios de precio en favoritos: {e}")
 
 
+def notify_keyword_alerts(brand_new_asins, merged):
+    """Avisa por push cuando aparece una oferta NUEVA de verdad (no vista en ningún ciclo
+    anterior) cuyo título coincide con alguna palabra clave que un usuario tenga guardada en
+    users/{uid}.keywordAlerts (27 ago 2026, pedido explícito: "que puedan ir agregando varias
+    palabras... que les pueda avisar de varias ofertas"). Mismo mecanismo de topics que el
+    resto de pushes personales -- topic "user_<uid>". Solo mira brand_new_asins (nunca lo
+    re-scrapeado) para no repetir el aviso cada ciclo mientras la oferta siga viva -- una
+    persona con la alerta "nike" puesta debe enterarse UNA vez por oferta nueva, no cada 3h
+    mientras siga en el catálogo. Nunca debe tumbar main() si falla."""
+    if not brand_new_asins:
+        return
+    if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        return
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, firestore, messaging
+
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+        db = firestore.client()
+
+        new_offers = [merged[a] for a in brand_new_asins if a in merged]
+        sent = 0
+        for doc in db.collection("users").stream():
+            keywords = [k.strip().lower() for k in (doc.to_dict() or {}).get("keywordAlerts") or [] if k.strip()]
+            if not keywords:
+                continue
+            uid = doc.id
+            matches = [
+                offer for offer in new_offers
+                if any(kw in offer.get("title", "").lower() for kw in keywords)
+            ]
+            if not matches:
+                continue
+            if len(matches) == 1:
+                body = f"{matches[0]['title'][:80]} — {matches[0]['price']} €"
+            else:
+                body = f"{len(matches)} ofertas nuevas coinciden con tus alertas"
+            try:
+                messaging.send(messaging.Message(
+                    notification=messaging.Notification(
+                        title="🔔 Nueva oferta de tu alerta",
+                        body=body,
+                    ),
+                    topic=f"user_{uid}",
+                ))
+                sent += 1
+            except Exception as e:
+                log(f"  aviso: no se pudo avisar a {uid} de sus alertas: {e}")
+        if sent:
+            log(f"  {sent} avisos de alertas de palabra clave enviados.")
+    except Exception as e:
+        log(f"  aviso: no se pudo comprobar alertas de palabra clave: {e}")
+
+
 def build_driver():
     options = Options()
     options.binary_location = CHROMIUM_PATH
@@ -1698,6 +1754,10 @@ def main():
     # más abajo, 27 ago 2026). Se calcula ANTES de pisar new_offer en merged, con el precio viejo
     # de existing_offers todavía disponible.
     price_changes = {}
+    # Ofertas nuevas de verdad este ciclo (no vistas en ningún ciclo anterior) -- para las
+    # alertas de palabra clave de abajo, que solo deben avisar una vez por oferta, el ciclo en
+    # que aparece, no cada vez que se vuelve a ver mientras siga viva (27 ago 2026).
+    brand_new_asins = set()
     for asin, new_offer in new_or_updated.items():
         prior = existing_offers.get(asin)
         if prior is not None:
@@ -1709,6 +1769,8 @@ def main():
                     price_changes[asin] = "up"
             except (TypeError, ValueError):
                 pass
+        else:
+            brand_new_asins.add(asin)
         new_offer["first_seen"] = prior["first_seen"] if prior else now_iso
         new_offer["last_seen"] = now_iso
         merged[asin] = new_offer
@@ -1853,6 +1915,8 @@ def main():
         # Avisos personales de cambio de precio en favoritos (27 ago 2026) -- misma rama que el
         # push genérico de arriba, con las mismas garantías (solo en ciclos con push real).
         notify_favorite_price_changes(price_changes, merged)
+        # Alertas de palabra clave/marca (27 ago 2026) -- misma rama, mismas garantías.
+        notify_keyword_alerts(brand_new_asins, merged)
 
     # Publicación en el grupo público de Telegram: se hace DESPUÉS del push, no antes (cambiado
     # el 11 ago 2026) — así una tanda larga (p.ej. el primer envío del catálogo completo al tema
