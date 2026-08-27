@@ -954,6 +954,42 @@ def parse_price(text):
         return None
 
 
+# Valoración con estrellas (27 ago 2026, pedido explícito del usuario: "las estrellas de
+# valoración"). rating_text es el textContent del contenedor de la valoración tal cual lo
+# manda _EXTRACT_CARDS_JS -- algo como "4,84,8 de 5 estrellas (125)" (el número visible +
+# el texto de accesibilidad + el nº de reseñas entre paréntesis, todo junto porque se coge el
+# texto plano del div contenedor entero, no de un span suelto -- más robusto que depender de
+# que un selector concreto siga existiendo tal cual si Amazon cambia el marcado interno).
+def parse_rating(text):
+    if not text:
+        return None
+    # OJO: un solo `\d` en cada grupo, no `\d+` (bug real probando esto a mano, 27 ago 2026) --
+    # el número visible ("4,8") va PEGADO sin espacio justo delante del texto de accesibilidad
+    # ("4,8 de 5 estrellas"), ej. "4,84,8 de 5 estrellas". Con `\d+` (varios dígitos) el primer
+    # grupo se comía el "8" del número visible Y el "4" del texto de accesibilidad juntos ("84"),
+    # dando una valoración inventada de 84,8 en vez de 4,8. Como la nota siempre es de un dígito
+    # entero (0-5) + un decimal, un solo `\d` por grupo es exacto y evita el problema.
+    m = re.search(r"(\d),(\d)\s*de\s*5\s*estrellas", text)
+    if not m:
+        return None
+    try:
+        return round(float(f"{m.group(1)}.{m.group(2)}"), 1)
+    except ValueError:
+        return None
+
+
+def parse_rating_count(text):
+    if not text:
+        return None
+    m = re.search(r"\(([\d.,]+)\)\s*$", text.strip())
+    if not m:
+        return None
+    try:
+        return int(m.group(1).replace(".", "").replace(",", ""))
+    except ValueError:
+        return None
+
+
 # Extrae todas las tarjetas de resultado de una vez con JS: en una Pi 3B, hacer una consulta
 # Selenium por cada campo de cada tarjeta (varios find_element por tarjeta x ~60 tarjetas)
 # suponía más de 2 minutos por búsqueda solo en ida-y-vuelta del protocolo WebDriver. Con un
@@ -989,13 +1025,20 @@ return Array.from(document.querySelectorAll(
   // si no se cuela tal cual en el título ("Anuncio patrocinado: Adidas Hombre Run 70S 2.0").
   var imgAlt = imgEl ? (imgEl.getAttribute('alt') || '').replace(/^Anuncio patrocinado:\s*/i, '').trim() : '';
   var title = imgAlt.length > h2Text.length ? imgAlt : h2Text;
+  // Valoración (27 ago 2026): 'span.a-icon-alt' trae el texto de accesibilidad ("4,8 de 5
+  // estrellas") -- se coge el texto del DIV contenedor entero (closest('div')), no solo ese
+  // span, porque ahí al lado vive también el nº de reseñas entre paréntesis ("(125)"). Más
+  // robusto que encadenar varios selectores concretos que Amazon podría cambiar.
+  var ratingEl = card.querySelector('span.a-icon-alt');
+  var ratingContainer = ratingEl ? ratingEl.closest('div') : null;
   return {
     asin: card.getAttribute('data-asin'),
     title: title || null,
     price_text: text('span.a-price span.a-offscreen'),
     original_price_text: text('span.a-price.a-text-price span.a-offscreen'),
     image: imgEl ? imgEl.getAttribute('src') : '',
-    is_flash: !!flashEl
+    is_flash: !!flashEl,
+    rating_text: ratingContainer ? ratingContainer.textContent : null
   };
 });
 """
@@ -1039,6 +1082,7 @@ def scrape_keyword(driver, keyword, category):
         # price == 0 (gratis de verdad, p.ej. libro Kindle en promoción) se deja pasar aunque el
         # descuento salga en 100 — ahí no hay un precio de referencia inflado que desconfiar.
 
+        rating_text = card.get("rating_text")
         results.append(
             {
                 "id": asin,
@@ -1050,6 +1094,10 @@ def scrape_keyword(driver, keyword, category):
                 "is_flash": bool(card.get("is_flash")),
                 "image": card.get("image") or "",
                 "url": f"https://www.amazon.es/dp/{asin}?tag={AFFILIATE_TAG}",
+                # Valoración real de Amazon (27 ago 2026) -- None si el producto no tiene
+                # todavía ninguna reseña o si Amazon no la mostró esta vez, nunca inventada.
+                "rating": parse_rating(rating_text),
+                "rating_count": parse_rating_count(rating_text),
             }
         )
         if len(results) >= MAX_PRODUCTS_PER_KEYWORD:
@@ -1079,7 +1127,12 @@ return {
     '#corePriceDisplay_desktop_feature_div span.a-price.a-text-price span.a-offscreen, ' +
     '.basisPrice span.a-offscreen, span.a-price.a-text-price span.a-offscreen'
   ),
-  image: imgEl ? imgEl.getAttribute('src') : ''
+  image: imgEl ? imgEl.getAttribute('src') : '',
+  rating_text: (function() {
+    var ratingEl = document.querySelector('#acrPopover span.a-icon-alt, span.a-icon-alt');
+    var container = ratingEl ? ratingEl.closest('div') : null;
+    return container ? container.textContent : null;
+  })()
 };
 """
 
@@ -1115,6 +1168,7 @@ def scrape_product_page(driver, asin):
         original_price = price  # sin descuento visible ahora mismo, pero el precio sigue interesando
     discount = round((original_price - price) / original_price * 100) if original_price > 0 else 0
 
+    rating_text = data.get("rating_text")
     return {
         "id": asin,
         "title": title[:180],
@@ -1124,6 +1178,8 @@ def scrape_product_page(driver, asin):
         "is_flash": False,
         "image": data.get("image") or "",
         "url": f"https://www.amazon.es/dp/{asin}?tag={AFFILIATE_TAG}",
+        "rating": parse_rating(rating_text),
+        "rating_count": parse_rating_count(rating_text),
     }
 
 
@@ -1699,6 +1755,8 @@ def main():
                     "url": fresh.get("url") or f"https://www.amazon.es/dp/{asin}?tag={AFFILIATE_TAG}",
                     "first_seen": (prior or {}).get("first_seen", now_iso),
                     "checked_at": now_iso,
+                    "rating": fresh.get("rating"),
+                    "rating_count": fresh.get("rating_count"),
                 }
             elif prior is not None:
                 watched_final[asin] = prior  # sin novedad esta vez, se conserva tal cual
