@@ -923,7 +923,13 @@ def notify_favorite_price_changes(price_changes, merged):
 
         sent = 0
         for doc in db.collection("users").stream():
-            notifications = (doc.to_dict() or {}).get("notifications") or {}
+            data = doc.to_dict() or {}
+            # Interruptor general (27 ago 2026, ver favorites_service.dart) -- apaga TODOS los
+            # avisos de precio en favoritos de este usuario sin tocar las campanas puestas
+            # producto a producto, que se quedan tal cual para cuando lo vuelva a activar.
+            if data.get("favoriteAlertsEnabled") is False:
+                continue
+            notifications = data.get("notifications") or {}
             if not notifications:
                 continue
             uid = doc.id
