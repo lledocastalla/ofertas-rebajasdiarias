@@ -983,7 +983,13 @@ def notify_keyword_alerts(brand_new_asins, merged):
         new_offers = [merged[a] for a in brand_new_asins if a in merged]
         sent = 0
         for doc in db.collection("users").stream():
-            keywords = [k.strip().lower() for k in (doc.to_dict() or {}).get("keywordAlerts") or [] if k.strip()]
+            data = doc.to_dict() or {}
+            # Interruptor general (27 ago 2026, ver alerts_service.dart) -- apaga TODAS las
+            # alertas de este usuario sin borrar las palabras guardadas, que se quedan tal cual
+            # para cuando lo vuelva a activar.
+            if data.get("keywordAlertsEnabled") is False:
+                continue
+            keywords = [k.strip().lower() for k in data.get("keywordAlerts") or [] if k.strip()]
             if not keywords:
                 continue
             uid = doc.id
