@@ -856,6 +856,59 @@ def notify_submitter_push(uid, offer):
         log(f"  aviso: no se pudo enviar el push personal al autor: {e}")
 
 
+def notify_favorite_price_changes(price_changes, merged):
+    """Avisa por push a quien tenga la campana de precio activada en un favorito cuyo precio
+    ha cambiado este ciclo, si la dirección coincide con lo que pidió ('down', 'up' o 'both')
+    -- ver la campana de favoritos_page.dart y el documento users/{uid}.notifications en
+    Firestore (favorites_service.dart). Hasta ahora esa preferencia se guardaba pero nada la
+    leía nunca (27 ago 2026, pedido explícito del usuario tras revisar mejoras pendientes).
+    Mismo mecanismo de topics que notify_submitter_push(): cada usuario logueado está
+    suscrito a "user_<uid>", así que basta con mandar el mensaje a ese topic, sin gestionar
+    tokens por dispositivo. Nunca debe tumbar main() si falla."""
+    if not price_changes:
+        return
+    if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        return
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, firestore, messaging
+
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+        db = firestore.client()
+
+        sent = 0
+        for doc in db.collection("users").stream():
+            notifications = (doc.to_dict() or {}).get("notifications") or {}
+            if not notifications:
+                continue
+            uid = doc.id
+            for asin, wanted in notifications.items():
+                direction = price_changes.get(asin)
+                if direction is None or (wanted != "both" and wanted != direction):
+                    continue
+                offer = merged.get(asin)
+                if offer is None:
+                    continue
+                emoji, verb = ("📉", "ha bajado") if direction == "down" else ("📈", "ha subido")
+                try:
+                    messaging.send(messaging.Message(
+                        notification=messaging.Notification(
+                            title=f"{emoji} Precio {verb} en un favorito",
+                            body=f"{offer['title'][:80]} — ahora {offer['price']} €",
+                        ),
+                        topic=f"user_{uid}",
+                    ))
+                    sent += 1
+                except Exception as e:
+                    log(f"  aviso: no se pudo avisar a {uid} de {asin}: {e}")
+        if sent:
+            log(f"  {sent} avisos de cambio de precio en favoritos enviados.")
+    except Exception as e:
+        log(f"  aviso: no se pudo comprobar cambios de precio en favoritos: {e}")
+
+
 def build_driver():
     options = Options()
     options.binary_location = CHROMIUM_PATH
@@ -1584,8 +1637,22 @@ def main():
     # conservan su first_seen original (no son nuevas) pero se actualiza el precio/descuento a lo
     # último visto y se refresca last_seen (para que no las pode la limpieza de caducadas).
     merged = dict(existing_offers)
+    # Precio antes/después por ASIN, solo de lo tocado esta ejecución (new_or_updated) -- para
+    # avisar a quien tenga la campana de favoritos activada (ver notify_favorite_price_changes()
+    # más abajo, 27 ago 2026). Se calcula ANTES de pisar new_offer en merged, con el precio viejo
+    # de existing_offers todavía disponible.
+    price_changes = {}
     for asin, new_offer in new_or_updated.items():
         prior = existing_offers.get(asin)
+        if prior is not None:
+            try:
+                old_price, new_price = float(prior.get("price")), float(new_offer.get("price"))
+                if new_price < old_price:
+                    price_changes[asin] = "down"
+                elif new_price > old_price:
+                    price_changes[asin] = "up"
+            except (TypeError, ValueError):
+                pass
         new_offer["first_seen"] = prior["first_seen"] if prior else now_iso
         new_offer["last_seen"] = now_iso
         merged[asin] = new_offer
@@ -1725,6 +1792,9 @@ def main():
         # nunca en un ciclo sin cambios (evita avisos vacíos "actualizado" cuando no hay nada
         # nuevo que ver).
         notify_app_push(list(merged.values()))
+        # Avisos personales de cambio de precio en favoritos (27 ago 2026) -- misma rama que el
+        # push genérico de arriba, con las mismas garantías (solo en ciclos con push real).
+        notify_favorite_price_changes(price_changes, merged)
 
     # Publicación en el grupo público de Telegram: se hace DESPUÉS del push, no antes (cambiado
     # el 11 ago 2026) — así una tanda larga (p.ej. el primer envío del catálogo completo al tema
