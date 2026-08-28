@@ -24,11 +24,11 @@ acceso suspendido, token inválido...), search_amazon() devuelve None y quien ll
 tratarlo como "no disponible ahora", nunca como "sin resultados" ni como un error que deba
 propagarse.
 
-PENDIENTE DE VERIFICAR EN LA PI: la ruta exacta de SearchItems (aquí `/catalog/v1/searchItems`,
-por el mismo patrón que `/catalog/v1/getItems`, confirmado este último en la documentación
-oficial con un ejemplo literal -- SearchItems no se llegó a confirmar con un ejemplo literal
-antes de que se cortara la sesión de navegador). Si el primer test real falla con 404, revisar
-afiliados.amazon.es/creatorsapi/docs/en-us/get-started/using-sdk o using-curl de nuevo.
+Endpoint de token y ruta de SearchItems verificados a mano contra el código fuente real del SDK
+oficial de Python de Amazon (creatorsapi-python-sdk.zip, descargado y revisado el 28 ago 2026 --
+ver auth/oauth2_config.py:determine_token_endpoint() y api/default_api.py:search_items(),
+resource_path='/catalog/v1/searchItems') -- no hizo falta añadir el SDK entero como dependencia
+de la Pi, este fichero ya acertaba en los dos puntos críticos antes de la verificación.
 """
 
 import json
@@ -126,10 +126,11 @@ def search_amazon(keywords: str, item_count: int = 10):
     if not token:
         return None
 
+    # "marketplace" NO va en el cuerpo -- verificado contra el modelo real del SDK
+    # (SearchItemsRequestContent no tiene ese campo), solo existe como cabecera x-marketplace.
     payload = {
         "partnerTag": creds["partner_tag"],
         "keywords": keywords,
-        "marketplace": MARKETPLACE,
         "itemCount": min(max(item_count, 1), 10),
         "minSavingPercent": MIN_DISCOUNT_PERCENT,
         "resources": [
