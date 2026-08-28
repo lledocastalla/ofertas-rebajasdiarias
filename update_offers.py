@@ -1574,16 +1574,34 @@ def _process_submissions(driver, log):
                 submission_offers[offer["id"]] = doc_id
                 changed = True
 
-                # Insignia de nivel de "cazador" (28 ago 2026, idea de un análisis de
-                # estrategia que le gustó al usuario): contador público de sugerencias
+                # Insignia de nivel + perfil público de "cazador" (28 ago 2026, idea de un
+                # análisis de estrategia que le gustó al usuario): contador y últimas ofertas
                 # aprobadas por usuario, en su propia colección (hunter_stats) para no tocar
-                # el documento privado de users/{uid}. Nunca debe poder tumbar la aprobación
-                # en sí (ya hecha arriba) si falla.
+                # el documento privado de users/{uid} ni exponer submissions (tiene el email).
+                # recentApproved se mantiene a mano (leer-modificar-escribir) porque Firestore
+                # no tiene un "array tope N" nativo -- arrayUnion crecería sin límite. Nunca
+                # debe poder tumbar la aprobación en sí (ya hecha arriba) si falla.
                 submitted_by_for_stats = data.get("submittedBy")
                 if submitted_by_for_stats:
                     try:
-                        db.collection("hunter_stats").document(submitted_by_for_stats).set(
-                            {"approvedCount": firestore.Increment(1)}, merge=True
+                        stats_ref = db.collection("hunter_stats").document(submitted_by_for_stats)
+                        entry = {
+                            "offerId": offer["id"],
+                            "title": offer["title"],
+                            "price": offer["price"],
+                            "originalPrice": offer["original_price"],
+                            "discountPercent": offer["discount_percent"],
+                            "image": offer["image"],
+                        }
+                        snap = stats_ref.get()
+                        recent = (snap.to_dict() or {}).get("recentApproved", []) if snap.exists else []
+                        recent = [entry] + [r for r in recent if r.get("offerId") != entry["offerId"]]
+                        stats_ref.set(
+                            {
+                                "approvedCount": firestore.Increment(1),
+                                "recentApproved": recent[:10],
+                            },
+                            merge=True,
                         )
                     except Exception as e:
                         log(f"  aviso: no se pudo actualizar hunter_stats de {submitted_by_for_stats}: {e}")
