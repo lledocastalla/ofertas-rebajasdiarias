@@ -1574,6 +1574,20 @@ def _process_submissions(driver, log):
                 submission_offers[offer["id"]] = doc_id
                 changed = True
 
+                # Insignia de nivel de "cazador" (28 ago 2026, idea de un análisis de
+                # estrategia que le gustó al usuario): contador público de sugerencias
+                # aprobadas por usuario, en su propia colección (hunter_stats) para no tocar
+                # el documento privado de users/{uid}. Nunca debe poder tumbar la aprobación
+                # en sí (ya hecha arriba) si falla.
+                submitted_by_for_stats = data.get("submittedBy")
+                if submitted_by_for_stats:
+                    try:
+                        db.collection("hunter_stats").document(submitted_by_for_stats).set(
+                            {"approvedCount": firestore.Increment(1)}, merge=True
+                        )
+                    except Exception as e:
+                        log(f"  aviso: no se pudo actualizar hunter_stats de {submitted_by_for_stats}: {e}")
+
                 # "Que si alguien ha publicado una oferta que salte una notificación" (26 ago
                 # 2026): aviso personal al autor, aparte del push genérico de "catálogo
                 # actualizado" -- nunca debe poder tumbar la aprobación en sí (ya hecha arriba)
