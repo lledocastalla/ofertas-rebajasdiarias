@@ -251,6 +251,12 @@ MAX_WATCHED_DIRECT_VISITS_PER_RUN = 15  # límite de visitas directas por ejecuc
 # día hay muchas alertas distintas a la vez.
 MAX_ALERT_KEYWORDS_PER_RUN = 20
 
+# Tope de ids que se meten en el `data` de un push (28 ago 2026, ver notify_app_push()/
+# notify_keyword_alerts()) -- de sobra para lo que se puede enseñar de un vistazo en la
+# pantalla que abre la app al tocar la notificación, y lejos del límite de 4KB del payload
+# de FCM aunque un ciclo traiga muchas ofertas nuevas de golpe.
+APP_PUSH_MAX_IDS = 30
+
 # "Sugerir una oferta" (26 ago 2026, pedido explícito del usuario: "los usuarios puedan subir
 # ofertas y que si realmente es una oferta el enlace se haga de afiliado mio automatico y sino
 # que no se publique" — necesita un admin, "eso lleva un admin"). Cualquier usuario logueado
@@ -823,12 +829,19 @@ def _fetch_alert_keywords():
         return []
 
 
-def notify_app_push(all_offers):
+def notify_app_push(all_offers, new_asins=None):
     """Manda un push de Firebase Cloud Messaging al topic al que se suscribe la app (ver
     lib/services/push_service.dart) — solo se llama tras un commit/push real a git, nunca en
     ciclos sin cambios (11 ago 2026, ver RASPI_REBAJASDIARIAS.md §3.3: el usuario pidió que
     avisara "cuando actualice las ofertas, para que la gente no se las pierda"). Nunca debe
-    tumbar el script si falla, igual que notify_telegram()."""
+    tumbar el script si falla, igual que notify_telegram().
+
+    new_asins (28 ago 2026, hallazgo real: "si sale la notificación con 18 ofertas nuevas si
+    pulso me abre el app pero no puedo ver únicamente esas ofertas") -- va en el bloque `data`
+    del mensaje (nunca en `notification`, que solo admite texto) para que la app pueda abrir
+    directamente una pantalla con solo esas ofertas al tocar la notificación (ver
+    PushService._handleMessageTap() en push_service.dart). Se limita a las primeras
+    APP_PUSH_MAX_IDS para no acercarse al límite de 4KB del payload de FCM."""
     # Log de entrada incondicional (12 ago) — el ciclo del 12 ago 08:18 no dejó
     # ningún rastro de esta función (ni éxito ni error), pese a que probado a mano
     # en la Pi con el mismo entorno (venv) funcionaba bien — con este log al menos
@@ -858,8 +871,14 @@ def notify_app_push(all_offers):
         else:
             body = f"📦 Catálogo actualizado: {len(all_offers)} ofertas activas."
 
+        data = {}
+        if new_asins:
+            ids = list(new_asins)[:APP_PUSH_MAX_IDS]
+            data = {"type": "catalog_update", "ids": ",".join(ids), "title": "Ofertas nuevas"}
+
         message = messaging.Message(
             notification=messaging.Notification(title="¡Catálogo actualizado! 🛍️", body=body),
+            data=data,
             topic=CATALOG_UPDATES_TOPIC,
         )
         messaging.send(message)
@@ -947,6 +966,13 @@ def notify_favorite_price_changes(price_changes, merged):
                             title=f"{emoji} Precio {verb} en un favorito",
                             body=f"{offer['title'][:80]} — ahora {offer['price']} €",
                         ),
+                        # Mismo mecanismo que catalog_update/keyword_alert (28 ago 2026) --
+                        # aquí siempre es una sola oferta conocida (el propio favorito).
+                        data={
+                            "type": "favorite_price",
+                            "ids": asin,
+                            "title": "Aviso de precio",
+                        },
                         topic=f"user_{uid}",
                     ))
                     sent += 1
@@ -1003,12 +1029,21 @@ def notify_keyword_alerts(brand_new_asins, merged):
                 body = f"{matches[0]['title'][:80]} — {matches[0]['price']} €"
             else:
                 body = f"{len(matches)} ofertas nuevas coinciden con tus alertas"
+            # ids en el `data` (28 ago 2026, hallazgo real: "no tengo forma de entrar a lo que
+            # me coincide, debo de poner en el buscador... debería llevar a alguna página donde
+            # salgan las coincidencias") -- ver PushService._handleMessageTap() en la app.
+            match_ids = [m["id"] for m in matches if m.get("id")][:APP_PUSH_MAX_IDS]
             try:
                 messaging.send(messaging.Message(
                     notification=messaging.Notification(
                         title="🔔 Nueva oferta de tu alerta",
                         body=body,
                     ),
+                    data={
+                        "type": "keyword_alert",
+                        "ids": ",".join(match_ids),
+                        "title": "Coincidencias con tus alertas",
+                    },
                     topic=f"user_{uid}",
                 ))
                 sent += 1
@@ -1983,7 +2018,7 @@ def main():
         # Push a la app (11 ago 2026) — solo aquí, en la rama donde hubo un commit/push real;
         # nunca en un ciclo sin cambios (evita avisos vacíos "actualizado" cuando no hay nada
         # nuevo que ver).
-        notify_app_push(list(merged.values()))
+        notify_app_push(list(merged.values()), new_asins=brand_new_asins)
         # Avisos personales de cambio de precio en favoritos (27 ago 2026) -- misma rama que el
         # push genérico de arriba, con las mismas garantías (solo en ciclos con push real).
         notify_favorite_price_changes(price_changes, merged)
