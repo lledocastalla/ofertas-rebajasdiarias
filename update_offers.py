@@ -635,20 +635,36 @@ def _send_telegram_offer(offer, thread_id):
 
 
 def sync_telegram_group_topics(all_offers):
-    """Sincroniza los temas del grupo público de Telegram con las ofertas destacadas
-    actuales (ver _is_standout_offer): crea el tema de una categoría en cuanto tiene alguna
-    oferta destacada y lo BORRA en cuanto se queda sin ninguna — nada permanente, a petición
-    del usuario (11 ago 2026). Nunca debe tumbar el script si algo falla aquí."""
+    """Sincroniza el grupo público de Telegram con el catálogo actual. Antes (11 ago 2026)
+    había un tema por categoría, creado en cuanto tenía alguna oferta destacada y borrado al
+    quedarse sin ninguna -- a petición del usuario (31 ago 2026: "en telegram estaría bien
+    dejarlo todo en una sección, eliminar todos los temas sino es un rollo para la gente") se
+    simplifica a un ÚNICO tema fijo, TELEGRAM_ALL_OFFERS_CATEGORY ("Todas las Ofertas"), que ya
+    existía y recibía el catálogo completo -- ahora es el único destino. Cualquier tema de
+    categoría que quedara de la época anterior se borra aquí mismo la primera vez que se ve
+    (autolimpieza, no hace falta un script aparte). Nunca debe tumbar el script si algo falla
+    aquí."""
     try:
         state = _load_telegram_topics_state()
-        by_category = {}
-        for offer in all_offers:
-            if _is_standout_offer(offer):
-                by_category.setdefault(offer.get("category") or "Otros", []).append(offer)
-        # "Todas las Ofertas": el catálogo completo, no solo lo destacado (ver constante arriba).
-        by_category[TELEGRAM_ALL_OFFERS_CATEGORY] = list(all_offers)
 
-        for category in set(KEYWORDS_BY_CATEGORY) | {TELEGRAM_ALL_OFFERS_CATEGORY} | set(state) | set(by_category):
+        # Autolimpieza de temas antiguos por categoría (todo lo que no sea el tema único de
+        # ahora) -- se borran del grupo de verdad y de este estado, una sola vez por tema.
+        for category in list(state):
+            if category == TELEGRAM_ALL_OFFERS_CATEGORY:
+                continue
+            old_thread_id = (state.get(category) or {}).get("thread_id")
+            if old_thread_id:
+                _telegram_api(
+                    "deleteForumTopic",
+                    {"chat_id": TELEGRAM_GROUP_CHAT_ID, "message_thread_id": old_thread_id},
+                )
+                log(f"Telegram: tema antiguo '{category}' borrado (unificación en un solo tema).")
+            state.pop(category, None)
+
+        # "Todas las Ofertas": el catálogo completo, único destino ahora.
+        by_category = {TELEGRAM_ALL_OFFERS_CATEGORY: list(all_offers)}
+
+        for category in {TELEGRAM_ALL_OFFERS_CATEGORY}:
             current = by_category.get(category, [])
             current_ids = {o["id"] for o in current if o.get("id")}
             entry = state.get(category) or {}
