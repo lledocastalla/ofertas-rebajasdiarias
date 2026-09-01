@@ -440,6 +440,92 @@ def fetch_obi_extended(log):
 
 
 # ---------------------------------------------------------------------------
+# 4 Elementos (1 sep 2026, aprobada en Awin) -- 1 solo feed (fid 114028, "Google Sheet - CDO
+# SOLUTIONS" pese al nombre, es un feed nativo de Awin con columnas normales, no formato
+# Google), mismo patrón que Stylevana/OBI. Streetwear/sneakers multimarca (Carhartt W.I.P.,
+# Nike, Jordan, New Balance, Adidas, ASICS...), sin distinción de sección por sexo en
+# merchant_category (a diferencia de OBI) -- todo a "Moda Hombre" por defecto, mismo criterio
+# que el catch-all de Stylevana. Comprobado 1 sep 2026: 30.463 filas, 14.735 candidatos
+# 30-80% de descuento, 1.181 con stock real (in_stock=1).
+# ---------------------------------------------------------------------------
+
+ELEMENTOS4_MAX_PER_CYCLE = 50
+ELEMENTOS4_FID = "114028"
+
+
+def fetch_4elementos_offers(log, local_test_file=None, cap=ELEMENTOS4_MAX_PER_CYCLE):
+    columns = (
+        "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
+        "merchant_image_url,merchant_category,search_price,rrp_price,in_stock,currency"
+    )
+    try:
+        if local_test_file:
+            with gzip.open(local_test_file, "rt", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+        else:
+            url = _awin_feed_url(AWIN_API_KEY, ELEMENTOS4_FID, columns)
+            text = _download_feed_csv(url, log)
+    except Exception as e:
+        log(f"[4elementos] error descargando feed: {e}")
+        return {}
+
+    reader = csv.DictReader(io.StringIO(text))
+    candidates = []
+    for row in reader:
+        if row.get("in_stock") != "1":
+            continue
+        if (row.get("currency") or "").strip().upper() not in ("", "EUR"):
+            continue
+        sp = row.get("search_price") or ""
+        rrp = row.get("rrp_price") or ""
+        if not sp.strip() or not rrp.strip():
+            continue
+        try:
+            actual = float(sp)
+            original = float(rrp)
+        except ValueError:
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (row.get("product_name") or "").strip()
+        pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
+        image = (row.get("merchant_image_url") or "").strip()
+        aff_url = (row.get("aw_deep_link") or "").strip()
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"4e_{pid}",
+            "title": title[:180],
+            "category": "Moda Hombre",
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "4elementos",
+            "store_label": "4 Elementos",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[4elementos] {len(candidates)} candidatos 30-80% con stock, {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+def fetch_4elementos_extended(log):
+    """Catálogo ampliado (1 sep 2026): a diferencia de OBI/Comas, aquí SÍ hace falta recortar
+    -- 1.181 candidatos con stock real es manejable entero, se deja sin cap de todas formas
+    igual que las otras tiendas de un solo feed."""
+    return fetch_4elementos_offers(log, cap=None)
+
+
+# ---------------------------------------------------------------------------
 # Perfumería Comas (25 ago 2026, aprobada en Awin -- ver RASPI_REBAJASDIARIAS.md) -- 1 solo
 # feed, sin rotación, mismo patrón que Stylevana. IMPORTANTE: el feed NATIVO de Awin
 # ("Crea-un-feed", formato Awin/CSV normal) NO trae rrp_price ni saving poblados para este
@@ -612,6 +698,7 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("leroy_merlin", fetch_leroy_merlin_offers, "leroymerlin"),
         ("stylevana", fetch_stylevana_offers, "stylevana"),
         ("obi", fetch_obi_offers, "obi"),
+        ("4elementos", fetch_4elementos_offers, "4elementos"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
     ]
     for name, fetch_fn, key in stores:
@@ -626,15 +713,17 @@ def fetch_multitienda_offers(log, local_test_files=None):
 def generate_extended_catalog(log):
     """Catálogo ampliado para el buscador de la web/app (26 ago 2026, ver
     RASPI_REBAJASDIARIAS.md §8 punto 17): Leroy Merlin (top 3.000/feed) + Perfumería Comas
-    (catálogo entero) + Zapatos OBI (31 ago 2026, catálogo entero, ver fetch_obi_extended). NO
-    se mezcla con offers.json -- es un archivo aparte (catalog_extended.json) que la web/app
-    solo piden cuando una búsqueda no encuentra nada en el catálogo curado normal. Aislado por
-    tienda igual que fetch_multitienda_offers(): un fallo en una no debe tirar la otra."""
+    (catálogo entero) + Zapatos OBI (31 ago 2026, catálogo entero, ver fetch_obi_extended) +
+    4 Elementos (1 sep 2026, catálogo entero, ver fetch_4elementos_extended). NO se mezcla con
+    offers.json -- es un archivo aparte (catalog_extended.json) que la web/app solo piden
+    cuando una búsqueda no encuentra nada en el catálogo curado normal. Aislado por tienda
+    igual que fetch_multitienda_offers(): un fallo en una no debe tirar la otra."""
     result = {}
     for name, fetch_fn in [
         ("leroy_merlin_extended", fetch_leroy_merlin_extended),
         ("perfumeria_comas_extended", fetch_perfumeria_comas_extended),
         ("obi_extended", fetch_obi_extended),
+        ("4elementos_extended", fetch_4elementos_extended),
     ]:
         try:
             result.update(fetch_fn(log))
