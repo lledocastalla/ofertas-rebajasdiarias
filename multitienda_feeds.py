@@ -544,6 +544,102 @@ def fetch_4elementos_extended(log):
 
 
 # ---------------------------------------------------------------------------
+# Adidas (2 sep 2026, aprobada en Awin -- ya estaba "Adherido" de antes, sin que quedara
+# registrado en este documento/repo) -- 1 solo feed de los dos que ofrece el anunciante (fid
+# 92152 "Adidas ES - variant", 46.387 filas; el otro, fid 92566 "Adidas ES 2", NO trae precio
+# de referencia, descartado). IMPORTANTE, quirk real del feed: pese al nombre del campo,
+# `product_price_old` NO es el precio antiguo sino el precio de VENTA actual, y `search_price`
+# es el precio de referencia/original -- comprobado en las 8.999 filas donde difieren, SIEMPRE
+# search_price >= product_price_old, nunca al revés. Categoría fija a "Deporte" (marca
+# deportiva, sin distinción de sección por sexo en merchant_category, igual que 4 Elementos)
+# -- subcategoría real del segundo tramo separado por comas ("Calzado,Zapatillas" ->
+# "Zapatillas"). Comprobado 2 sep 2026: 7.895 candidatos 30-80% de descuento, todos con stock.
+# ---------------------------------------------------------------------------
+
+ADIDAS_MAX_PER_CYCLE = 150
+ADIDAS_FID = "92152"
+
+
+def _adidas_subcategory(merchant_category):
+    parts = (merchant_category or "").split(",")
+    return parts[1].strip() if len(parts) > 1 else ""
+
+
+def fetch_adidas_offers(log, local_test_file=None, cap=ADIDAS_MAX_PER_CYCLE):
+    columns = (
+        "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
+        "merchant_image_url,merchant_category,search_price,product_price_old,in_stock,currency"
+    )
+    try:
+        if local_test_file:
+            with gzip.open(local_test_file, "rt", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+        else:
+            url = _awin_feed_url(AWIN_API_KEY, ADIDAS_FID, columns)
+            text = _download_feed_csv(url, log)
+    except Exception as e:
+        log(f"[adidas] error descargando feed: {e}")
+        return {}
+
+    reader = csv.DictReader(io.StringIO(text))
+    candidates = []
+    for row in reader:
+        if row.get("in_stock") != "1":
+            continue
+        if (row.get("currency") or "").strip().upper() not in ("", "EUR"):
+            continue
+        sp = row.get("search_price") or ""
+        old = row.get("product_price_old") or ""
+        if not sp.strip() or not old.strip():
+            continue
+        try:
+            # Quirk real del feed: search_price = original, product_price_old = precio de
+            # venta actual (al revés de lo que sugiere el nombre del campo).
+            original = float(sp)
+            actual = float(old)
+        except ValueError:
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (row.get("product_name") or "").strip()
+        pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
+        image = (row.get("merchant_image_url") or "").strip()
+        aff_url = (row.get("aw_deep_link") or "").strip()
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"ad_{pid}",
+            "title": title[:180],
+            "category": "Deporte",
+            "subcategory": _adidas_subcategory(row.get("merchant_category")),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "adidas",
+            "store_label": "Adidas",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[adidas] {len(candidates)} candidatos 30-80% con stock, {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+def fetch_adidas_extended(log):
+    """Catálogo ampliado (2 sep 2026): 7.895 candidatos con stock real, manejable entero igual
+    que las otras tiendas de un solo feed."""
+    return fetch_adidas_offers(log, cap=None)
+
+
+# ---------------------------------------------------------------------------
 # Perfumería Comas (25 ago 2026, aprobada en Awin -- ver RASPI_REBAJASDIARIAS.md) -- 1 solo
 # feed, sin rotación, mismo patrón que Stylevana. IMPORTANTE: el feed NATIVO de Awin
 # ("Crea-un-feed", formato Awin/CSV normal) NO trae rrp_price ni saving poblados para este
@@ -717,6 +813,7 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("stylevana", fetch_stylevana_offers, "stylevana"),
         ("obi", fetch_obi_offers, "obi"),
         ("4elementos", fetch_4elementos_offers, "4elementos"),
+        ("adidas", fetch_adidas_offers, "adidas"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
     ]
     for name, fetch_fn, key in stores:
@@ -742,6 +839,7 @@ def generate_extended_catalog(log):
         ("perfumeria_comas_extended", fetch_perfumeria_comas_extended),
         ("obi_extended", fetch_obi_extended),
         ("4elementos_extended", fetch_4elementos_extended),
+        ("adidas_extended", fetch_adidas_extended),
     ]:
         try:
             result.update(fetch_fn(log))
