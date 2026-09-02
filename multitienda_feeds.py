@@ -556,7 +556,12 @@ def fetch_4elementos_extended(log):
 # "Zapatillas"). Comprobado 2 sep 2026: 7.895 candidatos 30-80% de descuento, todos con stock.
 # ---------------------------------------------------------------------------
 
-ADIDAS_MAX_PER_CYCLE = 150
+# Sin tope real (2 sep 2026, pedido explícito: "con adidas sube casi todas las ofertas que
+# tenga") -- a diferencia del resto de tiendas de un solo feed (150/ciclo), aquí el ciclo
+# normal publica el catálogo cualificado ENTERO (~7.895 comprobado) para que no decaiga por
+# poda de STALE_AFTER_DAYS entre ejecuciones -- el feed se descarga igual cada ciclo, así que
+# no cuesta red extra (mismo razonamiento que ya usa Perfumería Comas para su tope).
+ADIDAS_MAX_PER_CYCLE = None
 ADIDAS_FID = "92152"
 
 
