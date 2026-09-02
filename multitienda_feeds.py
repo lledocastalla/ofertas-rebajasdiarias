@@ -351,7 +351,9 @@ def fetch_stylevana_offers(log, local_test_file=None):
 # hace falta anteponerla a mano.
 # ---------------------------------------------------------------------------
 
-OBI_MAX_PER_CYCLE = 50
+OBI_MAX_PER_CYCLE = 150  # subido de 50 (1 sep 2026, pedido explícito: "faltan ofertas") --
+                         # mismo criterio que Perfumería Comas, el feed entero se descarga
+                         # igual cada ciclo así que subir el tope no cuesta red extra
 OBI_FID = "116697"  # "España Feed" -- ver feedList, mismo catálogo que 116481/116483/116570/116696
 
 
@@ -366,6 +368,17 @@ def _obi_map_category(merchant_category):
     if "hombre" in top or top in ("compl. cab", "textil cab"):
         return "Moda Hombre"
     return "Moda Mujer"  # Mujer, Compl. sra, Textil sra, General... mayoría real del feed
+
+
+def _obi_subcategory(merchant_category):
+    """Tipo de calzado/complemento real (1 sep 2026, pedido explícito: "deberían estar mejor
+    organizadas por categorías y subcategorías") -- el tramo después de '>' ('Mujer > Botas'
+    -> 'Botas'), ya legible tal cual sin parsear el JSON del primer tramo. Sin '>' (fila
+    'General' suelta) se deja vacío -- el frontend no crea subsección para eso."""
+    parts = (merchant_category or "").split(">")
+    if len(parts) < 2:
+        return ""
+    return parts[1].strip()
 
 
 def fetch_obi_offers(log, local_test_file=None, cap=OBI_MAX_PER_CYCLE):
@@ -417,6 +430,7 @@ def fetch_obi_offers(log, local_test_file=None, cap=OBI_MAX_PER_CYCLE):
             "id": f"ob_{pid}",
             "title": title[:180],
             "category": _obi_map_category(row.get("merchant_category")),
+            "subcategory": _obi_subcategory(row.get("merchant_category")),
             "price": round(actual, 2),
             "original_price": round(original, 2),
             "discount_percent": int(round(pct)),
@@ -449,7 +463,7 @@ def fetch_obi_extended(log):
 # 30-80% de descuento, 1.181 con stock real (in_stock=1).
 # ---------------------------------------------------------------------------
 
-ELEMENTOS4_MAX_PER_CYCLE = 50
+ELEMENTOS4_MAX_PER_CYCLE = 150  # subido de 50 (1 sep 2026, pedido explícito: "faltan ofertas")
 ELEMENTOS4_FID = "114028"
 
 
@@ -502,6 +516,10 @@ def fetch_4elementos_offers(log, local_test_file=None, cap=ELEMENTOS4_MAX_PER_CY
             "id": f"4e_{pid}",
             "title": title[:180],
             "category": "Moda Hombre",
+            # Tipo real de producto (1 sep 2026, "categorías y subcategorías") -- aquí
+            # merchant_category YA es el tipo directo ("Zapatillas", "Pantalones"...), sin
+            # jerarquía "Sección > Tipo" como en OBI, así que se usa tal cual.
+            "subcategory": (row.get("merchant_category") or "").strip(),
             "price": round(actual, 2),
             "original_price": round(original, 2),
             "discount_percent": int(round(pct)),
