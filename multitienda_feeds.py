@@ -645,6 +645,141 @@ def fetch_adidas_extended(log):
 
 
 # ---------------------------------------------------------------------------
+# Foot Locker (5 sep 2026, ya estaba "Adherido" en Awin de antes, sin integrar -- encontrada
+# al repasar "Mis programas" a petición del usuario: "mirar en awin creo que tenemos alguna
+# marca buena... hay que crear las tiendas"). Feed único (fid 78257, 51.344 filas, Moda).
+# Igual que Foot Locker cuenta con feed de zapatillas, ropa y accesorios (marcas propias +
+# Adidas/Nike/etc revendidas), sin la reversión rara de nombres de campo que tiene Adidas:
+# aquí `product_price_old` SÍ es el precio ORIGINAL de verdad y `search_price` el de VENTA
+# actual (comprobado 5 sep 2026: en las 9.058 filas donde difieren, siempre
+# product_price_old > search_price, nunca al revés). `rrp_price` viene siempre vacío en este
+# feed, no sirve. Categoría fija a "Deporte" (mismo criterio que Adidas/4 Elementos), con
+# subcategoría traducida del último tramo de `merchant_category` (viene en inglés sin
+# traducir, p.ej. "men>shoes>court" -> "court") vía _FOOTLOCKER_SUBCATEGORY_ES -- tramos sin
+# traducción conocida caen en Title Case con los guiones cambiados a espacios, para no perder
+# ningún producto por vocabulario nuevo que añada el feed más adelante. 5.595 candidatos
+# 30-80% de descuento con stock, comprobado 5 sep 2026.
+# ---------------------------------------------------------------------------
+
+FOOTLOCKER_FID = "78257"
+
+# Traducciones del último tramo de merchant_category (5 sep 2026, ver comentario de arriba) --
+# solo los que de verdad aparecen en el feed real (comprobado con los 5.595 candidatos), el
+# resto cae al fallback genérico de _footlocker_subcategory().
+_FOOTLOCKER_SUBCATEGORY_ES = {
+    "court": "Zapatillas Court",
+    "running": "Running",
+    "basketball": "Baloncesto",
+    "shoes": "Calzado",
+    "shorts": "Pantalones cortos",
+    "shirts": "Camisetas",
+    "pants": "Pantalones",
+    "canvas-skate": "Zapatillas de skate",
+    "tracksuits": "Chándales",
+    "socks": "Calcetines",
+    "hoodies": "Sudaderas con capucha",
+    "casual": "Casual",
+    "caps": "Gorras",
+    "caps-hats": "Gorras",
+    "slides-and-sandals": "Sandalias y chanclas",
+    "track-tops": "Sudaderas",
+    "sweatshirts": "Sudaderas",
+    "infants": "Bebé",
+    "jackets": "Chaquetas",
+    "boots": "Botas",
+    "swimwear": "Baño",
+    "jerseys/replicas": "Camisetas de equipación",
+    "grade-school": "Niños",
+    "trucker": "Gorras trucker",
+    "shoecare": "Cuidado del calzado",
+    "accessories": "Accesorios",
+    "gift-sets": "Sets de regalo",
+    "knitted-hats-beanies": "Gorros",
+    "insoles": "Plantillas",
+    "sport-equipment": "Equipamiento deportivo",
+}
+
+
+def _footlocker_subcategory(merchant_category):
+    last = (merchant_category or "").split(">")[-1].strip()
+    if not last:
+        return ""
+    return _FOOTLOCKER_SUBCATEGORY_ES.get(last, last.replace("-", " ").title())
+
+
+def fetch_footlocker_offers(log, local_test_file=None, cap=None):
+    columns = (
+        "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
+        "merchant_image_url,merchant_category,search_price,product_price_old,in_stock,currency"
+    )
+    try:
+        if local_test_file:
+            with gzip.open(local_test_file, "rt", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+        else:
+            url = _awin_feed_url(AWIN_API_KEY, FOOTLOCKER_FID, columns)
+            text = _download_feed_csv(url, log)
+    except Exception as e:
+        log(f"[footlocker] error descargando feed: {e}")
+        return {}
+
+    reader = csv.DictReader(io.StringIO(text))
+    candidates = []
+    for row in reader:
+        if row.get("in_stock") != "1":
+            continue
+        if (row.get("currency") or "").strip().upper() not in ("", "EUR"):
+            continue
+        sp = row.get("search_price") or ""
+        old = row.get("product_price_old") or ""
+        if not sp.strip() or not old.strip():
+            continue
+        try:
+            actual = float(sp)
+            original = float(old)
+        except ValueError:
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (row.get("product_name") or "").strip()
+        pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
+        image = (row.get("merchant_image_url") or "").strip()
+        aff_url = (row.get("aw_deep_link") or "").strip()
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"fl_{pid}",
+            "title": title[:180],
+            "category": "Deporte",
+            "subcategory": _footlocker_subcategory(row.get("merchant_category")),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "footlocker",
+            "store_label": "Foot Locker",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[footlocker] {len(candidates)} candidatos 30-80% con stock, {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+def fetch_footlocker_extended(log):
+    """Catálogo ampliado (5 sep 2026): 5.595 candidatos con stock real, manejable entero igual
+    que Adidas/4 Elementos/Comas."""
+    return fetch_footlocker_offers(log, cap=None)
+
+
+# ---------------------------------------------------------------------------
 # Perfumería Comas (25 ago 2026, aprobada en Awin -- ver RASPI_REBAJASDIARIAS.md) -- 1 solo
 # feed, sin rotación, mismo patrón que Stylevana. IMPORTANTE: el feed NATIVO de Awin
 # ("Crea-un-feed", formato Awin/CSV normal) NO trae rrp_price ni saving poblados para este
@@ -819,6 +954,7 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("obi", fetch_obi_offers, "obi"),
         ("4elementos", fetch_4elementos_offers, "4elementos"),
         ("adidas", fetch_adidas_offers, "adidas"),
+        ("footlocker", fetch_footlocker_offers, "footlocker"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
     ]
     for name, fetch_fn, key in stores:
@@ -845,6 +981,7 @@ def generate_extended_catalog(log):
         ("obi_extended", fetch_obi_extended),
         ("4elementos_extended", fetch_4elementos_extended),
         ("adidas_extended", fetch_adidas_extended),
+        ("footlocker_extended", fetch_footlocker_extended),
     ]:
         try:
             result.update(fetch_fn(log))
