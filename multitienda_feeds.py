@@ -35,6 +35,11 @@ MIN_PRICE_EUR = 3.0  # descarta artículos de céntimos poco relevantes aunque e
 # de secretos aparte, un solo sitio de verdad.
 AWIN_API_KEY = "f239974da24e881acd5d3cdfa614a45e"
 
+# Tradedoubler "Feed de Producto" (5 sep 2026, primera vez que se usa esta red para catálogo
+# -- hasta ahora solo Awin). Token de cuenta obtenido en "Configuración del Feed" de
+# publishers.tradedoubler.com, válido para cualquier fid de nuestros programas adheridos.
+TRADEDOUBLER_TOKEN = "76BEEF2B875642D58D8CA9485889C04802806008"
+
 # ---------------------------------------------------------------------------
 # Leroy Merlin (7 feeds por categoría, rotación 1 por ciclo)
 # ---------------------------------------------------------------------------
@@ -102,6 +107,36 @@ def _awin_feed_url(api_key, fid, columns):
         f"fid/{fid}/rid/0/hasEnhancedFeeds/0/columns/{columns}/format/csv/delimiter/%2C/"
         f"compression/gzip/adultcontent/1/"
     )
+
+
+def _download_tradedoubler_products(fid, log, timeout=60, max_products=1000):
+    """Descarga el feed JSON preconstruido de Tradedoubler para un programa (fid). IMPORTANTE,
+    límite real de la API descubierto el 5 sep 2026: pageSize=1000 es el máximo permitido Y
+    ADEMÁS no se puede paginar más allá de 1000 productos en total (page=2 con pageSize=1000
+    devuelve el error "PF_430 Can't paginate beyond 1000 products") -- así que, a diferencia
+    de los feeds de Awin (que traen el catálogo entero de una vez), aquí el catálogo real
+    queda SIEMPRE capado a como mucho 1000 productos, sea cual sea el tamaño real de la tienda
+    (Desigual tiene 7.115, por ejemplo). Se acepta como límite permanente de la propia API, no
+    algo que podamos evitar con más peticiones."""
+    url = (
+        f"https://api.tradedoubler.com/1.0/products.json;page=1;pageSize={max_products};"
+        f"fid={fid}?token={TRADEDOUBLER_TOKEN}"
+    )
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        data = json.load(resp)
+    if "products" not in data:
+        raise RuntimeError(f"respuesta sin 'products': {data.get('errors', data)}")
+    return data["products"]
+
+
+def _td_field(fields, name):
+    """Busca un campo por nombre en la lista 'fields' de un producto de Tradedoubler (lista de
+    {"name":..., "value":...}, el value puede faltar del todo en campos vacíos)."""
+    for f in fields or []:
+        if f.get("name") == name:
+            return f.get("value")
+    return None
 
 
 def _download_feed_csv(url, log, timeout=180):
@@ -780,6 +815,363 @@ def fetch_footlocker_extended(log):
 
 
 # ---------------------------------------------------------------------------
+# Tradedoubler (5 sep 2026, primera vez que se integra esta red al catálogo -- hasta ahora
+# solo Awin). Encontradas repasando "Mis programas" a petición del usuario: "mirar en awin...
+# y luego en tradedoubler y las mejores marcas hay que crear las tiendas". De los 8 programas
+# adheridos, TotMoble ya se descartó antes (ver RASPI_REBAJASDIARIAS.md, sin descuentos
+# reales) y DC Shoes/L'Occitane se quedan fuera por lo mismo (sus feeds NO traen ningún precio
+# de referencia, solo el precio actual). HP Store y Desigual SÍ traen precio original real.
+# Bershka y Huawei son casos especiales, ver sus comentarios respectivos más abajo.
+# ---------------------------------------------------------------------------
+
+HPSTORE_FID = "38866"
+
+
+def fetch_hpstore_offers(log, cap=None):
+    """976 productos en total (cabe entero en 1 sola página, sin el límite de 1000 de
+    Tradedoubler). Campo `old_price` = precio ORIGINAL real (a diferencia de Huawei/Bershka,
+    aquí si hay diferencia real: 160 de 976 productos, comprobado 5 sep 2026). Categoría fija
+    a "Tecnología", subcategoría del campo `producttype` (ya viene en español/directo:
+    "Laptops", etc). 24 candidatos 30-80% de descuento con stock, comprobado 5 sep 2026."""
+    try:
+        products = _download_tradedoubler_products(HPSTORE_FID, log)
+    except Exception as e:
+        log(f"[hpstore] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if offer.get("availability") != "in stock":
+            continue
+        try:
+            actual = float(offer["priceHistory"][0]["price"]["value"])
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+        old = _td_field(fields, "old_price")
+        try:
+            original = float(old) if old else None
+        except ValueError:
+            original = None
+        if not original or original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or _td_field(fields, "image400") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"hp_{pid}",
+            "title": title[:180],
+            "category": "Tecnología",
+            "subcategory": (_td_field(fields, "producttype") or "").strip(),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "hpstore",
+            "store_label": "HP Store",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[hpstore] {len(candidates)} candidatos 30-80% con stock, {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+DESIGUAL_FID = "256429"
+
+# Traducción de prenda (último tramo de categories[0].name, viene en inglés) -- solo las que
+# aparecen de verdad en el feed (comprobado 5 sep 2026 sobre 1.000 productos, el máximo que
+# permite paginar la API de Tradedoubler, ver _download_tradedoubler_products).
+_DESIGUAL_SUBCATEGORY_ES = {
+    "T-Shirt": "Camisetas",
+    "Dress": "Vestidos",
+    "Shirt": "Camisas",
+    "Trousers": "Pantalones",
+    "Coat": "Abrigos",
+    "Denim Trousers": "Vaqueros",
+    "Skirt": "Faldas",
+    "Sweat": "Sudaderas",
+    "Hosiery": "Medias",
+    "Pullover": "Jerséis",
+    "Polo": "Polos",
+    "Bags": "Bolsos",
+    "Backpack": "Mochilas",
+    "Swimwear": "Baño",
+    "Blazer": "Blazers",
+}
+
+
+def _desigual_category_subcategory(categories):
+    """categories[0].name viene como "Man > Denim Trousers"/"Girl > T-Shirt" -- primer tramo
+    decide Moda Hombre/Mujer (Boy cae en Hombre, Girl en Mujer, con "Niño "/"Niña " delante en
+    la subcategoría para no perder ese matiz), segundo tramo es la prenda."""
+    name = (categories or [{}])[0].get("name", "")
+    parts = [p.strip() for p in name.split(">")]
+    group = parts[0] if parts else ""
+    garment = parts[1] if len(parts) > 1 else ""
+    garment_es = _DESIGUAL_SUBCATEGORY_ES.get(garment, garment.replace("-", " ").title())
+    if group == "Boy":
+        return "Moda Hombre", f"Niño {garment_es}".strip()
+    if group == "Girl":
+        return "Moda Mujer", f"Niña {garment_es}".strip()
+    if group == "Woman":
+        return "Moda Mujer", garment_es
+    return "Moda Hombre", garment_es
+
+
+def fetch_desigual_offers(log, cap=None):
+    """7.115 productos en el catálogo real, pero la API de Tradedoubler NO deja paginar más
+    allá de 1.000 productos en total (ver _download_tradedoubler_products) -- límite
+    permanente de la propia API, no algo que podamos evitar. Campo `Sale price` = precio de
+    VENTA actual, el precio de `offers[0].priceHistory` es el ORIGINAL (al revés que Adidas:
+    aquí el nombre del campo extra SÍ es el que está rebajado). 628 de los primeros 1.000
+    candidatos 30-80% de descuento, comprobado 5 sep 2026 -- proporción altísima, se publican
+    todos los que quepan (sin cap real necesario, igual que Adidas)."""
+    try:
+        products = _download_tradedoubler_products(DESIGUAL_FID, log)
+    except Exception as e:
+        log(f"[desigual] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if offer.get("availability") != "in stock":
+            continue
+        try:
+            original = float(offer["priceHistory"][0]["price"]["value"])
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+        sale = _td_field(fields, "Sale price")
+        try:
+            actual = float(sale) if sale else None
+        except ValueError:
+            actual = None
+        if not actual or original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+        category, subcategory = _desigual_category_subcategory(p.get("categories"))
+
+        candidates.append({
+            "id": f"dsg_{pid}",
+            "title": title[:180],
+            "category": category,
+            "subcategory": subcategory,
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "desigual",
+            "store_label": "Desigual",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[desigual] {len(candidates)} candidatos 30-80% con stock (de un máximo de 1.000 "
+        f"que deja ver la API), {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+BERSHKA_FID = "35429"
+
+
+def fetch_bershka_offers(log, cap=None):
+    """19.708 productos en el catálogo real, pero igual que Desigual la API de Tradedoubler
+    solo deja ver los primeros 1.000 (ver _download_tradedoubler_products). A diferencia de
+    Desigual/HP Store, aquí el feed NO trae ningún precio de referencia en ningún campo --
+    solo el precio actual y una etiqueta `custom_label_1` "promo"/"no_promo" sin más detalle
+    (comprobado 5 sep 2026). Sin precio "antes" no se puede calcular ni verificar ningún %, así
+    que estas ofertas NO llevan discount_percent/original_price (quedan a 0, igual que una
+    oferta gratis) -- en su lugar se marcan `is_promo=True` para que la web/app pinten una
+    insignia "PROMO" en vez de un "-X%" que no podríamos demostrar (pedido explícito del
+    usuario: "le ponemos como una tienda con promo"). Categoría por género (`gender`), sin
+    Niño/Niña -- Bershka no distingue línea infantil en el feed. Subcategoría directa de
+    `custom_label_0`, que ya viene en español ("Pantalones", "Camisetas"...). 97 de los
+    primeros 1.000 candidatos vienen marcados "promo", comprobado 5 sep 2026."""
+    try:
+        products = _download_tradedoubler_products(BERSHKA_FID, log)
+    except Exception as e:
+        log(f"[bershka] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if offer.get("availability") != "in stock":
+            continue
+        if _td_field(fields, "custom_label_1") != "promo":
+            continue
+        try:
+            price = float(offer["priceHistory"][0]["price"]["value"])
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+        if price < MIN_PRICE_EUR:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+        gender = _td_field(fields, "gender")
+        category = "Moda Mujer" if gender == "female" else "Moda Hombre"
+        subcategory = (_td_field(fields, "custom_label_0") or "").strip().title()
+
+        candidates.append({
+            "id": f"bsk_{pid}",
+            "title": title[:180],
+            "category": category,
+            "subcategory": subcategory,
+            "price": round(price, 2),
+            "original_price": 0,
+            "discount_percent": 0,
+            "is_promo": True,
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "bershka",
+            "store_label": "Bershka",
+        })
+
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[bershka] {len(candidates)} en promo con stock (de un máximo de 1.000 que deja ver "
+        f"la API), {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+HUAWEI_FID = "39841"
+
+# "CÓDIGO (descripción)" -> separa el código del texto explicativo (5 sep 2026, ver
+# fetch_huawei_offers). Ejemplo real: "A8IDEALOALL (Código de descuento del 8% - válido hasta
+# el 31/12/2026)".
+_HUAWEI_VOUCHER_RE = re.compile(r"^\s*([A-Z0-9]+)\s*\((.+)\)\s*$")
+
+# Último tramo de `ProductGroupinShop` (viene en inglés) -- solo los 3 que aparecen de verdad
+# en el feed (123 productos, comprobado 5 sep 2026), el resto cae tal cual.
+_HUAWEI_SUBCATEGORY_ES = {
+    "Wireless Headphones": "Auriculares inalámbricos",
+    "Smartwatches": "Relojes inteligentes",
+    "Tablet Computers": "Tablets",
+}
+
+
+def fetch_huawei_offers(log, cap=None):
+    """Solo 123 productos, cabe entero en 1 página. El feed NO trae precio de referencia
+    tradicional (`DiscountPrice` es siempre igual al precio actual, comprobado 5 sep 2026) --
+    pero SÍ trae códigos de descuento reales y verificables en el campo `voucher` (p.ej.
+    "A8IDEALOALL (Código de descuento del 8% - válido hasta el 31/12/2026)") junto con
+    `voucher_price`, el precio ya aplicado el código. El % real que dan estos códigos no llega
+    nunca al 30% mínimo del resto del catálogo (máximo real ~23%, comprobado 5 sep 2026) --
+    pedido explícito del usuario: entra de todas formas ("Huawei al tener cupones nos interesa
+    también y son marcas internacionales importantes que nos pueden traer grandes
+    comisiones"), con el código destacado en la oferta (coupon_code/coupon_label) en vez del
+    filtro de descuento normal. original_price = precio ANTES del código, price = precio CON
+    el código aplicado."""
+    try:
+        products = _download_tradedoubler_products(HUAWEI_FID, log)
+    except Exception as e:
+        log(f"[huawei] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        # Huawei trae el stock dentro de "fields" (nombre igual que en otras tiendas, pero
+        # NO es un campo del offer aquí, a diferencia de HP Store/Desigual) -- comprobado 5
+        # sep 2026: valores "In Stock"/"out of stock", con mayúsculas inconsistentes.
+        stock = (_td_field(fields, "availability") or "").strip().lower()
+        if stock != "in stock":
+            continue
+        voucher = _td_field(fields, "voucher")
+        voucher_price = _td_field(fields, "voucher_price")
+        if not voucher or not voucher_price:
+            continue
+        try:
+            original = float(offer["priceHistory"][0]["price"]["value"])
+            actual = float(voucher_price)
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+
+        m = _HUAWEI_VOUCHER_RE.match(voucher)
+        coupon_code = m.group(1) if m else voucher.strip()
+        coupon_label = m.group(2) if m else ""
+        pct = (original - actual) / original * 100
+
+        candidates.append({
+            "id": f"hw_{pid}",
+            "title": title[:180],
+            "category": "Tecnología",
+            "subcategory": _HUAWEI_SUBCATEGORY_ES.get(
+                (_td_field(fields, "ProductGroupinShop") or "").split("&gt;")[-1].strip(),
+                (_td_field(fields, "ProductGroupinShop") or "").split("&gt;")[-1].strip(),
+            ),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "coupon_code": coupon_code,
+            "coupon_label": coupon_label,
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "huawei",
+            "store_label": "Huawei",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[huawei] {len(candidates)} con código de descuento real y stock, {len(top)} "
+        f"publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+# ---------------------------------------------------------------------------
 # Perfumería Comas (25 ago 2026, aprobada en Awin -- ver RASPI_REBAJASDIARIAS.md) -- 1 solo
 # feed, sin rotación, mismo patrón que Stylevana. IMPORTANTE: el feed NATIVO de Awin
 # ("Crea-un-feed", formato Awin/CSV normal) NO trae rrp_price ni saving poblados para este
@@ -955,6 +1347,10 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("4elementos", fetch_4elementos_offers, "4elementos"),
         ("adidas", fetch_adidas_offers, "adidas"),
         ("footlocker", fetch_footlocker_offers, "footlocker"),
+        ("hpstore", fetch_hpstore_offers, "hpstore"),
+        ("desigual", fetch_desigual_offers, "desigual"),
+        ("bershka", fetch_bershka_offers, "bershka"),
+        ("huawei", fetch_huawei_offers, "huawei"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
     ]
     for name, fetch_fn, key in stores:
@@ -982,6 +1378,10 @@ def generate_extended_catalog(log):
         ("4elementos_extended", fetch_4elementos_extended),
         ("adidas_extended", fetch_adidas_extended),
         ("footlocker_extended", fetch_footlocker_extended),
+        ("hpstore_extended", fetch_hpstore_offers),
+        ("desigual_extended", fetch_desigual_offers),
+        ("bershka_extended", fetch_bershka_offers),
+        ("huawei_extended", fetch_huawei_offers),
     ]:
         try:
             result.update(fetch_fn(log))
