@@ -1172,6 +1172,346 @@ def fetch_huawei_offers(log, cap=None):
 
 
 # ---------------------------------------------------------------------------
+# Segunda ronda de Tradedoubler (8 sep 2026) -- de la tanda de grandes marcas solicitada el 7
+# sep (ver RASPI_REBAJASDIARIAS.md), aceptadas de un día para otro: AEG, Electrolux y
+# MediaMarkt SÍ traen precio de referencia real, comprobado sobre el feed entero/una muestra
+# de 1.000 productos el 8 sep 2026. Tiendanimal (aceptada desde antes, nunca conectada) tiene
+# precio de referencia real pero con un rendimiento mucho más bajo (los descuentos reales de
+# su feed rara vez llegan al 30%, la mayoría rondan el 20%). DC Shoes y L'Occitane se
+# revisaron otra vez y siguen sin traer ningún precio de referencia en ningún campo (mismo
+# resultado que el 5 sep) -- se quedan fuera, igual que entonces. Braun, Rowenta, Tefal, WMF y
+# Philips Home Appliances (también aceptadas en esta tanda) tampoco traen precio de
+# referencia en ningún campo -- podrían entrar más adelante marcadas "PROMO" como Bershka si
+# se decide que interesa, pero de momento se quedan fuera por no cumplir el criterio de
+# descuento real verificable.
+# ---------------------------------------------------------------------------
+
+AEG_FID = "44055"
+
+# Última parte de categories[0].name (viene en inglés, "Home & Garden > ... > X") -- solo las
+# 22 que aparecen de verdad en el feed (240 productos, comprobado 8 sep 2026).
+_AEG_SUBCATEGORY_ES = {
+    "Vacuums": "Aspiradoras",
+    "Dryers": "Secadoras",
+    "Garment Steamers": "Centros de planchado",
+    "Irons & Ironing Systems": "Planchas",
+    "Laundry Combo Units": "Lavadoras-secadoras",
+    "Washing Machines": "Lavadoras",
+    "Coffee Makers & Espresso Machines": "Cafeteras",
+    "Cooking Ranges": "Cocinas",
+    "Deep Fryers": "Freidoras",
+    "Dishwashers": "Lavavajillas",
+    "Electric Kettles": "Hervidores",
+    "Food Mixers & Blenders": "Batidoras",
+    "Food Warmers": "Calientaplatos",
+    "Freezers": "Congeladores",
+    "Hobs": "Placas de cocina",
+    "Microwave Ovens": "Microondas",
+    "Ovens": "Hornos",
+    "Range Hoods": "Campanas extractoras",
+    "Refrigerators": "Frigoríficos",
+    "Toasters": "Tostadoras",
+    "Vacuum Sealers": "Envasadoras al vacío",
+    "Household Appliances": "Otros electrodomésticos",
+}
+
+
+def _aeg_subcategory(categories):
+    name = (categories or [{}])[0].get("name", "")
+    last = name.split(">")[-1].strip()
+    return _AEG_SUBCATEGORY_ES.get(last, last)
+
+
+def fetch_aeg_offers(log, cap=None):
+    """240 productos, cabe entero en 1 página. Campo `sale price` = precio de VENTA actual
+    (vacío/sin `value` cuando el producto NO está rebajado, no se puede asumir que siempre
+    tenga valor), `original price` = precio de referencia real. 178 de 240 candidatos 30-80%
+    de descuento con stock, comprobado 8 sep 2026 -- proporción altísima, se publican todos
+    los que quepan."""
+    try:
+        products = _download_tradedoubler_products(AEG_FID, log)
+    except Exception as e:
+        log(f"[aeg] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if offer.get("availability") != "in stock":
+            continue
+        sale = _td_field(fields, "sale price")
+        original = _td_field(fields, "original price")
+        try:
+            actual = float((sale or "").split()[0]) if sale else None
+            orig = float((original or "").split()[0]) if original else None
+        except (ValueError, IndexError):
+            continue
+        if not actual or not orig or orig <= 0 or actual <= 0 or actual >= orig or actual < MIN_PRICE_EUR:
+            continue
+        pct = (orig - actual) / orig * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"aeg_{pid}",
+            "title": title[:180],
+            "category": "Hogar y jardín",
+            "subcategory": _aeg_subcategory(p.get("categories")),
+            "price": round(actual, 2),
+            "original_price": round(orig, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "aeg",
+            "store_label": "AEG",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[aeg] {len(candidates)} candidatos 30-80% con stock, {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+ELECTROLUX_FID = "258481"
+
+
+def fetch_electrolux_offers(log, cap=None):
+    """Solo 55 productos, cabe entero en 1 página. A diferencia de AEG, aquí `categories` ya
+    viene en español (2-3 niveles, se usa el más específico) -- algunos nombres traen
+    "Tendencia" pegado sin espacio al final (p.ej. "HornosTendencia"), se recorta. Campos
+    `raw_price` (original) / `raw_sale_price` (venta actual) traen el precio de referencia
+    real. 35 de 55 candidatos 30-80% de descuento con stock, comprobado 8 sep 2026."""
+    try:
+        products = _download_tradedoubler_products(ELECTROLUX_FID, log)
+    except Exception as e:
+        log(f"[electrolux] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if offer.get("availability") != "in stock":
+            continue
+        orig = _td_field(fields, "raw_price")
+        sale = _td_field(fields, "raw_sale_price")
+        try:
+            original = float(orig) if orig else None
+            actual = float(sale) if sale else None
+        except ValueError:
+            continue
+        if not original or not actual or original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+        categories = p.get("categories") or [{}]
+        subcategory = re.sub(r"Tendencia$", "", categories[-1].get("name", "")).strip()
+
+        candidates.append({
+            "id": f"elx_{pid}",
+            "title": title[:180],
+            "category": "Hogar y jardín",
+            "subcategory": subcategory,
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "electrolux",
+            "store_label": "Electrolux",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[electrolux] {len(candidates)} candidatos 30-80% con stock, {len(top)} publicados "
+        f"esta vez")
+    return {o["id"]: o for o in top}
+
+
+MEDIAMARKT_FID = "24915"
+
+
+def fetch_mediamarkt_offers(log, cap=None):
+    """16.501 productos en el catálogo real, pero la API de Tradedoubler solo deja ver los
+    primeros 1.000 (ver _download_tradedoubler_products). Campo `strike_price` = precio de
+    referencia ORIGINAL, el precio de `offers[0].priceHistory` es el de VENTA actual (al
+    revés que AEG/Electrolux, aquí el campo extra es el de ANTES). 489 de los primeros 1.000
+    candidatos 30-80% de descuento con stock, comprobado 8 sep 2026 -- se cierra el bloqueo
+    "PF_392 Requester is not connected to Feed" que había el 7 sep, resuelto solo de un día
+    para otro."""
+    try:
+        products = _download_tradedoubler_products(MEDIAMARKT_FID, log)
+    except Exception as e:
+        log(f"[mediamarkt] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if offer.get("availability") != "in stock":
+            continue
+        try:
+            actual = float(offer["priceHistory"][0]["price"]["value"])
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+        strike = _td_field(fields, "strike_price")
+        try:
+            original = float(strike) if strike else None
+        except ValueError:
+            original = None
+        if not original or original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+        subcategory = (
+            _td_field(fields, "category_third_level")
+            or _td_field(fields, "category_second_level")
+            or ""
+        ).strip()
+
+        candidates.append({
+            "id": f"mm_{pid}",
+            "title": title[:180],
+            "category": "Tecnología",
+            "subcategory": subcategory,
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "mediamarkt",
+            "store_label": "MediaMarkt",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[mediamarkt] {len(candidates)} candidatos 30-80% con stock (de un máximo de 1.000 "
+        f"que deja ver la API sobre 16.501 reales), {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+TIENDANIMAL_FID = "50625"
+
+# custom_label_0 viene en singular/plural mezclado y a veces con dos valores separados por
+# ";" (se usa solo el primero) -- comprobado 8 sep 2026 sobre 1.000 productos.
+_TIENDANIMAL_SUBCATEGORY_ES = {
+    "Perro": "Perros",
+    "Gato": "Gatos",
+    "Aves": "Aves",
+    "Peces": "Peces",
+    "Reptiles": "Reptiles",
+    "Pequeño Mamífero": "Pequeños mamíferos",
+}
+
+
+def fetch_tiendanimal_offers(log, cap=None):
+    """15.454 productos en el catálogo real, pero la API de Tradedoubler solo deja ver los
+    primeros 1.000. A diferencia del resto de tiendas de Tradedoubler, aquí `availability`
+    viene como "in_stock" (con guion bajo, no "in stock"). Campo `sale_price` = precio de
+    VENTA actual, `offers[0].priceHistory` = precio ORIGINAL. Rendimiento mucho más bajo que
+    el resto: la mayoría de descuentos reales del feed rondan el 20%, por debajo del 30%
+    mínimo -- solo 5 de 1.000 candidatos califican 30-80%, comprobado 8 sep 2026. Primera
+    tienda de Mascotas del catálogo (categoría ya existente, usada hasta ahora solo por
+    Amazon)."""
+    try:
+        products = _download_tradedoubler_products(TIENDANIMAL_FID, log)
+    except Exception as e:
+        log(f"[tiendanimal] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if offer.get("availability") != "in_stock":
+            continue
+        try:
+            original = float(offer["priceHistory"][0]["price"]["value"])
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+        sale = _td_field(fields, "sale_price")
+        try:
+            actual = float((sale or "").split()[0]) if sale else None
+        except (ValueError, IndexError):
+            actual = None
+        if not actual or original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+        animal = (_td_field(fields, "custom_label_0") or "").split(";")[0].strip()
+        subcategory = _TIENDANIMAL_SUBCATEGORY_ES.get(animal, animal)
+
+        candidates.append({
+            "id": f"tda_{pid}",
+            "title": title[:180],
+            "category": "Mascotas",
+            "subcategory": subcategory,
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "tiendanimal",
+            "store_label": "Tiendanimal",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[tiendanimal] {len(candidates)} candidatos 30-80% con stock (de un máximo de 1.000 "
+        f"que deja ver la API sobre 15.454 reales), {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+# ---------------------------------------------------------------------------
 # Perfumería Comas (25 ago 2026, aprobada en Awin -- ver RASPI_REBAJASDIARIAS.md) -- 1 solo
 # feed, sin rotación, mismo patrón que Stylevana. IMPORTANTE: el feed NATIVO de Awin
 # ("Crea-un-feed", formato Awin/CSV normal) NO trae rrp_price ni saving poblados para este
@@ -1351,6 +1691,10 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("desigual", fetch_desigual_offers, "desigual"),
         ("bershka", fetch_bershka_offers, "bershka"),
         ("huawei", fetch_huawei_offers, "huawei"),
+        ("aeg", fetch_aeg_offers, "aeg"),
+        ("electrolux", fetch_electrolux_offers, "electrolux"),
+        ("mediamarkt", fetch_mediamarkt_offers, "mediamarkt"),
+        ("tiendanimal", fetch_tiendanimal_offers, "tiendanimal"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
     ]
     for name, fetch_fn, key in stores:
@@ -1382,6 +1726,10 @@ def generate_extended_catalog(log):
         ("desigual_extended", fetch_desigual_offers),
         ("bershka_extended", fetch_bershka_offers),
         ("huawei_extended", fetch_huawei_offers),
+        ("aeg_extended", fetch_aeg_offers),
+        ("electrolux_extended", fetch_electrolux_offers),
+        ("mediamarkt_extended", fetch_mediamarkt_offers),
+        ("tiendanimal_extended", fetch_tiendanimal_offers),
     ]:
         try:
             result.update(fetch_fn(log))
