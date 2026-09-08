@@ -298,7 +298,9 @@ def fetch_leroy_merlin_extended(log):
 # Stylevana (1 solo feed, sin rotación — 23.7k filas, ligero, se puede pedir entero cada ciclo)
 # ---------------------------------------------------------------------------
 
-STYLEVANA_MAX_PER_CYCLE = 50
+# STYLEVANA_MAX_PER_CYCLE (50) retirado del todo el 8 sep 2026 -- mismo motivo que OBI/4
+# Elementos/Perfumería Comas: "todas las tiendas tengan todo el catálogo", sin scraping de por
+# medio no hay riesgo real. Comprobado: 7.841 candidatos reales, manejable.
 STYLEVANA_FID = "88396"
 
 
@@ -369,9 +371,8 @@ def fetch_stylevana_offers(log, local_test_file=None):
         })
 
     candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
-    top = candidates[:STYLEVANA_MAX_PER_CYCLE]
-    log(f"[stylevana] {len(candidates)} candidatos 30-80%, {len(top)} publicados esta vez")
-    return {o["id"]: o for o in top}
+    log(f"[stylevana] {len(candidates)} candidatos 30-80%, {len(candidates)} publicados esta vez")
+    return {o["id"]: o for o in candidates}
 
 
 # ---------------------------------------------------------------------------
@@ -386,9 +387,13 @@ def fetch_stylevana_offers(log, local_test_file=None):
 # hace falta anteponerla a mano.
 # ---------------------------------------------------------------------------
 
-OBI_MAX_PER_CYCLE = 150  # subido de 50 (1 sep 2026, pedido explícito: "faltan ofertas") --
-                         # mismo criterio que Perfumería Comas, el feed entero se descarga
-                         # igual cada ciclo así que subir el tope no cuesta red extra
+# OBI_MAX_PER_CYCLE (subido de 50 a 150 el 1 sep 2026, "faltan ofertas") retirado del todo el
+# 8 sep 2026 -- pedido explícito: "todas las tiendas [que no sean Amazon] tengan todo el
+# catálogo" (sin scraping de por medio, el feed viene de Awin/Tradedoubler, no hay riesgo real
+# de "que nos pillen" a diferencia de Amazon). Comprobado ese día: 665 candidatos 30-80% de
+# descuento reales -- tamaño de sobra manejable, mismo criterio que ya se aplicaba sin pensarlo
+# a Adidas/Foot Locker/etc. desde que se integraron. fetch_obi_offers() ya no recibe ningún
+# tope por defecto (cap=None), ver más abajo.
 OBI_FID = "116697"  # "España Feed" -- ver feedList, mismo catálogo que 116481/116483/116570/116696
 
 
@@ -416,7 +421,7 @@ def _obi_subcategory(merchant_category):
     return parts[1].strip()
 
 
-def fetch_obi_offers(log, local_test_file=None, cap=OBI_MAX_PER_CYCLE):
+def fetch_obi_offers(log, local_test_file=None, cap=None):
     columns = (
         "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
         "merchant_image_url,merchant_category,search_price,rrp_price,in_stock,currency"
@@ -498,11 +503,13 @@ def fetch_obi_extended(log):
 # 30-80% de descuento, 1.181 con stock real (in_stock=1).
 # ---------------------------------------------------------------------------
 
-ELEMENTOS4_MAX_PER_CYCLE = 150  # subido de 50 (1 sep 2026, pedido explícito: "faltan ofertas")
+# ELEMENTOS4_MAX_PER_CYCLE (subido de 50 a 150 el 1 sep 2026) retirado del todo el 8 sep 2026 --
+# mismo motivo que OBI_MAX_PER_CYCLE más arriba: "todas las tiendas tengan todo el catálogo",
+# sin scraping de por medio no hay riesgo real. Comprobado: 1.421 candidatos reales, manejable.
 ELEMENTOS4_FID = "114028"
 
 
-def fetch_4elementos_offers(log, local_test_file=None, cap=ELEMENTOS4_MAX_PER_CYCLE):
+def fetch_4elementos_offers(log, local_test_file=None, cap=None):
     columns = (
         "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
         "merchant_image_url,merchant_category,search_price,rrp_price,in_stock,currency"
@@ -1625,11 +1632,10 @@ def fetch_deporte_outlet_extended(log):
 # parametrizable por columnas.
 # ---------------------------------------------------------------------------
 
-PERFUMERIA_COMAS_MAX_PER_CYCLE = 150  # "todos los más vendidos" (pedido explícito) -- feed
-                                       # entero se descarga igual cada ciclo (como Stylevana),
-                                       # así que subir el tope no cuesta red extra, solo da
-                                       # más variedad real por ciclo en vez de quedarse
-                                       # siempre con el mismo top-60 fijo
+# PERFUMERIA_COMAS_MAX_PER_CYCLE (150) retirado del todo el 8 sep 2026 -- mismo motivo que
+# OBI/4 Elementos más arriba: "todas las tiendas tengan todo el catálogo", sin scraping de por
+# medio no hay riesgo real de "que nos pillen" (a diferencia de Amazon). Comprobado: 3.695
+# candidatos reales, manejable igual que el resto.
 PERFUMERIA_COMAS_GOOGLE_FEED_ID = "F4298"
 PERFUMERIA_COMAS_FEED_URL = (
     f"https://ui.awin.com/productdata-darwin-download/publisher/3029543/"
@@ -1672,7 +1678,7 @@ def _perfumeria_comas_map_category(product_type, brand_upper):
     return "Belleza", True  # maquillaje, cosmética, cabello, estuches, cualquier otro
 
 
-def fetch_perfumeria_comas_offers(log, local_test_file=None, cap=PERFUMERIA_COMAS_MAX_PER_CYCLE):
+def fetch_perfumeria_comas_offers(log, local_test_file=None, cap=None):
     try:
         if local_test_file:
             with gzip.open(local_test_file, "rt", encoding="utf-8-sig", errors="replace") as f:
