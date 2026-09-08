@@ -1512,6 +1512,107 @@ def fetch_tiendanimal_offers(log, cap=None):
 
 
 # ---------------------------------------------------------------------------
+# Deporte Outlet ES (8 sep 2026, invitación de Awin aceptada -- ver RASPI_REBAJASDIARIAS.md).
+# Feed único (fid 41767 "Standard Produktexport ES" -- hay un segundo fid 99907 "...neu" con
+# columnas casi idénticas, se usa el primero por tener menos columnas raras). Comprobado 8 sep
+# 2026: 7.835 productos, 6.296 con precio de venta < precio original real, 4.962 en el rango
+# 30-80% -- todos con `stock_status` = "Envío inmediato" (único valor que aparece en las 7.835
+# filas, no hace falta filtrar por él, el feed ya solo trae disponibles). Sin la reversión rara
+# de nombres de campo que tiene Adidas: aquí `search_price` es el precio de VENTA actual y
+# `product_price_old` el ORIGINAL, igual que Foot Locker/Tiendanimal (comprobado: 0 filas con
+# search_price > product_price_old). Quirk real SÍ encontrado: product_price_old usa coma
+# decimal ("139,95") mientras que search_price usa punto ("89.99") -- inconsistente dentro del
+# mismo feed, de ahí el .replace(",", ".") antes de convertir a float. Categoría de producto
+# (`merchant_product_category_path`, tramos separados por ">") viene ya en español y bien
+# formada en el 46% de las filas ("Otros deportes>Baloncesto>Ropa de baloncesto") -- se usa el
+# último tramo tal cual, sin diccionario de traducción (a diferencia de Foot Locker, que sí lo
+# necesitaba por venir en inglés sin traducir).
+# ---------------------------------------------------------------------------
+
+DEPORTE_OUTLET_FID = "41767"
+
+
+def _deporte_outlet_subcategory(category_path):
+    return (category_path or "").split(">")[-1].strip()
+
+
+def fetch_deporte_outlet_offers(log, local_test_file=None, cap=None):
+    columns = (
+        "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
+        "merchant_image_url,merchant_product_category_path,search_price,product_price_old,"
+        "currency"
+    )
+    try:
+        if local_test_file:
+            with gzip.open(local_test_file, "rt", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+        else:
+            url = _awin_feed_url(AWIN_API_KEY, DEPORTE_OUTLET_FID, columns)
+            text = _download_feed_csv(url, log)
+    except Exception as e:
+        log(f"[deporte_outlet] error descargando feed: {e}")
+        return {}
+
+    reader = csv.DictReader(io.StringIO(text))
+    candidates = []
+    for row in reader:
+        if (row.get("currency") or "").strip().upper() not in ("", "EUR"):
+            continue
+        sp = row.get("search_price") or ""
+        old = row.get("product_price_old") or ""
+        if not sp.strip() or not old.strip():
+            continue
+        try:
+            actual = float(sp)
+            # Quirk real del feed: product_price_old usa coma decimal ("139,95"), a
+            # diferencia de search_price que usa punto -- sin este .replace() float()
+            # lanza ValueError en TODAS las filas.
+            original = float(old.replace(",", "."))
+        except ValueError:
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (row.get("product_name") or "").strip()
+        pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
+        image = (row.get("merchant_image_url") or "").strip()
+        aff_url = (row.get("aw_deep_link") or "").strip()
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"do_{pid}",
+            "title": title[:180],
+            "category": "Deporte",
+            "subcategory": _deporte_outlet_subcategory(
+                row.get("merchant_product_category_path")),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "deporteoutlet",
+            "store_label": "Deporte Outlet",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[deporte_outlet] {len(candidates)} candidatos 30-80% con stock, "
+        f"{len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+def fetch_deporte_outlet_extended(log):
+    """Catálogo ampliado (8 sep 2026): 4.962 candidatos con stock real, manejable entero igual
+    que Adidas/Foot Locker."""
+    return fetch_deporte_outlet_offers(log, cap=None)
+
+
+# ---------------------------------------------------------------------------
 # Perfumería Comas (25 ago 2026, aprobada en Awin -- ver RASPI_REBAJASDIARIAS.md) -- 1 solo
 # feed, sin rotación, mismo patrón que Stylevana. IMPORTANTE: el feed NATIVO de Awin
 # ("Crea-un-feed", formato Awin/CSV normal) NO trae rrp_price ni saving poblados para este
@@ -1695,6 +1796,7 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("electrolux", fetch_electrolux_offers, "electrolux"),
         ("mediamarkt", fetch_mediamarkt_offers, "mediamarkt"),
         ("tiendanimal", fetch_tiendanimal_offers, "tiendanimal"),
+        ("deporte_outlet", fetch_deporte_outlet_offers, "deporteoutlet"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
     ]
     for name, fetch_fn, key in stores:
@@ -1730,6 +1832,7 @@ def generate_extended_catalog(log):
         ("electrolux_extended", fetch_electrolux_offers),
         ("mediamarkt_extended", fetch_mediamarkt_offers),
         ("tiendanimal_extended", fetch_tiendanimal_offers),
+        ("deporte_outlet_extended", fetch_deporte_outlet_extended),
     ]:
         try:
             result.update(fetch_fn(log))
