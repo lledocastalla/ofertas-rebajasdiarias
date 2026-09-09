@@ -181,7 +181,13 @@ JITTER_MAX_MINUTES = 45
 # dentro de esta franja, pero esta comprobación es un segundo cinturón de seguridad — por si el
 # @reboot dispara tras un corte de luz a horas raras, o el jitter empuja el inicio fuera de rango.
 ACTIVE_HOUR_START = 8   # inclusive
-ACTIVE_HOUR_END = 23    # exclusive (última ejecución posible: 22:xx)
+# 9 sep 2026, bug real encontrado: el cron SÍ tiene programada una ejecución a las 23:00 (ver
+# crontab: "0 8,11,14,17,20,23 * * *"), pero con ACTIVE_HOUR_END=23 (exclusive) esa hora caía
+# fuera de la franja activa y el propio script se autodescartaba cada día pensando que era un
+# @reboot accidental en vez de la ejecución programada de verdad -- el ciclo de las 23:00
+# llevaba sin correr nunca desde que se puso esta comprobación. Ahora 24 (exclusive), para que
+# 23:xx sí cuente como franja activa; última ejecución posible pasa a ser 23:xx.
+ACTIVE_HOUR_END = 24
 
 # Las 20 categorías repartidas en 3 grupos, para que cada ejecución solo "toque" 6-7 categorías
 # (unas ~10-15 búsquedas) en vez de las 20 (~30) — un golpe más pequeño y menos identificable.
