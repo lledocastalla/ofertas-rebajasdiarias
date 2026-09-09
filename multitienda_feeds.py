@@ -13,6 +13,7 @@ resuelve a través de nuestro propio mapeo (nunca se usa merchant_category en cr
 veces viene en inglés sin traducir en el feed de origen).
 """
 
+import concurrent.futures
 import csv
 import gzip
 import heapq
@@ -749,6 +750,57 @@ def _footlocker_subcategory(merchant_category):
     return _FOOTLOCKER_SUBCATEGORY_ES.get(last, last.replace("-", " ").title())
 
 
+# Verificación de enlaces caducados (9 sep 2026, aviso real del usuario: "en foot locker me
+# salen muchas veces ofertas que ya no están"). Causa raíz comprobada: el feed de Awin sigue
+# marcando in_stock=1 productos que ya no existen de verdad en footlocker.es -- STALE_AFTER_DAYS
+# (update_offers.py) solo retira lo que deja de APARECER EN EL FEED, no detecta que el feed
+# mismo esté desactualizado. Y el enlace de afiliado tampoco da error 404 en esos casos
+# (comprobado con varios product id inválidos a propósito): el redirect de Awin cae con
+# ESTADO 200 a la portada de footlocker.es en vez de a una ficha de producto. La señal real es
+# la URL FINAL tras seguir el redirect -- una ficha de producto viva siempre tiene "/product/"
+# en la ruta, el fallback a portada nunca lo tiene.
+#
+# Solo Foot Locker por ahora (pedido explícito: "empezamos solo por foot locker, no por todas
+# las tiendas de golpe") -- verificación ligera de verdad: una petición HEAD por producto (no
+# descarga el contenido de la página, solo seguir el redirect y mirar a dónde llega), en
+# paralelo con un hilo por tanda para no alargar el ciclo de 3h por miles de peticiones
+# secuenciales (~5.500 candidatos, con 30 a la vez tarda unos minutos, no cuesta apenas red
+# extra por producto). Fallos de red (timeout, DNS...) NO cuentan como enlace muerto -- se
+# publican igual esta vez, por precaución, mismo criterio que _is_fresh() en update_offers.py
+# ante una fecha ilegible.
+def _footlocker_link_alive(url, timeout=8):
+    try:
+        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return "/product/" in resp.url
+    except Exception:
+        return True
+
+
+def _filter_dead_footlocker_links(candidates, log, max_workers=30):
+    if not candidates:
+        return candidates
+    alive = []
+    removed = 0
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_candidate = {
+            executor.submit(_footlocker_link_alive, c["url"]): c for c in candidates
+        }
+        for future in concurrent.futures.as_completed(future_to_candidate):
+            candidate = future_to_candidate[future]
+            try:
+                if future.result():
+                    alive.append(candidate)
+                else:
+                    removed += 1
+            except Exception:
+                alive.append(candidate)
+    if removed:
+        log(f"[footlocker] {removed} enlaces caducados detectados y retirados (el feed los "
+            f"seguía marcando in_stock, pero redirigen a la portada en vez de a un producto)")
+    return alive
+
+
 def fetch_footlocker_offers(log, local_test_file=None, cap=None):
     columns = (
         "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
@@ -809,9 +861,12 @@ def fetch_footlocker_offers(log, local_test_file=None, cap=None):
             "store_label": "Foot Locker",
         })
 
+    before_link_check = len(candidates)
+    candidates = _filter_dead_footlocker_links(candidates, log)
     candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
     top = candidates if cap is None else candidates[:cap]
-    log(f"[footlocker] {len(candidates)} candidatos 30-80% con stock, {len(top)} publicados esta vez")
+    log(f"[footlocker] {before_link_check} candidatos 30-80% con stock, "
+        f"{len(candidates)} con enlace vivo, {len(top)} publicados esta vez")
     return {o["id"]: o for o in top}
 
 
