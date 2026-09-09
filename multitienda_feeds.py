@@ -754,30 +754,45 @@ def _footlocker_subcategory(merchant_category):
 # salen muchas veces ofertas que ya no están"). Causa raíz comprobada: el feed de Awin sigue
 # marcando in_stock=1 productos que ya no existen de verdad en footlocker.es -- STALE_AFTER_DAYS
 # (update_offers.py) solo retira lo que deja de APARECER EN EL FEED, no detecta que el feed
-# mismo esté desactualizado. Y el enlace de afiliado tampoco da error 404 en esos casos
-# (comprobado con varios product id inválidos a propósito): el redirect de Awin cae con
-# ESTADO 200 a la portada de footlocker.es en vez de a una ficha de producto. La señal real es
-# la URL FINAL tras seguir el redirect -- una ficha de producto viva siempre tiene "/product/"
-# en la ruta, el fallback a portada nunca lo tiene.
+# mismo esté desactualizado. Dos formas distintas de estar "muerto", las dos con estado HTTP 200
+# (nunca un 404 de verdad):
+#   1. El redirect de Awin cae directo a la portada de footlocker.es en vez de a una ficha de
+#      producto -- se detecta solo con la URL final tras seguir el redirect (barato, sin leer
+#      el cuerpo: "/product/" ausente de la URL).
+#   2. La URL final SIGUE siendo una ficha de producto (con "/product/"), pero la propia página
+#      diagnostica el producto como inactivo -- comprobado con un caso real, "el 404 | Product
+#      Not Found" que se ve en el navegador (JS) NO aparece así en el HTML plano, pero el motivo
+#      real SÍ viene embebido en el estado inicial que trae el HTML servido por el propio
+#      servidor: `"getDetails":{"status":"@api/FAILED",...,"statusCode":404,...}` (vivo:
+#      `"@api/SUCCEEDED"`). Para esto hace falta el CUERPO entero de la página (~580 KB),
+#      no solo la cabecera.
 #
 # Solo Foot Locker por ahora (pedido explícito: "empezamos solo por foot locker, no por todas
-# las tiendas de golpe") -- verificación ligera de verdad: una petición HEAD por producto (no
-# descarga el contenido de la página, solo seguir el redirect y mirar a dónde llega), en
-# paralelo con un hilo por tanda para no alargar el ciclo de 3h por miles de peticiones
-# secuenciales (~5.500 candidatos, con 30 a la vez tarda unos minutos, no cuesta apenas red
-# extra por producto). Fallos de red (timeout, DNS...) NO cuentan como enlace muerto -- se
-# publican igual esta vez, por precaución, mismo criterio que _is_fresh() en update_offers.py
+# las tiendas de golpe"). Con las ~5.400 candidatas de hoy, el caso 2 exige ~3 GB de descarga
+# por ciclo -- aceptado con conocimiento de causa ("tengo bastante velocidad de red"), pero con
+# cuidado de memoria: la Pi de verdad es un Raspberry Pi 3 con menos de 1 GB de RAM total. Cada
+# hilo procesa y descarta su página al momento (nunca se guardan los ~580 KB en el resultado,
+# solo el `bool` de si está viva) -- con max_workers=20 el pico real son unos 20 × 580 KB ≈
+# 12 MB en vuelo, nada comparado con lo que ya maneja el propio scraper (el catálogo entero,
+# ~27.000 ofertas, en memoria). Fallos de red (timeout, DNS...) NO cuentan como enlace muerto --
+# se publican igual esta vez, por precaución, mismo criterio que _is_fresh() en update_offers.py
 # ante una fecha ilegible.
-def _footlocker_link_alive(url, timeout=8):
+_FOOTLOCKER_DEAD_MARKER = '"getDetails":{"status":"@api\\u002FFAILED"'
+
+
+def _footlocker_link_alive(url, timeout=10):
     try:
-        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "Mozilla/5.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return "/product/" in resp.url
+            if "/product/" not in resp.url:
+                return False  # caso 1: redirigido a portada
+            body = resp.read().decode("utf-8", errors="replace")
+            return _FOOTLOCKER_DEAD_MARKER not in body  # caso 2: ficha marcada inactiva
     except Exception:
         return True
 
 
-def _filter_dead_footlocker_links(candidates, log, max_workers=30):
+def _filter_dead_footlocker_links(candidates, log, max_workers=20):
     if not candidates:
         return candidates
     alive = []
