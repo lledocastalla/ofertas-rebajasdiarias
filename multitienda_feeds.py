@@ -1620,6 +1620,107 @@ def fetch_deporte_outlet_extended(log):
 
 
 # ---------------------------------------------------------------------------
+# Balay y Bosch ES (9 sep 2026, aceptadas en Tradedoubler el 7-8 sep -- ver
+# RASPI_REBAJASDIARIAS.md, bloqueadas unos días por PF_392 "Requester is not connected to
+# Feed" hasta que la API terminó de propagar el alta). Mismo grupo BSH que AEG/Electrolux, pero
+# con un esquema de precio DISTINTO a esas dos: el campo custom `previous_price` es el precio
+# ORIGINAL (no el de venta) y el precio de venta actual vive en `offers[0].priceHistory[0].
+# price.value` -- comprobado con 57/186 (Balay) y 76/318 (Bosch) productos con
+# previous_price > priceHistory, siempre en esa dirección, nunca al revés. `categories[0].name`
+# ya viene en español de fábrica (a diferencia de AEG, que lo trae en inglés sin traducir), se
+# usa tal cual como subcategoría.
+#
+# Rendimiento honesto (comprobado 9 sep 2026): de esos productos con descuento real, solo 2
+# (Balay) y 3 (Bosch) caen en el rango 30-80% del resto del catálogo -- la mayoría ronda un
+# 10% de descuento, por debajo del mínimo. Mismo orden de magnitud que Electrolux (5
+# candidatos) cuando se integró, así que se publican igual -- pocas ofertas reales, pero
+# reales, no un motivo para descartar la tienda.
+# ---------------------------------------------------------------------------
+
+BALAY_FID = "88088"
+BOSCH_FID = "44285"
+
+
+def _bsh_subcategory(categories):
+    """Última parte de categories[0].name -- a diferencia de AEG, Balay/Bosch ya lo traen en
+    español de fábrica, no hace falta diccionario de traducción."""
+    name = (categories or [{}])[0].get("name", "")
+    return name.split(">")[-1].strip()
+
+
+def _fetch_bsh_offers(fid, store_key, store_label, log, cap=None):
+    """Compartida por Balay y Bosch -- mismo feed BSH, mismo esquema de precio (ver comentario
+    de la sección de arriba), solo cambian fid/store."""
+    try:
+        products = _download_tradedoubler_products(fid, log)
+    except Exception as e:
+        log(f"[{store_key}] error descargando feed: {e}")
+        return {}
+
+    candidates = []
+    for p in products:
+        fields = p.get("fields") or []
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if offer.get("availability") != "in stock":
+            continue
+        price_history = offer.get("priceHistory") or []
+        if not price_history:
+            continue
+        prev = _td_field(fields, "previous_price")
+        if not prev:
+            continue
+        try:
+            original = float(prev)
+            actual = float(price_history[0]["price"]["value"])
+        except (ValueError, KeyError, TypeError):
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (p.get("name") or "").strip()
+        pid = offer.get("sourceProductId") or ""
+        image = (p.get("productImage") or {}).get("url") or ""
+        aff_url = offer.get("productUrl") or ""
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"{store_key}_{pid}",
+            "title": title[:180],
+            "category": "Hogar y jardín",
+            "subcategory": _bsh_subcategory(p.get("categories")),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": store_key,
+            "store_label": store_label,
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[{store_key}] {len(candidates)} candidatos 30-80% con stock, "
+        f"{len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
+def fetch_balay_offers(log, cap=None):
+    return _fetch_bsh_offers(BALAY_FID, "balay", "Balay", log, cap=cap)
+
+
+def fetch_bosch_offers(log, cap=None):
+    return _fetch_bsh_offers(BOSCH_FID, "bosch", "Bosch", log, cap=cap)
+
+
+# ---------------------------------------------------------------------------
 # Perfumería Comas (25 ago 2026, aprobada en Awin -- ver RASPI_REBAJASDIARIAS.md) -- 1 solo
 # feed, sin rotación, mismo patrón que Stylevana. IMPORTANTE: el feed NATIVO de Awin
 # ("Crea-un-feed", formato Awin/CSV normal) NO trae rrp_price ni saving poblados para este
@@ -1803,6 +1904,8 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("mediamarkt", fetch_mediamarkt_offers, "mediamarkt"),
         ("tiendanimal", fetch_tiendanimal_offers, "tiendanimal"),
         ("deporte_outlet", fetch_deporte_outlet_offers, "deporteoutlet"),
+        ("balay", fetch_balay_offers, "balay"),
+        ("bosch", fetch_bosch_offers, "bosch"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
     ]
     for name, fetch_fn, key in stores:
@@ -1839,6 +1942,8 @@ def generate_extended_catalog(log):
         ("mediamarkt_extended", fetch_mediamarkt_offers),
         ("tiendanimal_extended", fetch_tiendanimal_offers),
         ("deporte_outlet_extended", fetch_deporte_outlet_extended),
+        ("balay_extended", fetch_balay_offers),
+        ("bosch_extended", fetch_bosch_offers),
     ]:
         try:
             result.update(fetch_fn(log))
