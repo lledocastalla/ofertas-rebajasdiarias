@@ -22,6 +22,7 @@ import io
 import json
 import os
 import re
+import urllib.parse
 import urllib.request
 
 HOME = os.path.expanduser("~")
@@ -1718,6 +1719,42 @@ def _bsh_subcategory(categories):
     return name.split(">")[-1].strip()
 
 
+def _bsh_extract_real_url(tracking_url):
+    """`offer.productUrl` del feed de Tradedoubler es un enlace de seguimiento
+    (pdt.tradedoubler.com/click?...url(<destino real, URL-encoded>)) con una página intermedia
+    de 2s (meta refresh) antes de llegar de verdad a balay.es/bosch-home.es -- SIEMPRE responde
+    200 aunque el producto de debajo ya no exista, así que para comprobar si sigue vivo de
+    verdad hay que mirar la página REAL, no la de seguimiento."""
+    # El destino real va URL-encoded dentro del paréntesis ("url(https%3A%2F%2F...)"), no en
+    # texto plano -- comprobado 11 sep 2026: un regex que buscaba "https?://" literal ahí
+    # dentro nunca hacía match (0 de 2 candidatos reales), dejando pasar sin comprobar nada.
+    m = re.search(r"url\(([^)]+)\)", tracking_url)
+    return urllib.parse.unquote(m.group(1)) if m else None
+
+
+def _bsh_product_alive(tracking_url, timeout=10):
+    """Balay/Bosch (BSH) marcan el producto agotado/descatalogado con
+    `"availability":"https://schema.org/OutOfStock"` en su propio HTML (ficha schema.org
+    Product), aunque la página real siga respondiendo 200 -- comprobado 11 sep 2026, aviso
+    real del usuario ("la campana y la lavadora ya no están disponibles") sobre las dos únicas
+    ofertas que se habían publicado ese ciclo, las dos agotadas de verdad en balay.es. Mismo
+    concepto que _footlocker_link_alive (feed marcándolo in stock cuando ya no lo está), pero
+    aquí el marcador es un campo schema.org en vez de un estado embebido a medias -- y el
+    volumen es tan bajo (2-5 candidatos tras el filtro 30-80%, no miles) que no hace falta
+    paralelizar con hilos. Fallos de red NO cuentan como agotado (se publica igual esta vez,
+    por precaución) -- solo cuenta el marcador explícito de OutOfStock leído con éxito."""
+    real_url = _bsh_extract_real_url(tracking_url)
+    if not real_url:
+        return True
+    try:
+        req = urllib.request.Request(real_url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            body = resp.read().decode("utf-8", errors="replace")
+        return '"availability":"https://schema.org/OutOfStock"' not in body
+    except Exception:
+        return True
+
+
 def _fetch_bsh_offers(fid, store_key, store_label, log, cap=None):
     """Compartida por Balay y Bosch -- mismo feed BSH, mismo esquema de precio (ver comentario
     de la sección de arriba), solo cambian fid/store."""
@@ -1775,9 +1812,21 @@ def _fetch_bsh_offers(fid, store_key, store_label, log, cap=None):
             "store_label": store_label,
         })
 
+    alive_candidates = []
+    dead = 0
+    for c in candidates:
+        if _bsh_product_alive(c["url"]):
+            alive_candidates.append(c)
+        else:
+            dead += 1
+    if dead:
+        log(f"[{store_key}] {dead} producto(s) agotado(s)/descatalogado(s) de verdad "
+            f"retirados (el feed los seguía marcando in stock)")
+    candidates = alive_candidates
+
     candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
     top = candidates if cap is None else candidates[:cap]
-    log(f"[{store_key}] {len(candidates)} candidatos 30-80% con stock, "
+    log(f"[{store_key}] {len(candidates)} candidatos 30-80% con stock real verificado, "
         f"{len(top)} publicados esta vez")
     return {o["id"]: o for o in top}
 
