@@ -1883,6 +1883,23 @@ def main():
                 except WebDriverException as e:
                     log(f"  error de navegador con '{kw}': {e}")
                     continue
+                # "Alertas" es un cajón genérico, no una categoría real de la app (14 sep 2026,
+                # pedido explícito: "que lo que busque la gente también se quede guardado en
+                # las categorías para todos... si es ropa a ropa, etc"). Para cada oferta
+                # encontrada por una alerta, se visita su ficha (mismo driver ya abierto, sin
+                # lanzar Chrome nuevo) y se reclasifica con _detect_amazon_category() -- mismo
+                # mecanismo que ya usa "Sugerir una oferta". Si no se puede identificar con
+                # seguridad, se queda en "Alertas" (mejor no adivinar que adivinar mal, mismo
+                # criterio que SUBMISSION_CATEGORY).
+                if category == 'Alertas':
+                    for offer in found:
+                        try:
+                            driver.get(offer["url"])
+                            real_category = _detect_amazon_category(driver)
+                            if real_category:
+                                offer["category"] = real_category
+                        except WebDriverException:
+                            pass  # se queda en "Alertas", no debe tumbar el resto del ciclo
                 for offer in found:
                     new_or_updated[offer["id"]] = offer
                 scraped_count += len(found)
