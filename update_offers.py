@@ -16,6 +16,7 @@ Diseño (ver RASPI_REBAJASDIARIAS.md):
   tocar offers.json ni hacer commit/push. Nunca se deja la app sin ofertas por un fallo puntual.
 """
 
+import atexit
 import fcntl
 import json
 import os
@@ -47,6 +48,12 @@ OFFERS_PATH = f"{REPO_DIR}/offers.json"
 # de 3h) espera su turno (lock bloqueante); check_submissions.py, que dispara cada pocos
 # minutos, se sale sin más si lo encuentra ocupado y lo reintenta en su próximo disparo.
 REPO_LOCK_PATH = f"{HOME}/.rebajas_update_lock"
+# PID del ciclo normal en marcha (14 sep 2026, ver keyword_alert_search.py) -- solo existe
+# mientras main() tiene el candado de arriba tomado, se borra solo al terminar (atexit). Deja
+# que la búsqueda de una alerta de palabra clave lo pause (SIGSTOP) mientras dura su propia
+# búsqueda rápida y lo reanude (SIGCONT) al terminar, en vez de competir por CPU con él en una
+# Pi con pocos recursos (pedido explícito: "así no se satura la Pi").
+UPDATE_OFFERS_PID_PATH = f"{HOME}/.rebajas_update_pid"
 CHROMEDRIVER_PATH = "/usr/bin/chromedriver"
 CHROMIUM_PATH = "/usr/bin/chromium"
 AFFILIATE_TAG = "rebajasdiar05-21"
@@ -1077,10 +1084,16 @@ def notify_keyword_alerts(brand_new_asins, merged):
         log(f"  aviso: no se pudo comprobar alertas de palabra clave: {e}")
 
 
-def build_driver():
+def build_driver(profile_dir=PROFILE_DIR):
+    """`profile_dir` parametrizable (14 sep 2026, ver keyword_alert_search.py) -- las alertas de
+    palabra clave usan un perfil de Chrome APARTE del ciclo normal (pedido explícito: "lo más
+    rápido posible", que no tengan que esperar a que termine un ciclo de scraping entero, que
+    puede tardar minutos) -- dos Chrome sobre el MISMO user-data-dir sí chocan entre sí, sobre
+    dos distintos no hay problema. El ciclo normal sigue llamando a esta función sin pasar este
+    argumento, mismo perfil de siempre."""
     options = Options()
     options.binary_location = CHROMIUM_PATH
-    options.add_argument(f"--user-data-dir={PROFILE_DIR}")
+    options.add_argument(f"--user-data-dir={profile_dir}")
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
@@ -1772,6 +1785,15 @@ def main():
     # terminar (aquí main() se llama una única vez por ejecución del script).
     _repo_lock_file = open(REPO_LOCK_PATH, "w")
     fcntl.flock(_repo_lock_file, fcntl.LOCK_EX)
+
+    # PID propio (ver UPDATE_OFFERS_PID_PATH) -- atexit en vez de un finally que envolviera esta
+    # función entera (muy grande, alto riesgo de reestructurarla solo para esto): se borra solo
+    # al terminar el proceso, sea como sea que termine (éxito, sys.exit(1), excepción sin
+    # capturar...).
+    with open(UPDATE_OFFERS_PID_PATH, "w") as _pid_f:
+        _pid_f.write(str(os.getpid()))
+    atexit.register(lambda: os.path.exists(UPDATE_OFFERS_PID_PATH)
+                     and os.remove(UPDATE_OFFERS_PID_PATH))
 
     subprocess.run(["git", "-C", REPO_DIR, "pull", "--quiet"], check=False)
 

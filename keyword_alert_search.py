@@ -12,18 +12,25 @@ resultados a nadie. En vez de depender de esa elegibilidad, usa el MISMO scrapin
 (scrape_keyword() en update_offers.py, Selenium/Chrome) que ya funciona hoy para el resto del
 catálogo -- no hace falta ninguna API con permisos especiales.
 
+**Perfil de Chrome APARTE + pausa del ciclo normal** (14 sep 2026, segunda vuelta, pedido
+explícito: "lo más rápido posible y con pocos resultados de alertas" -- uno es "el de las
+ofertas de la app", este es otro distinto -- y luego "si hay una alerta en búsqueda pausa el
+otro scraping... y en terminar que siga", "así no se satura la Pi"): a diferencia de
+check_submissions.py, que SÍ comparte perfil y candado con update_offers.py porque puede
+permitirse esperar unos minutos, las alertas no esperan Y además no deben competir por CPU/RAM
+con el ciclo normal en una Pi con pocos recursos. `KEYWORD_ALERT_PROFILE_DIR` propio (evita que
+los dos Chrome choquen por el mismo user-data-dir) + **SIGSTOP al proceso del ciclo normal
+mientras dura la búsqueda, SIGCONT al terminar** (ver UPDATE_OFFERS_PID_PATH en
+update_offers.py) -- congela el ciclo normal a nivel de sistema operativo sin tocar su estado
+interno (git a medias, progreso por categoría...), se reanuda exactamente donde estaba. Si el
+ciclo normal no está corriendo, no hay nada que pausar y se sigue igual.
+
 Dos disparadores comparten esta misma función, para no duplicar la lógica de guardar/quitar:
   - search_requests_listener.py, al momento de añadir una palabra (ver AmazonSearchService.
     createKeywordAlertRequest() en la app) -- un Chrome headless tarda unos segundos en abrir y
     buscar, no es instantáneo como la API lo hubiera sido, pero es lo que de verdad funciona.
   - keyword_alert_cleanup.py, en un cron propio cada hora -- vuelve a comprobar CADA palabra ya
     guardada de CADA usuario, añade lo nuevo (avisa por push) y quita lo que ya no cumpla.
-
-Candado NO bloqueante compartido con update_offers.py/check_submissions.py (mismo
-REPO_LOCK_PATH, mismo perfil de Chrome -- dos Chrome a la vez sobre el mismo user-data-dir
-fallan) -- si el ciclo normal de scraping está corriendo ahora mismo, se sale sin más, nunca se
-espera bloqueado a que termine un ciclo entero (puede tardar minutos). Se reintenta solo en el
-siguiente disparo (cron horario, o la próxima vez que alguien añada/repita la alerta).
 
 Colección `keyword_alert_offers/{uid}_{keyword}_{asin}` -- id determinista para que guardar dos
 veces la misma oferta la actualice en vez de duplicarla.
@@ -35,7 +42,8 @@ real que nada. Nunca toca MIN_DISCOUNT_PERCENT/MAX_DISCOUNT_PERCENT de update_of
 siguen en 30-80% para el ciclo normal del catálogo.
 """
 
-import fcntl
+import os
+import signal
 
 from firebase_admin import firestore, messaging
 from google.cloud.firestore_v1.base_query import FieldFilter
@@ -45,34 +53,69 @@ import update_offers as uo
 MIN_SAVING_PERCENT_KEYWORD_ALERT = 1
 MAX_SAVING_PERCENT_KEYWORD_ALERT = 100  # "hasta el máximo" -- sin techo, a diferencia del 80%
 CATEGORY_LABEL = "Alerta"
+MAX_PRODUCTS_KEYWORD_ALERT = 5  # "pocos resultados de alertas" -- una búsqueda concreta, no el
+# catálogo entero; menos productos por búsqueda = Chrome menos tiempo abierto/pausa más corta.
+KEYWORD_ALERT_PROFILE_DIR = f"{uo.HOME}/.rebajas_chrome_profile_alertas"
 
 
 def log(msg):
     print(f"[keyword_alert_search] {msg}", flush=True)
 
 
-def _scrape_keyword_live(keyword):
-    """Abre un Chrome real y busca `keyword` en Amazon.es con el umbral bajo de las alertas.
-    Devuelve None si el candado del repo está ocupado (ciclo normal de scraping en curso) o si
-    algo falla de verdad al abrir/usar Chrome -- en los dos casos NO se debe tocar nada de lo
-    ya guardado (fallo temporal, no que las ofertas hayan desaparecido de verdad). Devuelve una
-    lista (puede estar vacía) si el scraping se completó con normalidad."""
-    lock_file = open(uo.REPO_LOCK_PATH, "w")
+def _pause_main_cycle():
+    """Pausa (SIGSTOP) el ciclo normal de scraping mientras dura la búsqueda de la alerta, en
+    vez de competir por CPU/RAM con él en una Pi con pocos recursos (pedido explícito: "así no
+    se satura la Pi"). SIGSTOP congela el proceso tal cual está, sin tocar su estado interno --
+    se reanuda exactamente donde iba. Devuelve el PID pausado (o None si el ciclo normal no
+    estaba corriendo, nada que pausar, o el PID guardado ya no existe -- proceso muerto sin que
+    le diera tiempo a borrar su propio fichero, p. ej. un SIGKILL por falta de memoria)."""
+    pid_path = uo.UPDATE_OFFERS_PID_PATH
+    if not os.path.isfile(pid_path):
+        return None
     try:
-        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except OSError:
-        log(f"'{keyword}': el perfil de Chrome está en uso ahora mismo, se reintenta luego")
+        with open(pid_path) as f:
+            pid = int(f.read().strip())
+        os.kill(pid, signal.SIGSTOP)
+        log(f"ciclo normal (pid {pid}) pausado mientras dura la búsqueda")
+        return pid
+    except ProcessLookupError:
+        # El PID guardado ya no existe de verdad -- limpia el fichero huérfano de paso.
+        try:
+            os.remove(pid_path)
+        except OSError:
+            pass
+        return None
+    except (OSError, ValueError):
         return None
 
+
+def _resume_main_cycle(pid):
+    if pid is None:
+        return
+    try:
+        os.kill(pid, signal.SIGCONT)
+        log(f"ciclo normal (pid {pid}) reanudado")
+    except OSError:
+        pass  # ya había terminado solo mientras tanto (poco probable, pero no pasa nada)
+
+
+def _scrape_keyword_live(keyword):
+    """Abre un Chrome real (perfil propio, aparte del ciclo normal) y busca `keyword` en
+    Amazon.es con el umbral bajo de las alertas -- pausando el ciclo normal mientras dura, si
+    estaba corriendo. Devuelve None si algo falla de verdad al abrir/usar Chrome (fallo
+    temporal, NO se debe tocar nada de lo ya guardado). Devuelve una lista (puede estar vacía)
+    si el scraping se completó con normalidad."""
+    paused_pid = _pause_main_cycle()
     driver = None
     try:
-        driver = uo.build_driver()
+        driver = uo.build_driver(profile_dir=KEYWORD_ALERT_PROFILE_DIR)
         return uo.scrape_keyword(
             driver,
             keyword,
             CATEGORY_LABEL,
             min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
             max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
+            max_products=MAX_PRODUCTS_KEYWORD_ALERT,
         )
     except Exception as e:
         log(f"ERROR scrapeando '{keyword}': {e}")
@@ -83,11 +126,7 @@ def _scrape_keyword_live(keyword):
                 driver.quit()
             except Exception:
                 pass
-        try:
-            fcntl.flock(lock_file, fcntl.LOCK_UN)
-        except Exception:
-            pass
-        lock_file.close()
+        _resume_main_cycle(paused_pid)
 
 
 def _send_keyword_alert_push(uid, keyword, new_offers):
