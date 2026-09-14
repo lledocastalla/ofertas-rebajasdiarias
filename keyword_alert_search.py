@@ -46,6 +46,7 @@ import fcntl
 import os
 import re
 import signal
+import time
 
 from firebase_admin import firestore, messaging
 from google.cloud.firestore_v1.base_query import FieldFilter
@@ -66,6 +67,21 @@ KEYWORD_ALERT_PROFILE_DIR = f"{uo.HOME}/.rebajas_chrome_profile_alertas"
 # sin _NB) a propósito, a diferencia de REPO_LOCK_PATH del ciclo normal -- aquí sí queremos que
 # la segunda alerta espere su turno en vez de rendirse, cada búsqueda es rápida (segundos).
 KEYWORD_ALERT_LOCK_PATH = f"{uo.HOME}/.rebajas_keyword_alert_lock"
+# 14 sep 2026, tercer aviso real: varias alertas seguidas SÍ se procesaban una detrás de otra
+# (el candado de arriba ya lo garantizaba), pero sin ninguna pausa entre medias -- en una Pi de
+# solo 905MB, el Chrome recién cerrado no siempre suelta su memoria/swap a tiempo antes de que
+# el siguiente intente abrir uno nuevo, y las últimas de una tanda larga acababan fallando
+# ("session not created", timeouts) al no quedar RAM libre. Pausa real tras cada búsqueda,
+# dentro del propio candado -- así la siguiente en la cola no arranca hasta que ha pasado tiempo
+# de sobra para que el sistema recupere la memoria.
+KEYWORD_ALERT_COOLDOWN_SECONDS = 8
+# Reintentos con pausa larga (pedido explícito: "si sale un error que arranque al rato otra vez
+# hasta que vaya") -- antes un solo fallo (Chrome no arrancó, timeout...) se rendía del todo y
+# el usuario se quedaba sin nada. 3 intentos en total, con tiempo de sobra entre cada uno para
+# que la memoria se asiente de verdad (más que el cooldown normal de arriba, porque si ha
+# fallado es que la Pi venía más apurada de lo normal).
+KEYWORD_ALERT_RETRY_ATTEMPTS = 3
+KEYWORD_ALERT_RETRY_DELAY_SECONDS = 30
 
 
 def log(msg):
@@ -137,15 +153,17 @@ def _resume_main_cycle(pid):
         pass  # ya había terminado solo mientras tanto (poco probable, pero no pasa nada)
 
 
-def _scrape_keyword_live(keyword):
-    """Abre un Chrome real (perfil propio, aparte del ciclo normal) y busca `keyword` en
-    Amazon.es con el umbral bajo de las alertas -- pausando el ciclo normal mientras dura, si
-    estaba corriendo. Candado BLOQUEANTE propio del perfil de alertas primero (ver
+def _scrape_keyword_live_once(keyword):
+    """Un único intento -- abre un Chrome real (perfil propio, aparte del ciclo normal) y busca
+    `keyword` en Amazon.es con el umbral bajo de las alertas, pausando el ciclo normal mientras
+    dura, si estaba corriendo. Candado BLOQUEANTE propio del perfil de alertas primero (ver
     KEYWORD_ALERT_LOCK_PATH) -- si dos alertas se añaden seguidas, la segunda espera a que
     termine la primera en vez de abrir un segundo Chrome sobre el mismo user-data-dir a la vez
-    (eso es lo que crasheaba antes: "session not created: Chrome instance exited"). Devuelve
-    None si algo falla de verdad al abrir/usar Chrome (fallo temporal, NO se debe tocar nada de
-    lo ya guardado). Devuelve una lista (puede estar vacía) si el scraping se completó bien."""
+    (eso es lo que crasheaba antes: "session not created: Chrome instance exited"). Con un
+    cooldown real antes de soltar el candado (ver KEYWORD_ALERT_COOLDOWN_SECONDS) -- así la
+    siguiente en la cola no arranca hasta que la memoria de esta ha tenido tiempo de asentarse.
+    Devuelve None si algo falla de verdad al abrir/usar Chrome (fallo temporal, NO se debe tocar
+    nada de lo ya guardado). Devuelve una lista (puede estar vacía) si se completó bien."""
     lock_file = open(KEYWORD_ALERT_LOCK_PATH, "w")
     fcntl.flock(lock_file, fcntl.LOCK_EX)  # bloqueante -- espera su turno, no se rinde
     try:
@@ -171,12 +189,31 @@ def _scrape_keyword_live(keyword):
                 except Exception:
                     pass
             _resume_main_cycle(paused_pid)
+            time.sleep(KEYWORD_ALERT_COOLDOWN_SECONDS)
     finally:
         try:
             fcntl.flock(lock_file, fcntl.LOCK_UN)
         except Exception:
             pass
         lock_file.close()
+
+
+def _scrape_keyword_live(keyword):
+    """Como _scrape_keyword_live_once(), pero con reintentos (14 sep 2026, pedido explícito: "si
+    sale un error en la búsqueda que arranque al rato otra vez hasta que vaya") -- un fallo
+    puntual (Chrome sin memoria para arrancar, timeout de red...) ya no se rinde a la primera,
+    reintenta unas cuantas veces con pausa real entre medias. Sigue devolviendo None solo si
+    TODOS los intentos fallan de verdad."""
+    for attempt in range(1, KEYWORD_ALERT_RETRY_ATTEMPTS + 1):
+        result = _scrape_keyword_live_once(keyword)
+        if result is not None:
+            return result
+        if attempt < KEYWORD_ALERT_RETRY_ATTEMPTS:
+            log(f"'{keyword}': intento {attempt} fallido, reintentando en "
+                f"{KEYWORD_ALERT_RETRY_DELAY_SECONDS}s...")
+            time.sleep(KEYWORD_ALERT_RETRY_DELAY_SECONDS)
+    log(f"'{keyword}': {KEYWORD_ALERT_RETRY_ATTEMPTS} intentos fallidos, se rinde por ahora")
+    return None
 
 
 def _send_keyword_alert_push(uid, keyword, new_offers):
