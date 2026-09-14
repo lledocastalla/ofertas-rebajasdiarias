@@ -53,8 +53,9 @@ import update_offers as uo
 MIN_SAVING_PERCENT_KEYWORD_ALERT = 1
 MAX_SAVING_PERCENT_KEYWORD_ALERT = 100  # "hasta el máximo" -- sin techo, a diferencia del 80%
 CATEGORY_LABEL = "Alerta"
-MAX_PRODUCTS_KEYWORD_ALERT = 5  # "pocos resultados de alertas" -- una búsqueda concreta, no el
-# catálogo entero; menos productos por búsqueda = Chrome menos tiempo abierto/pausa más corta.
+MAX_PRODUCTS_KEYWORD_ALERT = 16  # 14 sep 2026, segundo aviso real: "solo encuentra 5 ofertas y
+# sé que hay muchas más" -- subido de 5 a 16 (una sola página de resultados de Amazon.es trae
+# normalmente entre 16 y 24 tarjetas, no hace falta paginar más para una alerta concreta).
 KEYWORD_ALERT_PROFILE_DIR = f"{uo.HOME}/.rebajas_chrome_profile_alertas"
 
 
