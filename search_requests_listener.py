@@ -63,7 +63,7 @@ def _process_request(doc_id, data):
     if data.get("notifyPush") and data.get("requestedBy"):
         try:
             new_offers = keyword_alert_search.refresh_keyword_alert(
-                db, data["requestedBy"], query_text
+                db, data["requestedBy"], query_text, first_search=True
             )
             if new_offers is None:
                 doc_ref.set({"status": "unavailable"}, merge=True)

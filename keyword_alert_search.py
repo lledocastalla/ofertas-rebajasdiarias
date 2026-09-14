@@ -243,13 +243,45 @@ def _send_keyword_alert_push(uid, keyword, new_offers):
         log(f"  aviso: no se pudo mandar push de '{keyword}' a {uid}: {e}")
 
 
-def refresh_keyword_alert(db, uid, keyword, notify_new=True):
+def _send_keyword_alert_empty_push(uid, keyword):
+    """14 sep 2026, aviso real: "he puesto una alerta y tarda mucho en aparecer algo, sigue sin
+    aparecer" -- la búsqueda en realidad SÍ había terminado bien (resultCount: 0 en Firestore),
+    solo que Amazon no tenía ningún descuento real para esa palabra en ese momento. Como el push
+    de "encontramos ofertas" de arriba solo se manda si hay algo nuevo, quien busca se queda
+    esperando para siempre sin enterarse de que ya se ha terminado de buscar. Solo se llama
+    desde la búsqueda EN VIVO al añadir la alerta (ver first_search más abajo) -- nunca desde el
+    cron de repaso periódico (keyword_alert_cleanup.py), que sí volvería a encontrar 0 en la
+    mayoría de sus pasadas para la mayoría de palabras: mandar este aviso ahí sería spam, no
+    información útil."""
+    try:
+        messaging.send(messaging.Message(
+            notification=messaging.Notification(
+                title="🔍 Búsqueda terminada",
+                body=f'No encontramos ningún descuento real para "{keyword}" ahora mismo -- '
+                     'seguimos vigilando y te avisamos en cuanto aparezca uno.',
+            ),
+            data={"type": "keyword_alert_empty", "keyword": keyword},
+            topic=f"user_{uid}",
+        ))
+        log(f"  push de '0 resultados' enviado a {uid} por '{keyword}'")
+    except Exception as e:
+        log(f"  aviso: no se pudo mandar push de '0 resultados' de '{keyword}' a {uid}: {e}")
+
+
+def refresh_keyword_alert(db, uid, keyword, notify_new=True, first_search=False):
     """Busca `keyword` en vivo (scraping real, umbral 1% sin techo), guarda lo que encuentre en
     keyword_alert_offers y borra lo que ya no aparezca -- pedido explícito "si ya no están las
     ofertas que se eliminen". Devuelve la lista de ofertas NUEVAS (no vistas antes para este
     uid+keyword, puede estar vacía) y manda el push por ellas si notify_new=True. Devuelve None
     si el scraping no se pudo completar (candado ocupado, Chrome falló...) -- en ese caso NO
-    toca nada de lo ya guardado."""
+    toca nada de lo ya guardado.
+
+    `first_search` (14 sep 2026): True solo cuando esto es la búsqueda inmediata al añadir la
+    alerta (ver search_requests_listener.py) -- si no encuentra nada, avisa de todos modos (ver
+    _send_keyword_alert_empty_push) para que quien la añadió no se quede esperando sin saber si
+    ya ha terminado o sigue en marcha. False en el cron de repaso periódico
+    (keyword_alert_cleanup.py), donde 0 resultados nuevos es lo normal la mayoría de las veces
+    y avisar cada vez sería spam."""
     offers = _scrape_keyword_live(keyword)
     if offers is None:
         return None
@@ -299,4 +331,7 @@ def refresh_keyword_alert(db, uid, keyword, notify_new=True):
         log(f"'{keyword}' ({uid}): {len(new_offers)} oferta(s) nueva(s) de {len(offers)} total")
         if notify_new:
             _send_keyword_alert_push(uid, keyword, new_offers)
+    elif first_search:
+        log(f"'{keyword}' ({uid}): 0 resultados en la búsqueda inicial")
+        _send_keyword_alert_empty_push(uid, keyword)
     return new_offers
