@@ -315,6 +315,11 @@ def refresh_keyword_alert(db, uid, keyword, notify_new=True, first_search=False)
             "price": o["price"],
             "originalPrice": o["original_price"],
             "discountPercent": o["discount_percent"],
+            # 14 sep 2026, aviso real: "las estrellas no salen en las cards de tus alertas" --
+            # scrape_keyword() ya las traía (parse_rating()/parse_rating_count() en
+            # update_offers.py), solo no se estaban guardando aquí.
+            "rating": o.get("rating"),
+            "ratingCount": o.get("rating_count"),
             # 14 sep 2026, pedido explícito: "si no hay productos manda algo similar pero no
             # dice nada, podríamos poner un pequeño cartel que diga 'o similares'" -- ver
             # _title_matches_keyword() arriba. false = probablemente un sustituto de Amazon,
