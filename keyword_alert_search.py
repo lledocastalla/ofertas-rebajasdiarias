@@ -42,6 +42,7 @@ real que nada. Nunca toca MIN_DISCOUNT_PERCENT/MAX_DISCOUNT_PERCENT de update_of
 siguen en 30-80% para el ciclo normal del catálogo.
 """
 
+import fcntl
 import os
 import signal
 
@@ -57,6 +58,13 @@ MAX_PRODUCTS_KEYWORD_ALERT = 16  # 14 sep 2026, segundo aviso real: "solo encuen
 # sé que hay muchas más" -- subido de 5 a 16 (una sola página de resultados de Amazon.es trae
 # normalmente entre 16 y 24 tarjetas, no hace falta paginar más para una alerta concreta).
 KEYWORD_ALERT_PROFILE_DIR = f"{uo.HOME}/.rebajas_chrome_profile_alertas"
+# Candado propio de ESTE perfil (14 sep 2026, aviso real: "si pongo varias búsquedas solo me
+# sale una" -- confirmado en el log real: `session not created: Chrome instance exited` cuando
+# dos alertas se procesan a la vez, dos Chrome sobre el MISMO user-data-dir de alertas chocan
+# entre sí igual que chocarían con el del ciclo normal, ver REPO_LOCK_PATH). BLOQUEANTE (LOCK_EX
+# sin _NB) a propósito, a diferencia de REPO_LOCK_PATH del ciclo normal -- aquí sí queremos que
+# la segunda alerta espere su turno en vez de rendirse, cada búsqueda es rápida (segundos).
+KEYWORD_ALERT_LOCK_PATH = f"{uo.HOME}/.rebajas_keyword_alert_lock"
 
 
 def log(msg):
@@ -103,31 +111,43 @@ def _resume_main_cycle(pid):
 def _scrape_keyword_live(keyword):
     """Abre un Chrome real (perfil propio, aparte del ciclo normal) y busca `keyword` en
     Amazon.es con el umbral bajo de las alertas -- pausando el ciclo normal mientras dura, si
-    estaba corriendo. Devuelve None si algo falla de verdad al abrir/usar Chrome (fallo
-    temporal, NO se debe tocar nada de lo ya guardado). Devuelve una lista (puede estar vacía)
-    si el scraping se completó con normalidad."""
-    paused_pid = _pause_main_cycle()
-    driver = None
+    estaba corriendo. Candado BLOQUEANTE propio del perfil de alertas primero (ver
+    KEYWORD_ALERT_LOCK_PATH) -- si dos alertas se añaden seguidas, la segunda espera a que
+    termine la primera en vez de abrir un segundo Chrome sobre el mismo user-data-dir a la vez
+    (eso es lo que crasheaba antes: "session not created: Chrome instance exited"). Devuelve
+    None si algo falla de verdad al abrir/usar Chrome (fallo temporal, NO se debe tocar nada de
+    lo ya guardado). Devuelve una lista (puede estar vacía) si el scraping se completó bien."""
+    lock_file = open(KEYWORD_ALERT_LOCK_PATH, "w")
+    fcntl.flock(lock_file, fcntl.LOCK_EX)  # bloqueante -- espera su turno, no se rinde
     try:
-        driver = uo.build_driver(profile_dir=KEYWORD_ALERT_PROFILE_DIR)
-        return uo.scrape_keyword(
-            driver,
-            keyword,
-            CATEGORY_LABEL,
-            min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
-            max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
-            max_products=MAX_PRODUCTS_KEYWORD_ALERT,
-        )
-    except Exception as e:
-        log(f"ERROR scrapeando '{keyword}': {e}")
-        return None
+        paused_pid = _pause_main_cycle()
+        driver = None
+        try:
+            driver = uo.build_driver(profile_dir=KEYWORD_ALERT_PROFILE_DIR)
+            return uo.scrape_keyword(
+                driver,
+                keyword,
+                CATEGORY_LABEL,
+                min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
+                max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
+                max_products=MAX_PRODUCTS_KEYWORD_ALERT,
+            )
+        except Exception as e:
+            log(f"ERROR scrapeando '{keyword}': {e}")
+            return None
+        finally:
+            if driver is not None:
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+            _resume_main_cycle(paused_pid)
     finally:
-        if driver is not None:
-            try:
-                driver.quit()
-            except Exception:
-                pass
-        _resume_main_cycle(paused_pid)
+        try:
+            fcntl.flock(lock_file, fcntl.LOCK_UN)
+        except Exception:
+            pass
+        lock_file.close()
 
 
 def _send_keyword_alert_push(uid, keyword, new_offers):
