@@ -44,6 +44,7 @@ siguen en 30-80% para el ciclo normal del catálogo.
 
 import fcntl
 import os
+import re
 import signal
 
 from firebase_admin import firestore, messaging
@@ -69,6 +70,34 @@ KEYWORD_ALERT_LOCK_PATH = f"{uo.HOME}/.rebajas_keyword_alert_lock"
 
 def log(msg):
     print(f"[keyword_alert_search] {msg}", flush=True)
+
+
+# Conectores sin valor para comparar -- si se dejaran, "Nike DE HOMBRE" "coincidiría" con
+# cualquier título que tenga "de" o "hombre" sueltos, dando falsos positivos.
+_STOPWORDS_ES = {
+    "de", "del", "la", "el", "los", "las", "y", "con", "para", "en", "un", "una",
+    "unos", "unas", "por", "mujer", "hombre", "niño", "niña",
+}
+
+
+def _title_matches_keyword(title, keyword):
+    """¿Tiene el título encontrado alguna relación real con lo que se buscó? Amazon a veces
+    devuelve "resultados relacionados" SIN avisar de nada cuando no hay coincidencia exacta --
+    comprobado en vivo el 14 sep 2026: buscar "bimba y lola" devuelve Tommy Hilfiger, Tous,
+    Pandora... sin ningún aviso en la propia página de Amazon (pedido explícito del usuario:
+    "si no hay productos manda algo similar pero no dice nada"). Se considera coincidencia real
+    si el título contiene al menos una palabra significativa (3+ letras, sin conectores) de la
+    palabra clave -- no hace falta que coincida entera, "Nike de hombre" encaja con cualquier
+    título que solo diga "Nike". Sin ninguna palabra significativa que comparar (rarísimo),
+    se da por buena -- mejor no descartar de más por un tecnicismo."""
+    title_lower = title.lower()
+    words = [
+        w for w in re.findall(r"[a-záéíóúñ]+", keyword.lower())
+        if len(w) >= 3 and w not in _STOPWORDS_ES
+    ]
+    if not words:
+        return True
+    return any(w in title_lower for w in words)
 
 
 def _pause_main_cycle():
@@ -217,6 +246,11 @@ def refresh_keyword_alert(db, uid, keyword, notify_new=True):
             "price": o["price"],
             "originalPrice": o["original_price"],
             "discountPercent": o["discount_percent"],
+            # 14 sep 2026, pedido explícito: "si no hay productos manda algo similar pero no
+            # dice nada, podríamos poner un pequeño cartel que diga 'o similares'" -- ver
+            # _title_matches_keyword() arriba. false = probablemente un sustituto de Amazon,
+            # no lo que se buscó de verdad; la app lo marca con un aviso en vez de nada.
+            "exactMatch": _title_matches_keyword(o["title"], keyword),
             "updatedAt": firestore.SERVER_TIMESTAMP,
         }, merge=True)
         if is_new:
