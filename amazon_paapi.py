@@ -113,11 +113,18 @@ def _get_access_token(client_id: str, client_secret: str):
     return token
 
 
-def search_amazon(keywords: str, item_count: int = 10):
+def search_amazon(keywords: str, item_count: int = 10, min_saving_percent: int = MIN_DISCOUNT_PERCENT):
     """Busca en Amazon.es por texto libre. Devuelve la lista cruda de 'items' de la Creators
     API (puede estar vacía si de verdad no hay resultados con descuento real), o None si la API
     no está disponible ahora mismo (sin credenciales, sin red, sin acceso -- menos de 10 ventas
-    en 30 días, token inválido, cupo agotado...). Nunca lanza."""
+    en 30 días, token inválido, cupo agotado...). Nunca lanza.
+
+    `min_saving_percent` es parametrizable (14 sep 2026, ver keyword_alert_search.py) -- las
+    alertas de palabra clave usan un umbral mucho más bajo (1%) que el resto del catálogo (30%,
+    MIN_DISCOUNT_PERCENT de siempre): es una palabra muy concreta pedida por una persona en
+    Ajustes, pedido explícito "desde 1% de descuento hasta el máximo" -- mejor un 5% real que
+    nada. El buscador normal de la app (search_requests_listener.py, camino sin
+    notifyPush) sigue usando el 30% de siempre, sin tocar nada ahí."""
     creds = _load_credentials()
     if not creds:
         return None
@@ -132,7 +139,7 @@ def search_amazon(keywords: str, item_count: int = 10):
         "partnerTag": creds["partner_tag"],
         "keywords": keywords,
         "itemCount": min(max(item_count, 1), 10),
-        "minSavingPercent": MIN_DISCOUNT_PERCENT,
+        "minSavingPercent": min_saving_percent,
         "resources": [
             "images.primary.large",
             "itemInfo.title",
@@ -167,13 +174,15 @@ def search_amazon(keywords: str, item_count: int = 10):
     return data.get("searchResult", {}).get("items", [])
 
 
-def offers_from_items(items, category="Amazon"):
+def offers_from_items(items, category="Amazon", min_discount_percent: int = MIN_DISCOUNT_PERCENT):
     """Convierte los 'items' crudos de la Creators API en el mismo esquema de oferta que ya usa
     el resto del catálogo (ver _build_kindle_unlimited_offer en update_offers.py: id/title/
     category/price/original_price/discount_percent/image/url) -- así la app/web no necesitan
     ningún caso especial para pintar un resultado de este buscador. Como la petición ya pide
     minSavingPercent, en teoría todo lo que llega aquí ya tiene descuento real -- se
-    revalida igualmente por si acaso, nunca fiarse a ciegas de un filtro ajeno."""
+    revalida igualmente por si acaso, nunca fiarse a ciegas de un filtro ajeno.
+    `min_discount_percent` debe coincidir con el que se pasó a search_amazon() -- ver
+    comentario de ahí."""
     offers = []
     for item in items or []:
         try:
@@ -185,7 +194,7 @@ def offers_from_items(items, category="Amazon"):
             discount_percent = listing["price"].get("savings", {}).get("percentage")
             if discount_percent is None:
                 discount_percent = round((1 - price / saving_basis) * 100)
-            if discount_percent < MIN_DISCOUNT_PERCENT:
+            if discount_percent < min_discount_percent:
                 continue
             title = item["itemInfo"]["title"]["displayValue"]
             image = item.get("images", {}).get("primary", {}).get("large", {}).get("url", "")
