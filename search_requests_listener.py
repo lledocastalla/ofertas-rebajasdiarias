@@ -54,18 +54,20 @@ def _process_request(doc_id, data):
         return
     # Camino de "alerta de palabra clave" (14 sep 2026, ver AmazonSearchService.
     # createKeywordAlertRequest() en la app -- se dispara al añadir una alerta en Ajustes):
-    # usa el motor compartido con keyword_alert_cleanup.py en vez del camino normal de abajo --
-    # guarda en keyword_alert_offers (umbral 1%, no 30%) y avisa por push desde ahí mismo. Este
-    # documento de search_requests solo sirve de disparador async, nadie lo escucha en vivo.
+    # usa el motor compartido con keyword_alert_cleanup.py -- scraping real (Selenium/Chrome,
+    # no la Creators API bloqueada), guarda en keyword_alert_offers (umbral 1%, no 30%) y avisa
+    # por push desde ahí mismo. Sin _note_availability() aquí -- ese sondeo es solo para la
+    # Creators API del camino normal de abajo (buscador de la propia pantalla), no aplica al
+    # scraping. Este documento de search_requests solo sirve de disparador async, nadie lo
+    # escucha en vivo.
     if data.get("notifyPush") and data.get("requestedBy"):
         try:
             new_offers = keyword_alert_search.refresh_keyword_alert(
                 db, data["requestedBy"], query_text
             )
-            _note_availability(new_offers is not None, _load_availability_state())
             if new_offers is None:
                 doc_ref.set({"status": "unavailable"}, merge=True)
-                log(f"{query_text!r} (alerta): Amazon no disponible ahora mismo")
+                log(f"{query_text!r} (alerta): no se pudo completar el scraping ahora mismo")
             else:
                 doc_ref.set({"status": "done", "resultCount": len(new_offers)}, merge=True)
         except Exception as e:

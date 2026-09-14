@@ -1212,7 +1212,20 @@ return Array.from(document.querySelectorAll(
 """
 
 
-def scrape_keyword(driver, keyword, category):
+def scrape_keyword(
+    driver,
+    keyword,
+    category,
+    min_discount_percent=MIN_DISCOUNT_PERCENT,
+    max_discount_percent=MAX_DISCOUNT_PERCENT,
+    max_products=MAX_PRODUCTS_PER_KEYWORD,
+):
+    """Umbrales parametrizables (14 sep 2026, ver keyword_alert_search.py) -- las alertas de
+    palabra clave usan un umbral mucho más bajo (1%, sin techo) que el resto del catálogo (30-
+    80%, MIN/MAX_DISCOUNT_PERCENT de siempre): es una palabra muy concreta pedida por una
+    persona en Ajustes, pedido explícito "desde 1% de descuento hasta el máximo". El ciclo
+    normal del catálogo sigue llamando a esta función sin pasar estos argumentos, así que su
+    comportamiento no cambia en nada."""
     url = f"https://www.amazon.es/s?k={quote_plus(keyword)}"
     results = []
     try:
@@ -1243,9 +1256,9 @@ def scrape_keyword(driver, keyword, category):
             continue  # sin descuento real detectable
 
         discount = round((original_price - price) / original_price * 100)
-        if discount < MIN_DISCOUNT_PERCENT:
+        if discount < min_discount_percent:
             continue
-        if price > 0 and discount > MAX_DISCOUNT_PERCENT:
+        if price > 0 and discount > max_discount_percent:
             continue  # precio de referencia poco creíble, ver MAX_DISCOUNT_PERCENT
         # price == 0 (gratis de verdad, p.ej. libro Kindle en promoción) se deja pasar aunque el
         # descuento salga en 100 — ahí no hay un precio de referencia inflado que desconfiar.
@@ -1268,7 +1281,7 @@ def scrape_keyword(driver, keyword, category):
                 "rating_count": parse_rating_count(rating_text),
             }
         )
-        if len(results) >= MAX_PRODUCTS_PER_KEYWORD:
+        if len(results) >= max_products:
             break
     return results
 
