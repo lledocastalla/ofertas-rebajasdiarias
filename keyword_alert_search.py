@@ -57,9 +57,12 @@ import update_offers as uo
 MIN_SAVING_PERCENT_KEYWORD_ALERT = 1
 MAX_SAVING_PERCENT_KEYWORD_ALERT = 100  # "hasta el máximo" -- sin techo, a diferencia del 80%
 CATEGORY_LABEL = "Alerta"
-MAX_PRODUCTS_KEYWORD_ALERT = 16  # 14 sep 2026, segundo aviso real: "solo encuentra 5 ofertas y
-# sé que hay muchas más" -- subido de 5 a 16 (una sola página de resultados de Amazon.es trae
-# normalmente entre 16 y 24 tarjetas, no hace falta paginar más para una alerta concreta).
+MAX_PRODUCTS_KEYWORD_ALERT = 24  # 14 sep 2026, segundo aviso real: "solo encuentra 5 ofertas y
+# sé que hay muchas más" -- subido de 5 a 16, y de 16 a 24 el 15 sep (pedido explícito: "estaría
+# guay que enviara más ofertas") -- sigue siendo GRATIS en recursos, una sola página de
+# resultados de Amazon.es ya trae normalmente hasta 24 tarjetas, no hace falta cargar una
+# página más (eso sí tendría coste real de scraping/memoria, aparcado para cuando la Pi tenga
+# más margen -- ver README-backup-rebajasdiarias.md / RASPI_REBAJASDIARIAS.md).
 KEYWORD_ALERT_PROFILE_DIR = f"{uo.HOME}/.rebajas_chrome_profile_alertas"
 # Candado propio de ESTE perfil (14 sep 2026, aviso real: "si pongo varias búsquedas solo me
 # sale una" -- confirmado en el log real: `session not created: Chrome instance exited` cuando
