@@ -1,0 +1,7 @@
+{
+  "active": true,
+  "title": "¿Buscas algo en concreto y no está en nuestro catálogo?",
+  "subtitle": "Añade una palabra clave en Alertas y te avisamos en cuanto encontramos una oferta real que encaje.",
+  "buttonLabel": "Ir a Alertas",
+  "_comment": "15 sep 2026, ver RASPI_REBAJASDIARIAS.md -- burbuja mostrada en la app cuando una búsqueda no encuentra nada (offers_screen.dart, _buildAlertsPromptBubble()). Pedido explícito: que se pueda cambiar el texto o apagar (active=false) sin tener que compilar una versión nueva de la app -- se usará bastante. Mismo mecanismo que campaign.json/hero_banner.json: JSON público fuera de la app, leído en caliente."
+}
