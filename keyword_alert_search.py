@@ -46,6 +46,7 @@ import fcntl
 import os
 import re
 import signal
+import subprocess
 import time
 
 from firebase_admin import firestore, messaging
@@ -153,6 +154,30 @@ def _resume_main_cycle(pid):
         pass  # ya había terminado solo mientras tanto (poco probable, pero no pasa nada)
 
 
+def _kill_orphaned_alert_chrome():
+    """15 sep 2026, aviso real del usuario: encontrados procesos de chromium con más de 50
+    minutos vivos sobre KEYWORD_ALERT_PROFILE_DIR, tumbando el swap de la Pi al 100% -- "cuando
+    algo así pasa debe de matarlo automáticamente". Causa real: si webdriver.Chrome() falla AL
+    ARRANCAR (el caso real visto: "session not created: Chrome instance exited"), `driver` se
+    queda en None y el finally de _scrape_keyword_live_once() nunca llega a llamar a
+    driver.quit() -- pero chromedriver ya puede haber lanzado el chromium real por debajo antes
+    de que la sesión terminase de fallar, y ese chromium (más sus procesos hijos: gpu-process,
+    zygote, utility...) se queda huérfano sin que nada lo mate.
+
+    En vez de depender de tener una referencia viva al driver/service (frágil, justo el caso
+    que falla), mata por perfil: CUALQUIER proceso cuyo cmdline mencione
+    KEYWORD_ALERT_PROFILE_DIR se para aquí, éxito o fracaso -- este perfil es EXCLUSIVO de las
+    alertas (el ciclo normal usa PROFILE_DIR, sin "_alertas"), así que no hay riesgo de matar
+    nada del ciclo normal por error. Se llama siempre desde el finally, incondicionalmente."""
+    try:
+        subprocess.run(
+            ["pkill", "-9", "-f", f"user-data-dir={KEYWORD_ALERT_PROFILE_DIR}"],
+            check=False,
+        )
+    except Exception as e:
+        log(f"aviso: no se pudo limpiar chrome huérfano de alertas: {e}")
+
+
 def _scrape_keyword_live_once(keyword):
     """Un único intento -- abre un Chrome real (perfil propio, aparte del ciclo normal) y busca
     `keyword` en Amazon.es con el umbral bajo de las alertas, pausando el ciclo normal mientras
@@ -188,6 +213,10 @@ def _scrape_keyword_live_once(keyword):
                     driver.quit()
                 except Exception:
                     pass
+            # Incondicional, incluso si driver quedó en None (ver _kill_orphaned_alert_chrome)
+            # -- ANTES de reanudar el ciclo normal, para no competir por la memoria que se
+            # acaba de liberar.
+            _kill_orphaned_alert_chrome()
             _resume_main_cycle(paused_pid)
             time.sleep(KEYWORD_ALERT_COOLDOWN_SECONDS)
     finally:
