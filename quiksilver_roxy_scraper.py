@@ -28,7 +28,18 @@ import re
 import time
 import urllib.parse
 
-import update_offers as uo
+# 15 sep 2026, fallo real encontrado en producción: "import update_offers as uo" aquí arriba
+# (import circular a nivel de módulo, ya que update_offers.py importa esta función) funcionaba
+# en una prueba local (`python3 -c "import update_offers"`) pero rompía en la Pi de verdad --
+# cuando update_offers.py se ejecuta como script principal (`python3 update_offers.py`, como
+# hace el cron), Python lo registra como "__main__", NO como "update_offers". Al llegar aquí a
+# "import update_offers as uo", Python no lo encuentra ya cargado bajo ese nombre y vuelve a
+# ejecutar el archivo entero desde cero como un módulo aparte -- que a su vez intenta importar
+# esta función de este mismo archivo, todavía a medio cargar (ni siquiera ha llegado a
+# definirla) -> ImportError real, confirmado en el log de la Pi. Arreglado con import diferido
+# (dentro de las funciones, no aquí arriba) -- para cuando de verdad se llama a fetch_
+# quiksilver_roxy_offers(), update_offers.py ya ha terminado de cargar del todo, sea cual sea
+# el nombre bajo el que esté registrado.
 
 MIN_DISCOUNT_PERCENT = 30  # mismo umbral real que el resto del catálogo (ver multitienda_feeds.py)
 MIN_PRICE_EUR = 3.0
@@ -91,6 +102,8 @@ def _sku_from_url(real_url):
 
 
 def _scrape_section(driver, section):
+    import update_offers as uo  # ver nota de import diferido más arriba
+
     driver.get(section["url"])
     time.sleep(2)
     for _ in range(MAX_SCROLLS):
@@ -154,6 +167,8 @@ def _scrape_section(driver, section):
 def fetch_quiksilver_roxy_offers(log_fn=None):
     """Punto de entrada único, mismo patrón que fetch_multitienda_offers() -- un fallo en una
     sección nunca debe tumbar las demás ni el ciclo entero de update_offers.py."""
+    import update_offers as uo  # ver nota de import diferido más arriba
+
     _log = log_fn or log
     driver = None
     result = {}
