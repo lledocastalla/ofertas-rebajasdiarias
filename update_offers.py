@@ -34,7 +34,7 @@ from urllib.parse import quote_plus
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from selenium.common.exceptions import WebDriverException, TimeoutException
+from selenium.common.exceptions import TimeoutException
 
 from multitienda_feeds import fetch_multitienda_offers
 # 15 sep 2026, ver quiksilver_roxy_scraper.py -- import circular a propósito (ese módulo hace
@@ -1886,8 +1886,17 @@ def main():
                 log(f"Buscando '{kw}' ({category})...")
                 try:
                     found = scrape_keyword(driver, kw, category)
-                except WebDriverException as e:
-                    log(f"  error de navegador con '{kw}': {e}")
+                except Exception as e:
+                    # 15 sep 2026, fallo real encontrado en producción: "HTTPConnectionPool
+                    # (host='localhost', port=...): Read timed out" tumbó el ciclo ENTERO sin
+                    # guardar nada -- esa excepción no es una WebDriverException (es del propio
+                    # cliente HTTP local con el que Selenium habla con chromedriver, una capa
+                    # más baja), así que se colaba por este except y llegaba al manejador fatal
+                    # de más abajo. Ampliado a Exception: una palabra sola fallando, sea cual
+                    # sea el motivo exacto, nunca debe poder tirar todo el trabajo ya hecho de
+                    # las demás -- mismo criterio de resiliencia que el resto de este archivo
+                    # (multitienda_feeds, cada tienda con su propio try/except aparte).
+                    log(f"  error con '{kw}', se salta: {e}")
                     continue
                 # "Alertas" es un cajón genérico, no una categoría real de la app (14 sep 2026,
                 # pedido explícito: "que lo que busque la gente también se quede guardado en
@@ -1904,7 +1913,10 @@ def main():
                             real_category = _detect_amazon_category(driver)
                             if real_category:
                                 offer["category"] = real_category
-                        except WebDriverException:
+                        except Exception:
+                            # 15 sep 2026: igual que el except de arriba, ampliado de
+                            # WebDriverException a Exception -- un timeout de conexión aquí
+                            # tampoco debe tumbar el resto del ciclo, mismo motivo real.
                             pass  # se queda en "Alertas", no debe tumbar el resto del ciclo
                 for offer in found:
                     new_or_updated[offer["id"]] = offer
