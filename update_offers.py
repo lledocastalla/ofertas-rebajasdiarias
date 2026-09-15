@@ -2198,9 +2198,31 @@ def main():
         subprocess.run(["git", "-C", REPO_DIR, "commit", "-m", commit_msg], check=True)
         push = subprocess.run(["git", "-C", REPO_DIR, "push"], capture_output=True, text=True)
         if push.returncode != 0:
-            log(f"ERROR haciendo push: {push.stderr}")
-            sys.exit(1)
-        log("Push realizado correctamente.")
+            # 15 sep 2026, fallo real en producción: el ciclo llevaba horas corriendo (pausas
+            # de alertas intercaladas lo alargan mucho) y mientras tanto se habían hecho commits
+            # directos al repo desde fuera (campaign.json, hero_banner.json...) -- el remoto ya
+            # no era un fast-forward del local, "! [rejected] ... (fetch first)". Resultado real
+            # antes de este arreglo: Quiksilver/Roxy quedaron 40+40 ofertas reales calculadas
+            # pero sin llegar nunca a producción, con el ciclo entero muerto (sys.exit(1)) hasta
+            # que alguien lo arreglara a mano. Un solo reintento con pull --rebase (nunca hay
+            # conflicto real de verdad -- nadie más toca offers.json a mano) antes de rendirse.
+            log(f"aviso: push rechazado, probablemente el remoto avanzó mientras corría "
+                f"este ciclo -- reintentando con git pull --rebase: {push.stderr}")
+            rebase = subprocess.run(
+                ["git", "-C", REPO_DIR, "pull", "--rebase", "--quiet"],
+                capture_output=True, text=True,
+            )
+            if rebase.returncode != 0:
+                log(f"ERROR: el rebase automático falló, hace falta arreglarlo a mano: "
+                    f"{rebase.stderr}")
+                sys.exit(1)
+            push = subprocess.run(["git", "-C", REPO_DIR, "push"], capture_output=True, text=True)
+            if push.returncode != 0:
+                log(f"ERROR haciendo push (tras reintento): {push.stderr}")
+                sys.exit(1)
+            log("Push realizado correctamente tras reintento con pull --rebase.")
+        else:
+            log("Push realizado correctamente.")
         deploy_offers_to_netlify()
         notify_telegram(
             f"📦 RebajasDiarias actualizado: {len(new_or_updated)} ofertas nuevas/actualizadas, "
