@@ -37,6 +37,12 @@ from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import WebDriverException, TimeoutException
 
 from multitienda_feeds import fetch_multitienda_offers
+# 15 sep 2026, ver quiksilver_roxy_scraper.py -- import circular a propósito (ese módulo hace
+# "import update_offers as uo" para reusar build_driver()/parse_price()): funciona porque los
+# dos solo se usan dentro de funciones, nunca al cargar el módulo, así que para cuando de verdad
+# se llaman ambos archivos ya han terminado de importarse del todo. Probado con
+# `python3 -c "import update_offers"` sin errores tras añadir esto.
+from quiksilver_roxy_scraper import fetch_quiksilver_roxy_offers
 
 # --- Configuración ---
 HOME = os.path.expanduser("~")
@@ -1946,6 +1952,19 @@ def main():
         log(f"aviso: fallo en la ingesta multi-tienda, se continúa sin ella este ciclo: {e}")
         multitienda_offers = {}
     new_or_updated.update(multitienda_offers)
+
+    # Quiksilver/Roxy (15 sep 2026, ver quiksilver_roxy_scraper.py): aceptadas en Tradedoubler
+    # pero SIN precio de referencia en su feed -- se escrapea su propia web de rebajas
+    # directamente (Selenium, perfil normal, ya libre porque el driver de Amazon de arriba ya se
+    # cerró). Aparte de multitienda_feeds.py a propósito (ese archivo es solo HTTP/feeds, meter
+    # aquí un Selenium habría acoplado dos cosas muy distintas) y con su propio try/except, mismo
+    # criterio que arriba: un fallo aquí nunca debe tumbar el ciclo ni las demás tiendas.
+    try:
+        quiksilver_roxy_offers = fetch_quiksilver_roxy_offers(log)
+    except Exception as e:
+        log(f"aviso: fallo en Quiksilver/Roxy, se continúa sin ellas este ciclo: {e}")
+        quiksilver_roxy_offers = {}
+    new_or_updated.update(quiksilver_roxy_offers)
 
     if len(new_or_updated) == 0:
         log(
