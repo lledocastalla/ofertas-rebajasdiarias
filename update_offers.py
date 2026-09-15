@@ -182,6 +182,16 @@ STALE_AFTER_DAYS = 2             # una oferta que lleva sin verse este tiempo se
 INTER_SEARCH_DELAY_RANGE = (4, 15)  # pausa entre cada búsqueda individual dentro de una ejecución
                                      # (antes 1.5-3.5s; más larga = menos parece un bot golpeando
                                      # Amazon a ritmo constante)
+# 15 sep 2026, aviso real del usuario tras varios colapsos reales de la Pi (swap al 100%, dejó
+# de responder, hubo que cortarle la luz): "esto debemos de solucionarlo... busca alguna
+# pequeña solución (parche)". El bucle principal abre UN Chrome y lo mantiene vivo durante todo
+# el ciclo (puede ser horas, cientos de búsquedas seguidas incluyendo las visitas a fichas de
+# producto para reclasificar Alertas) -- patrón clásico de fuga de memoria en sesiones largas
+# de Chrome/Selenium (caché, historial, procesos renderer acumulándose). No sustituye al Pi 5
+# con más RAM que se va a pedir, pero reduce la presión real mientras tanto: reiniciar el
+# navegador entero cada N búsquedas libera lo acumulado antes de que se convierta en el mismo
+# problema de siempre.
+DRIVER_RESTART_EVERY_N_SEARCHES = 40
 
 # El cron dispara este script varias veces al día, pero arrancar SIEMPRE justo a la hora exacta,
 # con el mismo patrón de búsquedas, es justo lo que delataría un bot ante Amazon. Para que cada
@@ -1818,6 +1828,40 @@ def diversify_order(offers):
     return result
 
 
+def _checkpoint_progress(existing_offers, new_or_updated):
+    """15 sep 2026, pedido explícito del usuario tras varios colapsos reales de la Pi: 'que no
+    empiece el ciclo otra vez sino que empiece por donde se ha quedado'. Reconstruir la posición
+    EXACTA (qué palabra tocaba a continuación) rompería el sorteo aleatorio de categorías/
+    palabras que es parte del diseño (variedad real entre ejecuciones, ver randint/sample más
+    arriba) -- en vez de eso, este checkpoint hace algo más simple con el mismo efecto
+    práctico: escribe a disco lo ya encontrado EN ESTE CICLO hasta ahora, sin esperar al final.
+    Si la Pi se cae a mitad, ese trabajo no se pierde del todo -- el próximo ciclo (aunque sea
+    uno nuevo, con su propio sorteo) parte de un catálogo que ya incluye este progreso, en vez
+    de tener que volver a encontrarlo de cero. Escritura atómica (fichero temporal + os.replace)
+    para no dejar offers.json a medio escribir si el proceso muere justo en mitad de este
+    guardado. Sin commit/push a git aquí -- eso sigue siendo solo al final del ciclo completo,
+    para no llenar el historial de commits intermedios ni competir con el candado de git que ya
+    usan check_submissions.py y el resto."""
+    if not new_or_updated:
+        return
+    try:
+        merged = dict(existing_offers)
+        merged.update(new_or_updated)
+        checkpoint = {
+            "updated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+            "affiliate_tag": AFFILIATE_TAG,
+            "offers": diversify_order(list(merged.values())),
+        }
+        tmp_path = f"{OFFERS_PATH}.checkpoint-tmp"
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            json.dump(checkpoint, f, ensure_ascii=False, indent=2)
+        os.replace(tmp_path, OFFERS_PATH)
+        log(f"  progreso guardado a disco ({len(new_or_updated)} nuevas/actualizadas hasta "
+            f"ahora) por si la Pi se cae a mitad de ciclo")
+    except Exception as e:
+        log(f"  aviso: no se pudo guardar el progreso intermedio: {e}")
+
+
 def main():
     log("=== Inicio ===")
 
@@ -1914,6 +1958,7 @@ def main():
 
     driver = None
     scraped_count = 0
+    searches_since_restart = 0
     new_or_updated = {}
     watched_asins = None
     watched_results = {}
@@ -1974,13 +2019,46 @@ def main():
                 for offer in found:
                     new_or_updated[offer["id"]] = offer
                 scraped_count += len(found)
+                searches_since_restart += 1
+                if searches_since_restart >= DRIVER_RESTART_EVERY_N_SEARCHES:
+                    log(f"  {searches_since_restart} búsquedas seguidas con el mismo Chrome, "
+                        f"reiniciándolo para no acumular memoria...")
+                    try:
+                        driver.quit()
+                    except Exception:
+                        pass
+                    # driver = None de entrada -- si build_driver() falla, NO debe quedar
+                    # apuntando al que se acaba de cerrar (bug real que se coló aquí la primera
+                    # vez: scrape_keyword() sobre un driver ya muerto habría fallado en
+                    # silencio, keyword tras keyword, el resto del ciclo entero).
+                    driver = None
+                    for attempt in range(2):
+                        try:
+                            driver = build_driver()
+                            break
+                        except Exception as e:
+                            log(f"  aviso: fallo reiniciando Chrome (intento {attempt + 1}/2): "
+                                f"{e}")
+                    searches_since_restart = 0
+                    # Checkpoint aquí, no solo al final -- ver _checkpoint_progress().
+                    _checkpoint_progress(existing_offers, new_or_updated)
+                    if driver is None:
+                        log("  no se pudo reiniciar Chrome tras 2 intentos -- se corta aquí el "
+                            "resto de búsquedas de Amazon de este ciclo (multitienda/Quiksilver-"
+                            "Roxy siguen intentándose después, y lo ya encontrado no se pierde, "
+                            "ver el checkpoint de arriba)")
+                        break
                 time.sleep(random.uniform(*INTER_SEARCH_DELAY_RANGE))  # no machacar a Amazon
+            if driver is None:
+                break
 
         # Favoritos vigilados: solo si el scraping normal de arriba ha ido bien (si no, mejor
         # no arriesgar más peticiones en una sesión que ya pinta rara). Solo se visita
         # directamente el ASIN de los que NO tengan ya un precio fresco de esta misma
         # ejecución o del catálogo público actual — para esos, es gratis, no hace falta visita.
-        if scraped_count > 0:
+        # driver is not None: si el bucle de arriba se cortó por no poder reiniciar Chrome, no
+        # hay con qué visitar nada más aquí (ver el break de más arriba).
+        if scraped_count > 0 and driver is not None:
             watched_asins = _fetch_watched_asins()
             if watched_asins:
                 already_fresh = set(new_or_updated) | set(existing_offers)
