@@ -1,7 +1,7 @@
 {
   "campaigns": [
     {
-      "active": false,
+      "active": true,
       "title": "Vuelta al Hogar: hasta 30% en Leroy Merlin 🏡",
       "subtitle": "Renueva cada rincón de tu casa después del verano: bricolaje, decoración, cocinas y baños, muebles y jardín con descuento real. Solo hasta el 28 de septiembre.",
       "colorHex": "#4A90A4",
@@ -12,7 +12,7 @@
       "endDate": "2026-09-28"
     },
     {
-      "active": false,
+      "active": true,
       "title": "Vuelta al Cole: mochilas y material escolar con descuento real 🎒",
       "subtitle": "Mochilas Totto, Safta y Movom, estuches, agendas y más, con el mismo filtro de siempre: descuento verificado de al menos un 30%, nunca precios inflados.",
       "colorHex": "#F2A93B",
