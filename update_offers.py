@@ -18,6 +18,7 @@ Diseño (ver RASPI_REBAJASDIARIAS.md):
 
 import atexit
 import fcntl
+import io
 import json
 import os
 import random
@@ -27,6 +28,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+import zipfile
 import zlib
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote_plus
@@ -249,6 +251,18 @@ PINNED_OFFER_IDS = {"B0CTYHNVSD"}  # "Pierde el Miedo de Alquilar tu Inmueble" (
 WATCHED_PATH = f"{REPO_DIR}/watched_prices.json"
 FIREBASE_CREDENTIALS_PATH = f"{HOME}/firebase-service-account.json"
 WATCHED_LAST_REPORTED_MAX_DAYS = 20  # ignora entradas de Firestore que nadie renueva ya
+
+# 15 sep 2026, aviso real del usuario ("le cuesta cargar y solo me salen ahora 3 tiendas", web
+# sin ninguna tienda): raw.githubusercontent.com tardó 30-40s en servir offers.json (32MB) en
+# vez de 2-3s -- no es un CDN de producción, sin SLA ni límites documentados, y con más usuarios
+# el riesgo solo crece (ya había pasado antes, 11 sep, "no sale ninguna tienda"). Se sigue
+# haciendo el commit/push a git de siempre (útil como historial), pero AHORA TAMBIÉN se sube
+# offers.json a Netlify justo después -- mismo patrón que FIREBASE_CREDENTIALS_PATH: archivo
+# local con el token fuera del repo, nunca en git. Si el deploy a Netlify falla, no aborta el
+# ciclo (igual que el resto de pasos de resiliencia) -- la app/web siguen sirviendo la versión
+# de Netlify anterior mientras tanto, no se quedan sin nada.
+NETLIFY_TOKEN_PATH = f"{HOME}/netlify_token.txt"
+NETLIFY_SITE_ID = "4ccf86b0-43aa-4cbe-b66c-258b773795b8"
 
 # Push de "catálogo actualizado" (11 ago 2026, ver RASPI_REBAJASDIARIAS.md §3.3): la app se
 # suscribe sola a este topic al arrancar (lib/services/push_service.dart) — mandar aquí evita
@@ -518,6 +532,45 @@ KEYWORDS_BY_CATEGORY = {
 
 def log(msg):
     print(f"[update_offers] {msg}", flush=True)
+
+
+def deploy_offers_to_netlify():
+    """Sube offers.json a Netlify justo después del commit/push a git (ver NETLIFY_TOKEN_PATH
+    más arriba para el motivo). Usa el endpoint de "deploy por zip" de la API de Netlify --
+    un solo POST con el zip entero como cuerpo, sin necesidad de node/netlify-cli en la Pi
+    (huella mínima: solo zipfile + urllib, ya en la librería estándar). Cache-Control propio
+    (5 min, igual que tenía GitHub) vía _headers -- por defecto Netlify sirve los deploys por
+    API sin caché en el borde (max-age=0), lo que habría vuelto a dejar cada petición yendo al
+    origen igual que el problema que se está arreglando aquí. Nunca lanza: si Netlify falla,
+    la app/web siguen sirviendo el deploy anterior mientras tanto, no es peor que antes."""
+    if not os.path.isfile(NETLIFY_TOKEN_PATH):
+        log("aviso: no hay netlify_token.txt, se omite el deploy a Netlify.")
+        return
+    try:
+        with open(NETLIFY_TOKEN_PATH, encoding="utf-8") as f:
+            token = f.read().strip()
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.write(OFFERS_PATH, arcname="offers.json")
+            zf.writestr(
+                "_headers",
+                "/*.json\n  Cache-Control: public, max-age=300, must-revalidate\n"
+                "  Access-Control-Allow-Origin: *\n",
+            )
+        req = urllib.request.Request(
+            f"https://api.netlify.com/api/v1/sites/{NETLIFY_SITE_ID}/deploys",
+            data=buf.getvalue(),
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/zip",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=60) as r:
+            r.read()
+        log("Deploy a Netlify realizado correctamente.")
+    except Exception as e:
+        log(f"aviso: fallo el deploy a Netlify, se sigue sin él este ciclo: {e}")
 
 
 def notify_telegram(msg):
@@ -2148,6 +2201,7 @@ def main():
             log(f"ERROR haciendo push: {push.stderr}")
             sys.exit(1)
         log("Push realizado correctamente.")
+        deploy_offers_to_netlify()
         notify_telegram(
             f"📦 RebajasDiarias actualizado: {len(new_or_updated)} ofertas nuevas/actualizadas, "
             f"{len(merged)} en total."
