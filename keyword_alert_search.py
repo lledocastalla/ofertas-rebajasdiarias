@@ -181,6 +181,45 @@ def _kill_orphaned_alert_chrome():
         log(f"aviso: no se pudo limpiar chrome huérfano de alertas: {e}")
 
 
+MIN_AVAILABLE_MB_FOR_CHROME = 150  # ver _wait_for_memory_headroom()
+MEMORY_WAIT_MAX_SECONDS = 60
+MEMORY_WAIT_POLL_SECONDS = 5
+
+
+def _available_mb():
+    """Lee MemAvailable de /proc/meminfo (estimación real del kernel de cuánta RAM se puede dar
+    a un proceso nuevo sin empezar a hacer swap agresivo -- más fiable que restar 'usado' de
+    'total' a mano, que no tiene en cuenta la caché reclamable). None si no se puede leer."""
+    try:
+        with open("/proc/meminfo") as f:
+            for line in f:
+                if line.startswith("MemAvailable:"):
+                    return int(line.split()[1]) // 1024  # kB -> MB
+    except Exception:
+        pass
+    return None
+
+
+def _wait_for_memory_headroom():
+    """15 sep 2026, aviso real del usuario tras un colapso de la Pi (swap al 100%, dejó de
+    responder por red): 'ves con cuidado con esos picos, intenta que no suba tanto' -- el
+    patrón real de ese día fue lanzar OTRO Chrome (el de una alerta) justo cuando ya quedaba
+    poca memoria libre, empujando el sistema al límite. En vez de lanzar Chrome a ciegas, espera
+    aquí (con tope de MEMORY_WAIT_MAX_SECONDS, nunca bloquea para siempre) a que haya un mínimo
+    de margen real. Si nunca se libera memoria a tiempo, sigue igualmente -- mejor intentarlo y
+    dejar que el reintento normal de _scrape_keyword_live() se encargue, que quedarse colgado
+    aquí sin hacer nada."""
+    waited = 0
+    while waited < MEMORY_WAIT_MAX_SECONDS:
+        available = _available_mb()
+        if available is None or available >= MIN_AVAILABLE_MB_FOR_CHROME:
+            return
+        log(f"memoria justa ({available}MB libres, mínimo {MIN_AVAILABLE_MB_FOR_CHROME}MB) -- "
+            f"esperando antes de lanzar Chrome para no empujar la Pi al límite")
+        time.sleep(MEMORY_WAIT_POLL_SECONDS)
+        waited += MEMORY_WAIT_POLL_SECONDS
+
+
 def _scrape_keyword_live_once(keyword):
     """Un único intento -- abre un Chrome real (perfil propio, aparte del ciclo normal) y busca
     `keyword` en Amazon.es con el umbral bajo de las alertas, pausando el ciclo normal mientras
@@ -196,6 +235,7 @@ def _scrape_keyword_live_once(keyword):
     fcntl.flock(lock_file, fcntl.LOCK_EX)  # bloqueante -- espera su turno, no se rinde
     try:
         paused_pid = _pause_main_cycle()
+        _wait_for_memory_headroom()
         driver = None
         try:
             driver = uo.build_driver(profile_dir=KEYWORD_ALERT_PROFILE_DIR)
