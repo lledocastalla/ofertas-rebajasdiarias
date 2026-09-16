@@ -222,70 +222,84 @@ def _wait_for_memory_headroom():
 
 def _scrape_keyword_live_once(keyword):
     """Un único intento -- abre un Chrome real (perfil propio, aparte del ciclo normal) y busca
-    `keyword` en Amazon.es con el umbral bajo de las alertas, pausando el ciclo normal mientras
-    dura, si estaba corriendo. Candado BLOQUEANTE propio del perfil de alertas primero (ver
-    KEYWORD_ALERT_LOCK_PATH) -- si dos alertas se añaden seguidas, la segunda espera a que
-    termine la primera en vez de abrir un segundo Chrome sobre el mismo user-data-dir a la vez
-    (eso es lo que crasheaba antes: "session not created: Chrome instance exited"). Con un
-    cooldown real antes de soltar el candado (ver KEYWORD_ALERT_COOLDOWN_SECONDS) -- así la
-    siguiente en la cola no arranca hasta que la memoria de esta ha tenido tiempo de asentarse.
-    Devuelve None si algo falla de verdad al abrir/usar Chrome (fallo temporal, NO se debe tocar
-    nada de lo ya guardado). Devuelve una lista (puede estar vacía) si se completó bien."""
-    lock_file = open(KEYWORD_ALERT_LOCK_PATH, "w")
-    fcntl.flock(lock_file, fcntl.LOCK_EX)  # bloqueante -- espera su turno, no se rinde
+    `keyword` en Amazon.es con el umbral bajo de las alertas. NO gestiona el candado ni la pausa
+    del ciclo normal -- eso lo hace _scrape_keyword_live(), que envuelve TODA la secuencia de
+    reintentos de una vez (ver comentario ahí). Devuelve None si algo falla de verdad al abrir/
+    usar Chrome (fallo temporal, NO se debe tocar nada de lo ya guardado). Devuelve una lista
+    (puede estar vacía) si se completó bien."""
+    _wait_for_memory_headroom()
+    driver = None
     try:
-        paused_pid = _pause_main_cycle()
-        _wait_for_memory_headroom()
-        driver = None
-        try:
-            driver = uo.build_driver(profile_dir=KEYWORD_ALERT_PROFILE_DIR)
-            return uo.scrape_keyword(
-                driver,
-                keyword,
-                CATEGORY_LABEL,
-                min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
-                max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
-                max_products=MAX_PRODUCTS_KEYWORD_ALERT,
-            )
-        except Exception as e:
-            log(f"ERROR scrapeando '{keyword}': {e}")
-            return None
-        finally:
-            if driver is not None:
-                try:
-                    driver.quit()
-                except Exception:
-                    pass
-            # Incondicional, incluso si driver quedó en None (ver _kill_orphaned_alert_chrome)
-            # -- ANTES de reanudar el ciclo normal, para no competir por la memoria que se
-            # acaba de liberar.
-            _kill_orphaned_alert_chrome()
-            _resume_main_cycle(paused_pid)
-            time.sleep(KEYWORD_ALERT_COOLDOWN_SECONDS)
+        driver = uo.build_driver(profile_dir=KEYWORD_ALERT_PROFILE_DIR)
+        return uo.scrape_keyword(
+            driver,
+            keyword,
+            CATEGORY_LABEL,
+            min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
+            max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
+            max_products=MAX_PRODUCTS_KEYWORD_ALERT,
+        )
+    except Exception as e:
+        log(f"ERROR scrapeando '{keyword}': {e}")
+        return None
     finally:
-        try:
-            fcntl.flock(lock_file, fcntl.LOCK_UN)
-        except Exception:
-            pass
-        lock_file.close()
+        if driver is not None:
+            try:
+                driver.quit()
+            except Exception:
+                pass
+        _kill_orphaned_alert_chrome()
+        # Deja que la memoria de este intento se asiente antes del siguiente (o de reanudar el
+        # ciclo normal, ver _scrape_keyword_live) -- mismo motivo de siempre, un Chrome recién
+        # cerrado no siempre suelta RAM/swap al instante.
+        time.sleep(KEYWORD_ALERT_COOLDOWN_SECONDS)
 
 
 def _scrape_keyword_live(keyword):
     """Como _scrape_keyword_live_once(), pero con reintentos (14 sep 2026, pedido explícito: "si
     sale un error en la búsqueda que arranque al rato otra vez hasta que vaya") -- un fallo
     puntual (Chrome sin memoria para arrancar, timeout de red...) ya no se rinde a la primera,
-    reintenta unas cuantas veces con pausa real entre medias. Sigue devolviendo None solo si
-    TODOS los intentos fallan de verdad."""
-    for attempt in range(1, KEYWORD_ALERT_RETRY_ATTEMPTS + 1):
-        result = _scrape_keyword_live_once(keyword)
-        if result is not None:
-            return result
-        if attempt < KEYWORD_ALERT_RETRY_ATTEMPTS:
-            log(f"'{keyword}': intento {attempt} fallido, reintentando en "
-                f"{KEYWORD_ALERT_RETRY_DELAY_SECONDS}s...")
-            time.sleep(KEYWORD_ALERT_RETRY_DELAY_SECONDS)
-    log(f"'{keyword}': {KEYWORD_ALERT_RETRY_ATTEMPTS} intentos fallidos, se rinde por ahora")
-    return None
+    reintenta unas cuantas veces con pausa real entre medias.
+
+    16 sep 2026, segunda vuelta tras un fallo real ("Adidas talla 39" se rindió los 3 intentos
+    por falta de memoria, 83-115MB libres): antes el ciclo normal se REANUDABA entre cada
+    intento (la pausa vivía dentro de _scrape_keyword_live_once, un intento a la vez), así que
+    competía justo por la memoria que acababa de causar el fallo durante los 30s de espera entre
+    reintentos -- el peor momento posible para dejarlo correr. Pedido explícito: "debería
+    pausar otra vez el scraping para darle prioridad a la alerta hasta que termine el ciclo de
+    alerta que es poco tiempo y luego reanudar". Ahora el candado (ver KEYWORD_ALERT_LOCK_PATH,
+    evita dos Chrome a la vez sobre el mismo perfil) Y la pausa del ciclo normal envuelven TODA
+    la secuencia de reintentos de una sola vez -- el ciclo normal solo se reanuda al final
+    (éxito o los 3 intentos agotados), nunca a medias. Tope real corto en la práctica (como
+    mucho 3 intentos x scrape + 2 huecos de 30s), así que la prioridad que pide el usuario no
+    deja el ciclo normal parado mucho tiempo. Sigue devolviendo None solo si TODOS los intentos
+    fallan de verdad."""
+    lock_file = open(KEYWORD_ALERT_LOCK_PATH, "w")
+    fcntl.flock(lock_file, fcntl.LOCK_EX)  # bloqueante -- espera su turno, no se rinde
+    try:
+        paused_pid = _pause_main_cycle()
+        try:
+            for attempt in range(1, KEYWORD_ALERT_RETRY_ATTEMPTS + 1):
+                result = _scrape_keyword_live_once(keyword)
+                if result is not None:
+                    return result
+                if attempt < KEYWORD_ALERT_RETRY_ATTEMPTS:
+                    log(f"'{keyword}': intento {attempt} fallido, reintentando en "
+                        f"{KEYWORD_ALERT_RETRY_DELAY_SECONDS}s...")
+                    time.sleep(KEYWORD_ALERT_RETRY_DELAY_SECONDS)
+            log(f"'{keyword}': {KEYWORD_ALERT_RETRY_ATTEMPTS} intentos fallidos, se rinde por "
+                f"ahora")
+            return None
+        finally:
+            # Incondicional (éxito, fallo total, o incluso una excepción inesperada) -- nunca se
+            # debe dejar el ciclo normal pausado para siempre por un error aquí dentro.
+            _resume_main_cycle(paused_pid)
+    finally:
+        try:
+            fcntl.flock(lock_file, fcntl.LOCK_UN)
+        except Exception:
+            pass
+        lock_file.close()
 
 
 def _send_keyword_alert_push(uid, keyword, new_offers):
