@@ -1989,6 +1989,84 @@ def fetch_perfumeria_comas_extended(log):
     return fetch_perfumeria_comas_offers(log, cap=None)
 
 
+# ---------------------------------------------------------------------------
+# Acer ES (17 sep 2026, aceptados en Awin el mismo día -- advertiser 17132, comprobado en vivo
+# vía el "Crea-un-feed" de Awin, feed 36293 "Acer ES feed"). Catálogo pequeño (193 productos en
+# total, comprobado 17 sep 2026) -- solo accesorios/monitores/periféricos en este feed concreto
+# (fundas, ratones, monitores...), nada de portátiles/sobremesa todavía, así que "Tecnología"
+# fija de categoría, subcategoría de category_name (ya viene en inglés: "Monitors",
+# "Peripherals", "Accessories" -- se deja tal cual, igual que HP Store con "producttype", no
+# hay mapeo especial pedido). search_price/rrp_price en el sentido normal (a diferencia del
+# quirk invertido de Adidas): search_price = precio actual, rrp_price = precio de referencia,
+# comprobado en la muestra real. Filtra también is_for_sale, no solo in_stock -- alguna fila
+# tiene in_stock=1 pero is_for_sale=0 (no vendible aunque haya stock, comprobado 17 sep 2026).
+# ---------------------------------------------------------------------------
+
+ACER_FID = "36293"
+
+
+def fetch_acer_offers(log, local_test_file=None, cap=None):
+    columns = (
+        "aw_deep_link,aw_product_id,merchant_product_id,merchant_image_url,"
+        "category_name,product_name,search_price,rrp_price,in_stock,is_for_sale,currency"
+    )
+    try:
+        if local_test_file:
+            with gzip.open(local_test_file, "rt", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+        else:
+            url = _awin_feed_url(AWIN_API_KEY, ACER_FID, columns)
+            text = _download_feed_csv(url, log)
+    except Exception as e:
+        log(f"[acer] error descargando feed: {e}")
+        return {}
+
+    reader = csv.DictReader(io.StringIO(text))
+    candidates = []
+    for row in reader:
+        if row.get("in_stock") != "1" or row.get("is_for_sale") != "1":
+            continue
+        if (row.get("currency") or "").strip().upper() not in ("", "EUR"):
+            continue
+        try:
+            actual = float(row.get("search_price") or "")
+            original = float(row.get("rrp_price") or "")
+        except ValueError:
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (row.get("product_name") or "").strip()
+        pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
+        image = (row.get("merchant_image_url") or "").strip()
+        aff_url = (row.get("aw_deep_link") or "").strip()
+        if not title or not pid or not aff_url:
+            continue
+
+        candidates.append({
+            "id": f"acer_{pid}",
+            "title": title[:180],
+            "category": "Tecnología",
+            "subcategory": (row.get("category_name") or "").strip(),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "acer",
+            "store_label": "Acer",
+        })
+
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[acer] {len(candidates)} candidatos 30-80% con stock y a la venta, {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
 def fetch_multitienda_offers(log, local_test_files=None):
     """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path,
     'perfumeriacomas': path}) solo para pruebas locales sin red — en producción se omite y se
@@ -2026,6 +2104,7 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("balay", fetch_balay_offers, "balay"),
         ("bosch", fetch_bosch_offers, "bosch"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
+        ("acer", fetch_acer_offers, "acer"),
     ]
     for name, fetch_fn, key in stores:
         try:
