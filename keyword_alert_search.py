@@ -86,6 +86,16 @@ KEYWORD_ALERT_COOLDOWN_SECONDS = 8
 # fallado es que la Pi venía más apurada de lo normal).
 KEYWORD_ALERT_RETRY_ATTEMPTS = 3
 KEYWORD_ALERT_RETRY_DELAY_SECONDS = 30
+# 17 sep 2026, pedido explícito tras un fallo real por memoria ("Chandal hombre"/"Chandal
+# hombre L", 74-148MB libres, muy por debajo del mínimo): "cuando falla por memoria se puede
+# hacer que al poco lo pause todo lo busque de nuevo y luego reanude?" -- los 30s entre los 3
+# intentos normales no bastan siempre para que la memoria se asiente de verdad (el ciclo normal
+# ya estaba pausado mientras tanto, pero un proceso PAUSADO sigue reteniendo su propia memoria
+# en RAM, no la suelta solo por estar parado -- necesita más tiempo real, no solo pausa). Si los
+# 3 intentos normales fallan TODOS, antes de rendirse del todo se da una última oportunidad tras
+# una espera bastante más larga -- el ciclo normal sigue pausado durante esta espera también
+# (ver _scrape_keyword_live), nunca se reanuda a medias.
+KEYWORD_ALERT_MEMORY_GRACE_SECONDS = 120
 
 
 def log(msg):
@@ -270,10 +280,16 @@ def _scrape_keyword_live(keyword):
     alerta que es poco tiempo y luego reanudar". Ahora el candado (ver KEYWORD_ALERT_LOCK_PATH,
     evita dos Chrome a la vez sobre el mismo perfil) Y la pausa del ciclo normal envuelven TODA
     la secuencia de reintentos de una sola vez -- el ciclo normal solo se reanuda al final
-    (éxito o los 3 intentos agotados), nunca a medias. Tope real corto en la práctica (como
-    mucho 3 intentos x scrape + 2 huecos de 30s), así que la prioridad que pide el usuario no
-    deja el ciclo normal parado mucho tiempo. Sigue devolviendo None solo si TODOS los intentos
-    fallan de verdad."""
+    (éxito o los 3 intentos agotados), nunca a medias.
+
+    17 sep 2026, tercera vuelta tras otro fallo real por memoria ("Chandal hombre"/"Chandal
+    hombre L", 74-148MB libres): "cuando falla por memoria se puede hacer que al poco lo pause
+    todo lo busque de nuevo y luego reanude?" -- si los 3 intentos normales fallan TODOS, en vez
+    de rendirse ahí mismo se da una última oportunidad de verdad tras
+    KEYWORD_ALERT_MEMORY_GRACE_SECONDS (bastante más larga que los 30s de entre intentos, para
+    que la memoria tenga tiempo real de asentarse) -- el ciclo normal sigue pausado también
+    durante esa espera larga, se reanuda solo al final de todo. Sigue devolviendo None solo si
+    ni los 3 intentos normales NI esta última oportunidad consiguen nada."""
     lock_file = open(KEYWORD_ALERT_LOCK_PATH, "w")
     fcntl.flock(lock_file, fcntl.LOCK_EX)  # bloqueante -- espera su turno, no se rinde
     try:
@@ -287,8 +303,14 @@ def _scrape_keyword_live(keyword):
                     log(f"'{keyword}': intento {attempt} fallido, reintentando en "
                         f"{KEYWORD_ALERT_RETRY_DELAY_SECONDS}s...")
                     time.sleep(KEYWORD_ALERT_RETRY_DELAY_SECONDS)
-            log(f"'{keyword}': {KEYWORD_ALERT_RETRY_ATTEMPTS} intentos fallidos, se rinde por "
-                f"ahora")
+            log(f"'{keyword}': {KEYWORD_ALERT_RETRY_ATTEMPTS} intentos fallidos -- última "
+                f"oportunidad tras {KEYWORD_ALERT_MEMORY_GRACE_SECONDS}s de margen real para "
+                f"que la memoria se asiente")
+            time.sleep(KEYWORD_ALERT_MEMORY_GRACE_SECONDS)
+            result = _scrape_keyword_live_once(keyword)
+            if result is not None:
+                return result
+            log(f"'{keyword}': también falló la última oportunidad, se rinde por ahora")
             return None
         finally:
             # Incondicional (éxito, fallo total, o incluso una excepción inesperada) -- nunca se
