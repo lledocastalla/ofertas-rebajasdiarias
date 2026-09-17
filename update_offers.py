@@ -861,6 +861,51 @@ def _active_campaign_categories():
     return []
 
 
+def _prune_expired_campaigns():
+    """Quita del array de campaign.json las campañas cuyo endDate ya pasó hace más de un día
+    (mismo margen que _active_campaign_categories, por huso horario) -- pedido explícito del
+    usuario tras crear la campaña de Adidas (17-20 sep 2026): "cuando termine la campaña que se
+    elimine todo". Antes de esto, una campaña terminada se quedaba parada en el array para
+    siempre a propósito (comentario original en campaign.json: "no hace falta quitarla del
+    array", pensado para poder reactivar Vuelta al Cole/Vuelta al Hogar el año que viene) --
+    ahora se borra sola. Campañas SIN endDate (abiertas) no se tocan nunca, por si acaso.
+    Devuelve True si de verdad ha borrado algo, para que main() sepa si tiene que meter
+    campaign.json en el commit de este ciclo. Nunca lanza: cualquier fallo aquí no debe tirar
+    abajo el resto del ciclo."""
+    for rel_path in CAMPAIGN_PATH_CANDIDATES:
+        path = os.path.join(REPO_DIR, rel_path)
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+            campaigns = data.get("campaigns")
+            if not isinstance(campaigns, list):
+                return False
+            now = datetime.now()
+            kept = []
+            for campaign in campaigns:
+                end = campaign.get("endDate") if isinstance(campaign, dict) else None
+                if end:
+                    try:
+                        if now > datetime.fromisoformat(end) + timedelta(days=1):
+                            continue  # caducada hace más de un día -- se elimina
+                    except ValueError:
+                        pass
+                kept.append(campaign)
+            if len(kept) == len(campaigns):
+                return False
+            data["campaigns"] = kept
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            log(f"  campaign.json: {len(campaigns) - len(kept)} campaña(s) caducada(s) eliminada(s).")
+            return True
+        except Exception as e:
+            log(f"  aviso: no se pudo limpiar campaign.json: {e}")
+            return False
+    return False
+
+
 def _fetch_watched_asins():
     """Devuelve el conjunto de ASINs que alguien tiene AHORA MISMO en favoritos, según
     Firestore (colección watched_offers, cuenta anónima — ver firestore.rules y
@@ -2262,6 +2307,11 @@ def main():
         git_paths.append("watched_prices.json")
     if os.path.isfile(SUBMISSION_OFFERS_PATH):
         git_paths.append("submission_offers.json")
+    # 17 sep 2026, pedido explícito: "cuando termine la campaña que se elimine todo" -- se
+    # comprueba en cada ciclo (barato, casi siempre no hay nada que borrar) para que una
+    # campaña caducada desaparezca del todo sola, sin depender de que alguien la borre a mano.
+    if _prune_expired_campaigns():
+        git_paths.append("campaign.json")
     subprocess.run(["git", "-C", REPO_DIR, "add"] + git_paths, check=True)
     diff = subprocess.run(["git", "-C", REPO_DIR, "diff", "--cached", "--quiet"])
     if diff.returncode == 0:
