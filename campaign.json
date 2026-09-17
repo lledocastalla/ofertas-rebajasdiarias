@@ -21,17 +21,6 @@
       "storeTarget": "leroymerlin",
       "startDate": "2026-08-25",
       "endDate": "2026-09-28"
-    },
-    {
-      "active": false,
-      "title": "Vuelta al Cole: mochilas y material escolar con descuento real 🎒",
-      "subtitle": "Mochilas Totto, Safta y Movom, estuches, agendas y más, con el mismo filtro de siempre: descuento verificado de al menos un 30%, nunca precios inflados.",
-      "colorHex": "#F2A93B",
-      "icon": "school",
-      "categoryTarget": "Vuelta al Cole",
-      "storeTarget": null,
-      "startDate": "2026-08-25",
-      "endDate": "2026-09-15"
     }
   ],
   "_comment": "Esquema con varias campañas a la vez (25 ago 2026 -- antes un único objeto, hizo falta ampliarlo porque Vuelta al Cole y Vuelta al Hogar tienen fechas que se solapan). Cada campaña: active=true, title/subtitle obligatorios (se muestran como una diapositiva mas en la rotacion del hero de la web y la app -- ver finalizeCampaign() en rebajasdiarias-web/js/app.js y CampaignInfo en rebajasdiarias-app), categoryTarget O storeTarget opcional pero no los dos a la vez (con cualquiera de los dos, solo se anuncia si hay 4+ ofertas reales de esa categoria/tienda en el catalogo), startDate/endDate en YYYY-MM-DD. icon: school|bolt|gift|tree|cart|fire|sun (guardado por si algun dia hace falta un tratamiento visual distinto, hoy no se usa). El ORDEN del array es el orden en que aparecen las diapositivas (la primera del array es la primera diapositiva del hero). 17 sep 2026, pedido explícito ('cuando termine la campaña que se elimine todo'): una campaña con endDate se borra SOLA de este array en cuanto pasa un día de esa fecha (ver _prune_expired_campaigns() en update_offers.py, se comprueba en cada ciclo de la Pi) -- ya no hace falta quitarla a mano ni dejarla parada aquí. Una campaña SIN endDate nunca se borra sola."
