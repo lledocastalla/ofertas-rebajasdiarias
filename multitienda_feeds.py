@@ -2107,6 +2107,15 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("acer", fetch_acer_offers, "acer"),
     ]
     for name, fetch_fn, key in stores:
+        # 17 sep 2026: heartbeat ANTES de cada tienda -- bug real detectado en producción,
+        # "acer" (última de la lista) no dejaba NINGÚN rastro en el log tras integrarse (ni
+        # éxito, ni el aviso de fallo de abajo, ni el aviso genérico de update_offers.py que
+        # descarta todo fetch_multitienda_offers() si algo escapa de este try/except) pese a
+        # que llamarla a mano, incluso justo después de perfumeria_comas en el mismo proceso,
+        # funcionaba perfectamente (7 candidatos). Sin este heartbeat es imposible distinguir
+        # "nunca llegó a intentarlo" de "lo intentó y algo se comió tanto el resultado como la
+        # excepción" -- con este log, el próximo ciclo real deja dicho hasta dónde llegó.
+        log(f"[{name}] intentando...")
         try:
             result.update(fetch_fn(log, local_test_files.get(key)))
         except Exception as e:
