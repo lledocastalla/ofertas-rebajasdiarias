@@ -62,6 +62,16 @@ REPO_LOCK_PATH = f"{HOME}/.rebajas_update_lock"
 # búsqueda rápida y lo reanude (SIGCONT) al terminar, en vez de competir por CPU con él en una
 # Pi con pocos recursos (pedido explícito: "así no se satura la Pi").
 UPDATE_OFFERS_PID_PATH = f"{HOME}/.rebajas_update_pid"
+# Candado de "solo un scraping a la vez" (18 sep 2026, incidente real: la Pi se reinició, el
+# ciclo del @reboot se quedó congelado sin soltar sus ~90 procesos de Chrome, y 2h después el
+# cron normal lanzó OTRO ciclo por encima sin saber que ya había uno a medias -- entre los dos
+# dejaron la Pi sin memoria y el catálogo 16h sin publicar). A diferencia de REPO_LOCK_PATH (que
+# solo protege el commit/push final y es bloqueante -- espera su turno), este se toma NADA MÁS
+# empezar y es NO bloqueante: si ya hay un ciclo scrapeando, este se sale al momento en vez de
+# arrancar Chrome por encima y competir por RAM/CPU. Un ciclo legítimamente pausado (SIGSTOP por
+# una alerta en vivo, ver UPDATE_OFFERS_PID_PATH) sigue reteniendo este candado mientras dura la
+# pausa -- justo lo que se quiere, que nadie más arranque mientras tanto.
+SCRAPE_LOCK_PATH = f"{HOME}/.rebajas_scrape_lock"
 CHROMEDRIVER_PATH = "/usr/bin/chromedriver"
 CHROMIUM_PATH = "/usr/bin/chromium"
 AFFILIATE_TAG = "rebajasdiar05-21"
@@ -1909,6 +1919,19 @@ def _checkpoint_progress(existing_offers, new_or_updated):
 
 def main():
     log("=== Inicio ===")
+
+    # Ver SCRAPE_LOCK_PATH: lo primero de todo, antes incluso del jitter -- si otro ciclo ya
+    # está scrapeando (o legítimamente pausado a mitad), este se sale ya mismo. _scrape_lock_file
+    # se queda abierto a propósito durante toda la ejecución (no se cierra a mano): el candado
+    # vive mientras viva el descriptor, y el propio proceso lo libera solo al terminar, igual que
+    # REPO_LOCK_PATH más abajo.
+    _scrape_lock_file = open(SCRAPE_LOCK_PATH, "w")
+    try:
+        fcntl.flock(_scrape_lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        log("Ya hay un ciclo de scraping en marcha (o pausado a medias) -- se sale sin arrancar "
+            "Chrome por encima, para no competir por RAM/CPU. Ya tocará en el próximo cron.")
+        return
 
     jitter = random.uniform(0, JITTER_MAX_MINUTES * 60)
     log(f"Esperando {round(jitter / 60, 1)} min antes de empezar (para no disparar siempre "
