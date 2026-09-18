@@ -12,6 +12,17 @@
       "endDate": "2026-09-20"
     },
     {
+      "active": true,
+      "title": "FOREO: hasta 50% en dispositivos de belleza 🎁",
+      "subtitle": "Training Season Sale de FOREO: packs con hasta un 50% de descuento real (con cupón incluido). Solo del 17 al 27 de septiembre.",
+      "colorHex": "#8B5FBF",
+      "icon": "gift",
+      "categoryTarget": null,
+      "storeTarget": "foreo",
+      "startDate": "2026-09-17",
+      "endDate": "2026-09-27"
+    },
+    {
       "active": false,
       "title": "Vuelta al Hogar: hasta 30% en Leroy Merlin 🏡",
       "subtitle": "Renueva cada rincón de tu casa después del verano: bricolaje, decoración, cocinas y baños, muebles y jardín con descuento real. Solo hasta el 28 de septiembre.",
