@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 """
-quiksilver_roxy_scraper.py — Quiksilver ES y Roxy ES (15 sep 2026, pedido explícito del usuario:
-"vamos con las tiendas, alguna forma tendremos de meterlas en el app ya que son marcas
-importantes").
+quiksilver_roxy_scraper.py — Quiksilver ES, Roxy ES y DC Shoes ES (15 sep 2026, pedido explícito
+del usuario: "vamos con las tiendas, alguna forma tendremos de meterlas en el app ya que son
+marcas importantes"; DC Shoes añadida el 20 sep 2026 -- mismo grupo Liberated Brands/Boardriders,
+misma plantilla web exacta, comprobado en vivo: 48/48 productos de rebajas-hombre con 40-50% real,
+sin ninguno por debajo del mínimo del proyecto).
+
+20 sep 2026, comprobación en vivo de las otras 3 tiendas que estaban en cola esperando la Pi 5
+(Rowenta, Tefal, ToysRus): NINGUNA llega al 30% mínimo ahora mismo (Rowenta 1/22 al filo del 30%,
+Tefal 0/10 -- máximo 27%, ToysRus 0/4 -- 15/20/20/20%, el -40% de su banner de portada es una
+promo puntual de mochilas, no el patrón real del catálogo). Quedan aparcadas, NO integradas --
+el mecanismo (scraping directo a su web de rebajas) ya está listo si algún día suben los
+descuentos reales, pero añadirlas hoy publicaría ofertas que no cumplen la promesa de la app.
 
 Por qué esto es un scraper aparte y no una tienda más de multitienda_feeds.py: las dos están
 aceptadas en Tradedoubler (fid 42467/43218) y ya se probó su feed de productos vía API real --
@@ -58,6 +67,10 @@ _SALE_SECTIONS = [
      "url": "https://www.quiksilver.es/rebajas-mujer/", "category": "Moda Mujer"},
     {"store": "roxy", "label": "Roxy", "program_id": "319668",
      "url": "https://www.roxy.es/rebajas-mujer/", "category": "Moda Mujer"},
+    {"store": "dcshoes", "label": "DC Shoes", "program_id": "319669",
+     "url": "https://www.dcshoes.es/rebajas-hombre/", "category": "Moda Hombre"},
+    {"store": "dcshoes", "label": "DC Shoes", "program_id": "319669",
+     "url": "https://www.dcshoes.es/rebajas-mujer/", "category": "Moda Mujer"},
 ]
 
 MAX_SCROLLS = 6  # cada scroll carga más tarjetas (scroll infinito, sin paginación real) --
