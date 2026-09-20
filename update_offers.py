@@ -45,6 +45,8 @@ from multitienda_feeds import fetch_multitienda_offers
 # se llaman ambos archivos ya han terminado de importarse del todo. Probado con
 # `python3 -c "import update_offers"` sin errores tras añadir esto.
 from quiksilver_roxy_scraper import fetch_quiksilver_roxy_offers
+# 20 sep 2026, mismo motivo/patrón que la línea de arriba (import circular a propósito).
+from groupeseb_toysrus_scraper import fetch_groupeseb_toysrus_offers
 
 # --- Configuración ---
 HOME = os.path.expanduser("~")
@@ -2176,6 +2178,16 @@ def main():
         log(f"aviso: fallo en Quiksilver/Roxy, se continúa sin ellas este ciclo: {e}")
         quiksilver_roxy_offers = {}
     new_or_updated.update(quiksilver_roxy_offers)
+
+    # Rowenta/Tefal/ToysRus (20 sep 2026, ver groupeseb_toysrus_scraper.py): mismo espíritu que
+    # Quiksilver/Roxy de arriba, pero con un mínimo de descuento más bajo (15% en vez de 30%)
+    # pedido explícito del usuario tras confirmar que ninguna llega al 30% estándar ahora mismo.
+    try:
+        groupeseb_toysrus_offers = fetch_groupeseb_toysrus_offers(log)
+    except Exception as e:
+        log(f"aviso: fallo en Rowenta/Tefal/ToysRus, se continúa sin ellas este ciclo: {e}")
+        groupeseb_toysrus_offers = {}
+    new_or_updated.update(groupeseb_toysrus_offers)
 
     if len(new_or_updated) == 0:
         log(
