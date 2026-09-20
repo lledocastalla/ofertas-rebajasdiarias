@@ -54,12 +54,9 @@ def _process_request(doc_id, data):
         return
     # Camino de "alerta de palabra clave" (14 sep 2026, ver AmazonSearchService.
     # createKeywordAlertRequest() en la app -- se dispara al añadir una alerta en Ajustes):
-    # usa el motor compartido con keyword_alert_cleanup.py -- scraping real (Selenium/Chrome,
-    # no la Creators API bloqueada), guarda en keyword_alert_offers (umbral 1%, no 30%) y avisa
-    # por push desde ahí mismo. Sin _note_availability() aquí -- ese sondeo es solo para la
-    # Creators API del camino normal de abajo (buscador de la propia pantalla), no aplica al
-    # scraping. Este documento de search_requests solo sirve de disparador async, nadie lo
-    # escucha en vivo.
+    # usa el motor compartido con keyword_alert_cleanup.py -- scraping real (Selenium/Chrome),
+    # guarda en keyword_alert_offers (umbral 1%, no 30%) y avisa por push desde ahí mismo. Este
+    # documento de search_requests solo sirve de disparador async, nadie lo escucha en vivo.
     if data.get("notifyPush") and data.get("requestedBy"):
         try:
             new_offers = keyword_alert_search.refresh_keyword_alert(
@@ -77,14 +74,25 @@ def _process_request(doc_id, data):
             except Exception:
                 pass
         return
+    # Buscador de la propia pantalla (AmazonSearchService.createSearchRequest()) -- hasta el 20
+    # sep 2026 llamaba a paapi.search_amazon() (Amazon Product Advertising API), bloqueada desde
+    # semanas antes por el umbral de ventas de Amazon (403 AssociateNotEligible, mismo motivo
+    # por el que las alertas se reescribieron el 14 sep) -- nunca se actualizó este camino en su
+    # momento, así que llevaba devolviendo "unavailable"/0 resultados en silencio todo este
+    # tiempo (hallazgo real: "he buscado anillo luminoso... no ha encontrado nada y en alertas
+    # sí"). Ahora usa el MISMO motor real que las alertas (scraping Selenium/Chrome, con
+    # candado + pausa del ciclo normal + reintentos ya incluidos en _scrape_keyword_live), con
+    # el umbral estándar del resto del catálogo (30-80%, no el 1% de las alertas) -- import
+    # amazon_paapi se deja arriba sin usar aquí por si hiciera falta más adelante para otra
+    # cosa, no se borra solo por esto.
     try:
-        items = paapi.search_amazon(query_text)
-        _note_availability(items is not None, _load_availability_state())
-        if items is None:
+        offers = keyword_alert_search._scrape_keyword_live(
+            query_text, min_discount_percent=30, max_discount_percent=80
+        )
+        if offers is None:
             doc_ref.set({"status": "unavailable"}, merge=True)
-            log(f"{query_text!r}: Amazon no disponible ahora mismo")
+            log(f"{query_text!r}: no se pudo completar el scraping ahora mismo")
             return
-        offers = paapi.offers_from_items(items)
         doc_ref.set(
             {"status": "done", "results": offers, "resultCount": len(offers)},
             merge=True,
