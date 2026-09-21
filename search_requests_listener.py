@@ -52,6 +52,17 @@ def _process_request(doc_id, data):
     if not query_text:
         doc_ref.set({"status": "error"}, merge=True)
         return
+    # 21 sep 2026, aviso real ("por que me ha tardado mucho"): un usuario esperando delante de la
+    # pantalla no debe competir en igualdad con el repaso de fondo de keyword_alert_cleanup.py --
+    # ver mark_live_search_pending()/yield_to_live_search() en keyword_alert_search.py.
+    priority_marker = keyword_alert_search.mark_live_search_pending()
+    try:
+        _process_request_inner(doc_id, doc_ref, query_text, data)
+    finally:
+        keyword_alert_search.clear_live_search_pending(priority_marker)
+
+
+def _process_request_inner(doc_id, doc_ref, query_text, data):
     # Camino de "alerta de palabra clave" (14 sep 2026, ver AmazonSearchService.
     # createKeywordAlertRequest() en la app -- se dispara al añadir una alerta en Ajustes):
     # usa el motor compartido con keyword_alert_cleanup.py -- scraping real (Selenium/Chrome),

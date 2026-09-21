@@ -47,6 +47,7 @@ import os
 import re
 import signal
 import subprocess
+import threading
 import time
 
 from firebase_admin import firestore, messaging
@@ -96,6 +97,50 @@ KEYWORD_ALERT_RETRY_DELAY_SECONDS = 30
 # una espera bastante más larga -- el ciclo normal sigue pausado durante esta espera también
 # (ver _scrape_keyword_live), nunca se reanuda a medias.
 KEYWORD_ALERT_MEMORY_GRACE_SECONDS = 120
+
+# 21 sep 2026, aviso real ("por que me ha tardado mucho" -- el buscador principal tardó mucho en
+# responder): KEYWORD_ALERT_LOCK_PATH es bloqueante pero SIN prioridad -- una búsqueda en vivo de
+# un usuario esperando delante de la pantalla podía quedarse en cola detrás de una tanda entera
+# del cron de keyword_alert_cleanup.py (repasa CADA palabra de CADA usuario cada hora, cada una
+# con su cooldown de KEYWORD_ALERT_COOLDOWN_SECONDS dentro del propio candado -- una tanda de 20+
+# palabras son varios minutos reales). search_requests_listener.py (usuario esperando en directo)
+# marca aquí que hay una búsqueda prioritaria en curso; keyword_alert_cleanup.py (que puede
+# esperar, es un repaso de fondo) comprueba esto ANTES de cada palabra y cede el turno si hace
+# falta, en vez de competir por el candado en igualdad de condiciones.
+LIVE_SEARCH_PRIORITY_DIR = f"{uo.HOME}/.rebajas_live_search_priority"
+LIVE_SEARCH_PRIORITY_MAX_WAIT_SECONDS = 25  # tope por si un marcador se quedara huérfano
+
+
+def mark_live_search_pending():
+    """Llamar justo antes de una búsqueda en vivo iniciada por un usuario real. Devuelve la ruta
+    del marcador -- guardarla y pasarla a clear_live_search_pending() al terminar (try/finally)."""
+    os.makedirs(LIVE_SEARCH_PRIORITY_DIR, exist_ok=True)
+    marker_path = os.path.join(LIVE_SEARCH_PRIORITY_DIR, f"{os.getpid()}_{threading.get_ident()}")
+    open(marker_path, "w").close()
+    return marker_path
+
+
+def clear_live_search_pending(marker_path):
+    try:
+        os.remove(marker_path)
+    except OSError:
+        pass
+
+
+def yield_to_live_search():
+    """Llamar desde el cron de fondo (keyword_alert_cleanup.py) antes de CADA palabra -- si hay
+    una búsqueda en vivo marcada como pendiente, espera a que termine (con tope) en vez de
+    lanzarse a competir por el mismo candado."""
+    waited = 0.0
+    while waited < LIVE_SEARCH_PRIORITY_MAX_WAIT_SECONDS:
+        try:
+            pending = bool(os.listdir(LIVE_SEARCH_PRIORITY_DIR))
+        except OSError:
+            pending = False
+        if not pending:
+            return
+        time.sleep(0.5)
+        waited += 0.5
 
 
 def log(msg):

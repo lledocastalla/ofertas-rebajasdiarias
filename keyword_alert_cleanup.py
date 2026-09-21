@@ -39,6 +39,10 @@ def main():
         keywords = [k.strip() for k in data.get("keywordAlerts") or [] if k.strip()]
         for kw in keywords:
             checked += 1
+            # 21 sep 2026, ver mark_live_search_pending()/yield_to_live_search() en
+            # keyword_alert_search.py -- este repaso es de fondo y puede esperar; una búsqueda
+            # real de un usuario delante de la pantalla no debería hacer cola detrás de él.
+            kas.yield_to_live_search()
             try:
                 result = kas.refresh_keyword_alert(db, doc.id, kw, notify_new=True)
             except Exception as e:
