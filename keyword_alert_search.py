@@ -230,13 +230,20 @@ def _wait_for_memory_headroom():
         waited += MEMORY_WAIT_POLL_SECONDS
 
 
-def _scrape_keyword_live_once(keyword):
+def _scrape_keyword_live_once(
+    keyword,
+    min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
+    max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
+):
     """Un único intento -- abre un Chrome real (perfil propio, aparte del ciclo normal) y busca
-    `keyword` en Amazon.es con el umbral bajo de las alertas. NO gestiona el candado ni la pausa
-    del ciclo normal -- eso lo hace _scrape_keyword_live(), que envuelve TODA la secuencia de
-    reintentos de una vez (ver comentario ahí). Devuelve None si algo falla de verdad al abrir/
-    usar Chrome (fallo temporal, NO se debe tocar nada de lo ya guardado). Devuelve una lista
-    (puede estar vacía) si se completó bien."""
+    `keyword` en Amazon.es. Umbral bajo de las alertas por defecto (min/max sin tocar en las
+    llamadas de siempre); el buscador principal (20 sep 2026, ver search_requests_listener.py)
+    pasa el umbral estándar del resto del catálogo (30-80%) en su lugar -- mismo motor real,
+    solo cambia el filtro de descuento. NO gestiona el candado ni la pausa del ciclo normal --
+    eso lo hace _scrape_keyword_live(), que envuelve TODA la secuencia de reintentos de una vez
+    (ver comentario ahí). Devuelve None si algo falla de verdad al abrir/usar Chrome (fallo
+    temporal, NO se debe tocar nada de lo ya guardado). Devuelve una lista (puede estar vacía)
+    si se completó bien."""
     _wait_for_memory_headroom()
     driver = None
     try:
@@ -245,8 +252,8 @@ def _scrape_keyword_live_once(keyword):
             driver,
             keyword,
             CATEGORY_LABEL,
-            min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
-            max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
+            min_discount_percent=min_discount_percent,
+            max_discount_percent=max_discount_percent,
             max_products=MAX_PRODUCTS_KEYWORD_ALERT,
         )
     except Exception as e:
@@ -265,7 +272,11 @@ def _scrape_keyword_live_once(keyword):
         time.sleep(KEYWORD_ALERT_COOLDOWN_SECONDS)
 
 
-def _scrape_keyword_live(keyword):
+def _scrape_keyword_live(
+    keyword,
+    min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
+    max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
+):
     """Como _scrape_keyword_live_once(), pero con reintentos (14 sep 2026, pedido explícito: "si
     sale un error en la búsqueda que arranque al rato otra vez hasta que vaya") -- un fallo
     puntual (Chrome sin memoria para arrancar, timeout de red...) ya no se rinde a la primera,
@@ -296,7 +307,9 @@ def _scrape_keyword_live(keyword):
         paused_pid = _pause_main_cycle()
         try:
             for attempt in range(1, KEYWORD_ALERT_RETRY_ATTEMPTS + 1):
-                result = _scrape_keyword_live_once(keyword)
+                result = _scrape_keyword_live_once(
+                    keyword, min_discount_percent, max_discount_percent
+                )
                 if result is not None:
                     return result
                 if attempt < KEYWORD_ALERT_RETRY_ATTEMPTS:
@@ -307,7 +320,9 @@ def _scrape_keyword_live(keyword):
                 f"oportunidad tras {KEYWORD_ALERT_MEMORY_GRACE_SECONDS}s de margen real para "
                 f"que la memoria se asiente")
             time.sleep(KEYWORD_ALERT_MEMORY_GRACE_SECONDS)
-            result = _scrape_keyword_live_once(keyword)
+            result = _scrape_keyword_live_once(
+                keyword, min_discount_percent, max_discount_percent
+            )
             if result is not None:
                 return result
             log(f"'{keyword}': también falló la última oportunidad, se rinde por ahora")
