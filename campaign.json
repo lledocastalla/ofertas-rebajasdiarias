@@ -2,17 +2,6 @@
   "campaigns": [
     {
       "active": true,
-      "title": "Adidas: compra 2 y llévate un 20% dto. 👟",
-      "subtitle": "Combina dos productos Adidas y te llevas un 20% de descuento en tu compra. Solo del 17 al 20 de septiembre.",
-      "colorHex": "#1AACD6",
-      "icon": "fire",
-      "categoryTarget": null,
-      "storeTarget": "adidas",
-      "startDate": "2026-09-17",
-      "endDate": "2026-09-20"
-    },
-    {
-      "active": true,
       "title": "FOREO: hasta 50% en dispositivos de belleza 🎁",
       "subtitle": "Training Season Sale de FOREO: packs con hasta un 50% de descuento real (con cupón incluido). Solo del 17 al 27 de septiembre.",
       "colorHex": "#8B5FBF",
