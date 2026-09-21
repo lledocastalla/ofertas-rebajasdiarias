@@ -81,14 +81,14 @@ def _process_request(doc_id, data):
     # momento, así que llevaba devolviendo "unavailable"/0 resultados en silencio todo este
     # tiempo (hallazgo real: "he buscado anillo luminoso... no ha encontrado nada y en alertas
     # sí"). Ahora usa el MISMO motor real que las alertas (scraping Selenium/Chrome, con
-    # candado + pausa del ciclo normal + reintentos ya incluidos en _scrape_keyword_live), con
-    # el umbral estándar del resto del catálogo (30-80%, no el 1% de las alertas) -- import
-    # amazon_paapi se deja arriba sin usar aquí por si hiciera falta más adelante para otra
-    # cosa, no se borra solo por esto.
+    # candado + pausa del ciclo normal + reintentos ya incluidos en _scrape_keyword_live). Sin
+    # umbral propio a partir de aquí (20 sep 2026, pedido explícito: "lo que es en vivo me da
+    # igual que tanto por % tenga de descuento") -- se deja caer a los valores por defecto de
+    # _scrape_keyword_live(), que son los mismos de las alertas (1%-100%, MIN/MAX_SAVING_
+    # PERCENT_KEYWORD_ALERT), no el 30-80% estándar del resto del catálogo. import amazon_paapi
+    # se deja arriba sin usar aquí por si hiciera falta más adelante para otra cosa.
     try:
-        offers = keyword_alert_search._scrape_keyword_live(
-            query_text, min_discount_percent=30, max_discount_percent=80
-        )
+        offers = keyword_alert_search._scrape_keyword_live(query_text)
         if offers is None:
             doc_ref.set({"status": "unavailable"}, merge=True)
             log(f"{query_text!r}: no se pudo completar el scraping ahora mismo")

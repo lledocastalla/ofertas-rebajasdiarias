@@ -1370,8 +1370,22 @@ def scrape_keyword(
     try:
         driver.get(url)
     except TimeoutException:
+        # 20 sep 2026, bug real encontrado (aviso del usuario: "sale antes la información de
+        # que no ha encontrado nada... voy a alertas vuelvo y lo encuentra"): esto devolvía
+        # `results` (lista vacía) en vez de relanzar, así que un timeout de PÁGINA (fallo
+        # transitorio real) se veía exactamente igual que "búsqueda completada, 0 resultados
+        # reales" -- en el ciclo normal del catálogo eso está BIEN (saltar esta palabra y
+        # seguir con la siguiente es lo correcto, con decenas de keywords por ciclo no se puede
+        # reintentar cada una), pero en el buscador en vivo (keyword_alert_search.py,
+        # _scrape_keyword_live_once) hacía que _scrape_keyword_live() diera el intento entero
+        # por bueno sin reintentar -- un timeout puntual se convertía en "no hay nada" en vez
+        # de reintentarlo como cualquier otro fallo. Relanzar en vez de devolver `results`: el
+        # ciclo normal ya envuelve esta llamada en un try/except Exception amplio (ver comentario
+        # de 15 sep ahí, "una palabra sola fallando... nunca debe poder tirar todo el trabajo"),
+        # así que su comportamiento no cambia -- solo cambia quién ve el fallo como fallo de
+        # verdad en vez de como "0 resultados" silencioso.
         log(f"  timeout cargando '{keyword}', se salta")
-        return results
+        raise
 
     time.sleep(2)
     try:
