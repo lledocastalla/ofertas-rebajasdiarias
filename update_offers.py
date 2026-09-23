@@ -2244,6 +2244,14 @@ def main():
         new_offer["last_seen"] = now_iso
         merged[asin] = new_offer
 
+    # Códigos de descuento caducados fuera de todo el catálogo (23 sep 2026, ver
+    # prune_expired_coupons en multitienda_feeds.py).
+    try:
+        from multitienda_feeds import prune_expired_coupons
+        prune_expired_coupons(merged, new_or_updated, log)
+    except Exception as e:
+        log(f"aviso: no se pudieron revisar los códigos caducados: {e!r}")
+
     # "Que ellos las puedan eliminar" (26 ago 2026): retira del catálogo las ofertas cuyo autor
     # ha borrado su propia sugerencia desde entonces (ver _reconcile_deleted_submissions()). Se
     # hace aquí, ya con `merged` construido, para que gane siempre sobre cualquier otra fuente

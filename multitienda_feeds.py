@@ -2494,6 +2494,42 @@ def attach_store_coupons(result, log):
     log(f"[cupones] códigos de toda la tienda añadidos: {attached or 'ninguno'}")
 
 
+def prune_expired_coupons(merged, fresh, log):
+    """Quita coupon_code/coupon_label de cualquier oferta del catálogo cuyo código ya no esté
+    activo (23 sep 2026, pedido explícito: "que revise automáticamente cuando los códigos ya no
+    estén y que se eliminen"). Las ofertas que se vuelven a ver en el ciclo ya llegan con el código
+    al día, pero las que siguen en el catálogo sin volver a verse (hasta STALE_AFTER_DAYS)
+    conservarían uno caducado. Activo = lo da hoy la API de Awin o la de Tradedoubler, o viene
+    en alguna oferta recién descargada en este ciclo (p.ej. los códigos del feed de Huawei).
+    Si alguna de las dos APIs falla, no se toca nada (mejor un código un ciclo de más que
+    borrar todos por un fallo de red)."""
+    active = {(o.get("coupon_code") or "").strip().upper() for o in fresh.values()}
+    now_ms = time.time() * 1000
+    td = _tradedoubler_vouchers(log)
+    awin = _awin_promotions(log)
+    if not td or not awin:
+        log("[cupones] aviso: sin respuesta de Tradedoubler o Awin, no se limpian códigos este ciclo")
+        return
+    for v in td:
+        try:
+            if float(v.get("endDate") or 0) and float(v.get("endDate")) < now_ms:
+                continue
+        except (TypeError, ValueError):
+            continue
+        active.add((v.get("code") or "").strip().upper())
+    for pr in awin:
+        active.add(((pr.get("voucher") or {}).get("code") or "").strip().upper())
+    active.discard("")
+    removed = 0
+    for o in merged.values():
+        code = (o.get("coupon_code") or "").strip().upper()
+        if code and code not in active:
+            o.pop("coupon_code", None)
+            o.pop("coupon_label", None)
+            removed += 1
+    log(f"[cupones] códigos caducados quitados del catálogo: {removed}")
+
+
 def fetch_multitienda_offers(log, local_test_files=None):
     """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path,
     'perfumeriacomas': path}) solo para pruebas locales sin red — en producción se omite y se
