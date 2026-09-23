@@ -32,7 +32,42 @@
       "storeTarget": "adidas",
       "startDate": "2026-09-25",
       "endDate": "2026-10-13"
+    },
+    {
+      "active": true,
+      "appOnly": true,
+      "title": "Nueva tienda: Armani Beauty ✨",
+      "subtitle": "Perfumes y maquillaje de Armani rebajados, y además un 15% extra con el código ARMANI15, exclusivo para afiliados.",
+      "colorHex": "#141518",
+      "icon": "gift",
+      "categoryTarget": null,
+      "storeTarget": "armani",
+      "startDate": "2026-09-23"
+    },
+    {
+      "active": true,
+      "appOnly": true,
+      "title": "Nueva tienda: YSL Beauty 🖤",
+      "subtitle": "Libre, Black Opium, La Nuit y maquillaje de Yves Saint Laurent rebajados. Código YSLBACK: 30% de descuento hasta el 30 de septiembre.",
+      "colorHex": "#050505",
+      "icon": "gift",
+      "categoryTarget": null,
+      "storeTarget": "ysl",
+      "startDate": "2026-09-23",
+      "endDate": "2026-09-30"
+    },
+    {
+      "active": true,
+      "appOnly": true,
+      "title": "Nueva tienda: Kiwoko 🐶",
+      "subtitle": "Collares, arneses, juguetes y premios para tu mascota hasta un 50% más baratos. Código COLLINKWK: 15% extra en compras de más de 69 € hasta el 30 de septiembre.",
+      "colorHex": "#d4262c",
+      "icon": "gift",
+      "categoryTarget": null,
+      "storeTarget": "kiwoko",
+      "startDate": "2026-09-23",
+      "endDate": "2026-09-30"
     }
   ],
-  "_comment": "Esquema con varias campañas a la vez (25 ago 2026 -- antes un único objeto, hizo falta ampliarlo porque Vuelta al Cole y Vuelta al Hogar tienen fechas que se solapan). Cada campaña: active=true, title/subtitle obligatorios (se muestran como una diapositiva mas en la rotacion del hero de la web y la app -- ver finalizeCampaign() en rebajasdiarias-web/js/app.js y CampaignInfo en rebajasdiarias-app), categoryTarget O storeTarget opcional pero no los dos a la vez (con cualquiera de los dos, solo se anuncia si hay 4+ ofertas reales de esa categoria/tienda en el catalogo), startDate/endDate en YYYY-MM-DD. icon: school|bolt|gift|tree|cart|fire|sun (guardado por si algun dia hace falta un tratamiento visual distinto, hoy no se usa). El ORDEN del array es el orden en que aparecen las diapositivas (la primera del array es la primera diapositiva del hero). 17 sep 2026, pedido explícito ('cuando termine la campaña que se elimine todo'): una campaña con endDate se borra SOLA de este array en cuanto pasa un día de esa fecha (ver _prune_expired_campaigns() en update_offers.py, se comprueba en cada ciclo de la Pi) -- ya no hace falta quitarla a mano ni dejarla parada aquí. Una campaña SIN endDate nunca se borra sola."
+  "_comment": "Esquema con varias campañas a la vez (25 ago 2026 -- antes un único objeto, hizo falta ampliarlo porque Vuelta al Cole y Vuelta al Hogar tienen fechas que se solapan). Cada campaña: active=true, title/subtitle obligatorios (se muestran como una diapositiva mas en la rotacion del hero de la web y la app -- ver finalizeCampaign() en rebajasdiarias-web/js/app.js y CampaignInfo en rebajasdiarias-app), categoryTarget O storeTarget opcional pero no los dos a la vez (con cualquiera de los dos, solo se anuncia si hay 4+ ofertas reales de esa categoria/tienda en el catalogo), startDate/endDate en YYYY-MM-DD. icon: school|bolt|gift|tree|cart|fire|sun (guardado por si algun dia hace falta un tratamiento visual distinto, hoy no se usa). El ORDEN del array es el orden en que aparecen las diapositivas (la primera del array es la primera diapositiva del hero). 17 sep 2026, pedido explícito ('cuando termine la campaña que se elimine todo'): una campaña con endDate se borra SOLA de este array en cuanto pasa un día de esa fecha (ver _prune_expired_campaigns() en update_offers.py, se comprueba en cada ciclo de la Pi) -- ya no hace falta quitarla a mano ni dejarla parada aquí. Una campaña SIN endDate nunca se borra sola. 23 sep 2026: appOnly=true -> solo la app la muestra como diapositiva de texto; la web la ignora porque ya pinta su propio banner de tienda con foto (ver buildHeroSlides en rebajasdiarias-web/js/app.js)."
 }
