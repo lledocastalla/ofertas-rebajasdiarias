@@ -2269,6 +2269,140 @@ def fetch_kiwoko_offers(log, cap=None):
     return {o["id"]: o for o in top}
 
 
+# ---------------------------------------------------------------------------
+# ToysRus ES (23 sep 2026, pedido explícito "me gustaría tener toysrus, tendríamos de buscar la
+# fórmula"). Su web está tras Cloudflare (no se evade) y su feed de Tradedoubler (fid 21529,
+# 33.367 productos) solo trae el precio ACTUAL, sin precio anterior. Dos vías, las dos solas:
+#  1. Cupones: si ToysRus publica un código % para toda la tienda en la API de vouchers, sus
+#     juguetes salen con el código aplicado (mismo esquema que Huawei, coupon_code/label).
+#  2. Historial propio: cada ciclo guarda el precio del día de cada producto en
+#     TOYSRUS_HISTORY_PATH; cuando hay TOYSRUS_MIN_HISTORY_DAYS días, publica solo bajadas
+#     reales de 30-80% frente al precio MÁS ALTO visto en los últimos 30 días (original_price =
+#     ese precio, nunca uno inventado).
+# El feed por defecto solo deja ver 1.000 productos (casi todos ropa de Prénatal), pero la API
+# admite ;q=<búsqueda> -- se recorre una lista de marcas/tipos de juguete (lego 705,
+# playmobil 162, barbie 316... comprobado 23 sep 2026).
+TOYSRUS_FID = "21529"
+TOYSRUS_PROGRAM_ID = 211811
+TOYSRUS_QUERIES = [
+    "lego", "playmobil", "barbie", "hot wheels", "pokemon", "nerf", "peppa", "patrulla canina",
+    "marvel", "disney", "puzzle", "juego de mesa", "muñeca", "peluche", "nintendo",
+    "playstation", "bicicleta", "patinete", "vtech", "fisher-price", "hasbro", "mattel",
+    "monopoly", "scalextric", "famosa", "nenuco", "cochecito", "silla de coche",
+]
+TOYSRUS_HISTORY_PATH = os.path.expanduser("~/toysrus_price_history.json")
+TOYSRUS_MIN_HISTORY_DAYS = 7
+TOYSRUS_HISTORY_KEEP_DAYS = 45
+TOYSRUS_COUPON_MAX = 60
+
+
+def _download_tradedoubler_query(fid, query, log, timeout=60):
+    url = (
+        f"https://api.tradedoubler.com/1.0/products.json;q={urllib.parse.quote(query)};"
+        f"page=1;pageSize=1000;fid={fid}?token={TRADEDOUBLER_TOKEN}"
+    )
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.load(resp).get("products") or []
+
+
+def _toysrus_products(log):
+    """{sourceProductId: producto} de todas las búsquedas, sin duplicados, solo en stock."""
+    found = {}
+    for q in TOYSRUS_QUERIES:
+        try:
+            for p in _download_tradedoubler_query(TOYSRUS_FID, q, log):
+                offer = (p.get("offers") or [{}])[0]
+                pid = offer.get("sourceProductId")
+                if pid and offer.get("availability") == "in stock":
+                    found.setdefault(pid, p)
+        except Exception as e:
+            log(f"[toysrus] aviso: búsqueda '{q}' falló: {e}")
+    return found
+
+
+def _toysrus_offer(p, original, actual, pct):
+    offer = p["offers"][0]
+    cat = ((p.get("categories") or [{}])[0].get("name") or "").split(">")
+    return {
+        "id": f"trus_{offer['sourceProductId']}",
+        "title": (p.get("name") or "").strip()[:180],
+        "category": "Juguetes",
+        "subcategory": cat[1].strip() if len(cat) > 1 else "",
+        "price": round(actual, 2),
+        "original_price": round(original, 2),
+        "discount_percent": int(round(pct)),
+        "is_flash": False,
+        "image": (p.get("productImage") or {}).get("url") or "",
+        "url": offer.get("productUrl") or "",
+        "store": "toysrus",
+        "store_label": "ToysRus",
+    }
+
+
+def fetch_toysrus_offers(log, cap=None):
+    products = _toysrus_products(log)
+    prices = {}
+    for pid, p in products.items():
+        try:
+            prices[pid] = float(p["offers"][0]["priceHistory"][0]["price"]["value"])
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+
+    # 1) Historial propio: guarda el precio de hoy y poda lo viejo.
+    today = time.strftime("%Y-%m-%d")
+    try:
+        with open(TOYSRUS_HISTORY_PATH) as f:
+            history = json.load(f)
+    except (OSError, ValueError):
+        history = {}
+    cutoff = time.strftime("%Y-%m-%d", time.localtime(time.time() - TOYSRUS_HISTORY_KEEP_DAYS * 86400))
+    for pid, price in prices.items():
+        history.setdefault(pid, {})[today] = price
+    for pid in list(history):
+        history[pid] = {d: v for d, v in history[pid].items() if d >= cutoff}
+        if not history[pid]:
+            del history[pid]
+    try:
+        tmp = TOYSRUS_HISTORY_PATH + ".tmp"
+        with open(tmp, "w") as f:
+            json.dump(history, f)
+        os.replace(tmp, TOYSRUS_HISTORY_PATH)
+    except OSError as e:
+        log(f"[toysrus] aviso: no se pudo guardar el historial de precios: {e}")
+
+    result = {}
+    window = time.strftime("%Y-%m-%d", time.localtime(time.time() - 30 * 86400))
+    for pid, actual in prices.items():
+        past = {d: v for d, v in history.get(pid, {}).items() if window <= d < today}
+        if len(past) < TOYSRUS_MIN_HISTORY_DAYS or actual < MIN_PRICE_EUR:
+            continue
+        original = max(past.values())
+        pct = (original - actual) / original * 100 if original > 0 else 0
+        if MIN_DISCOUNT_PERCENT <= pct <= MAX_DISCOUNT_PERCENT:
+            o = _toysrus_offer(products[pid], original, actual, pct)
+            result[o["id"]] = o
+
+    # 2) Cupón vigente de toda la tienda.
+    code, label = _best_store_voucher(TOYSRUS_PROGRAM_ID, log)
+    pct_code = None
+    for v in _tradedoubler_vouchers(log):
+        if v.get("programId") == TOYSRUS_PROGRAM_ID and (v.get("code") or "").strip() == code:
+            pct_code = float(v.get("discountAmount") or 0)
+    if code and pct_code:
+        ranked = sorted((pid for pid in prices if prices[pid] >= 15), key=lambda k: -prices[k])
+        for pid in ranked[:TOYSRUS_COUPON_MAX]:
+            original = prices[pid]
+            o = _toysrus_offer(products[pid], original, original * (1 - pct_code / 100), pct_code)
+            o["coupon_code"], o["coupon_label"] = code, label
+            result.setdefault(o["id"], o)
+
+    days = len({d for h in history.values() for d in h})
+    log(f"[toysrus] {len(prices)} productos con precio, historial de {days} día(s) "
+        f"(mínimo {TOYSRUS_MIN_HISTORY_DAYS}), código: {code or 'ninguno'} -> {len(result)} ofertas")
+    return result
+
+
 def fetch_multitienda_offers(log, local_test_files=None):
     """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path,
     'perfumeriacomas': path}) solo para pruebas locales sin red — en producción se omite y se
@@ -2310,6 +2444,7 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("armani", fetch_armani_offers, "armani"),
         ("ysl", fetch_ysl_offers, "ysl"),
         ("kiwoko", fetch_kiwoko_offers, "kiwoko"),
+        ("toysrus", fetch_toysrus_offers, "toysrus"),
     ]
     for name, fetch_fn, key in stores:
         # 17 sep 2026: heartbeat ANTES de cada tienda -- bug real detectado en producción,
