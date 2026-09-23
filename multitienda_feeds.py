@@ -2097,7 +2097,8 @@ LUXURY_BEAUTY_MIN_DISCOUNT_PERCENT = 15
 # a destacar. Comprobado sobre los 82 vouchers reales del 23 sep 2026.
 _VOUCHER_EXCLUDE_RE = re.compile(
     r"primera|bienvenid|2ª unidad|segunda unidad|marca|antiparasitario|productos para|"
-    r"cafeteras|newsletter",
+    r"cafeteras|newsletter|alimentaci|capilar|cofre|fragancia|cosm[eé]tica|niche|solar|"
+    r"accesorios|seleccionad|member|miembro",
     re.IGNORECASE,
 )
 
@@ -2126,6 +2127,10 @@ def _best_store_voucher(program_id, log):
     best = None
     for v in _tradedoubler_vouchers(log):
         if v.get("programId") != program_id or not (v.get("code") or "").strip():
+            continue
+        # Códigos con el nombre de otra web de cupones (p.ej. EXTRA15CUPONATIONELX) son de ese
+        # otro afiliado, no nuestros -- y el de Electrolux además hablaba de AEG.
+        if re.search(r"cuponation|idealo|chollometro|groupon", v["code"], re.IGNORECASE):
             continue
         if not v.get("isPercentage"):
             continue
@@ -2403,6 +2408,92 @@ def fetch_toysrus_offers(log, cap=None):
     return result
 
 
+# ---------------------------------------------------------------------------
+# Código de descuento de toda la tienda en cada oferta (23 sep 2026, pedido explícito: "si tiene
+# códigos debemos ponerlos también en la web y en la app"). La app y la web ya pintan
+# coupon_code/coupon_label en la tarjeta y los recogen en "Cupones" -- basta con rellenarlos.
+# SOLO se pega a las ofertas un código válido en TODA la tienda (HAIR10 de Perfumería Comas es
+# solo para productos capilares y no puede salir en un perfume); los demás salen igualmente en
+# las páginas /cupones/ de la web (generate_coupon_pages.py). Fuentes: API de promociones de
+# Awin (token OAuth2, ver README-backup-rebajasdiarias.md) y la de vouchers de Tradedoubler.
+AWIN_API_TOKEN = "b828628c-89de-4bce-a25e-818ae07ae27b"
+AWIN_PUBLISHER_ID = "3029543"
+STORE_CODE_SOURCES = {
+    # Awin (advertiserId)
+    "perfumeriacomas": ("awin", 33073), "stylevana": ("awin", 31535),
+    "zapatosobi": ("awin", 115587), "leroymerlin": ("awin", 20598), "acer": ("awin", 17132),
+    "deporteoutlet": ("awin", 19598),
+    # Tradedoubler (programId)
+    "tiendanimal": ("td", 306110), "aeg": ("td", 323375), "electrolux": ("td", 396967),
+    "mediamarkt": ("td", 270504), "hpstore": ("td", 245745), "bosch": ("td", 316288),
+    "balay": ("td", 354019), "desigual": ("td", 261390), "bershka": ("td", 302404),
+}
+_SITEWIDE_RE = re.compile(r"toda la web|toda la tienda|todo el sitio|en todo|sitewide|storewide|"
+                          r"entire order|all products", re.IGNORECASE)
+_awin_promos_cache = None
+
+
+def _awin_promotions(log):
+    global _awin_promos_cache
+    if _awin_promos_cache is None:
+        body = json.dumps({"filters": {"membership": "joined", "status": "active"},
+                           "pagination": {"page": 1, "pageSize": 200}}).encode()
+        try:
+            req = urllib.request.Request(
+                f"https://api.awin.com/publisher/{AWIN_PUBLISHER_ID}/promotions", data=body,
+                headers={"Authorization": f"Bearer {AWIN_API_TOKEN}",
+                         "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                _awin_promos_cache = json.load(resp).get("data") or []
+        except Exception as e:
+            log(f"[cupones] aviso: no se pudieron descargar las promociones de Awin: {e}")
+            _awin_promos_cache = []
+    return _awin_promos_cache
+
+
+def _best_awin_sitewide_code(advertiser_id, log):
+    """(código, texto) del mejor código de Awin válido en toda la tienda, o (None, None)."""
+    best = None
+    for pr in _awin_promotions(log):
+        if (pr.get("advertiser") or {}).get("id") != advertiser_id or pr.get("type") != "voucher":
+            continue
+        code = ((pr.get("voucher") or {}).get("code") or "").strip()
+        title = " ".join((pr.get("title") or "").split())
+        desc = " ".join((pr.get("description") or "").split())
+        text = f"{title} {desc}"
+        if not code or not _SITEWIDE_RE.search(text) or re.search(r"member|miembro|new customer|primera compra", text, re.I):
+            continue
+        m = re.search(r"(\d+(?:[.,]\d+)?)\s*%", text)
+        score = float(m.group(1).replace(",", ".")) if m else 0.0
+        mm = re.search(r"m[ií]nim[oa][^0-9]{0,20}(\d+)\s*(?:€|euros)", f"{text} {pr.get('terms') or ''}", re.I)
+        label = title.rstrip(".!")
+        if mm and "mín" not in label.lower() and "desde" not in label.lower():
+            label += f" (compra mínima {mm.group(1)} €)"
+        if best is None or score > best[0]:
+            best = (score, code, label)
+    return (best[1], best[2]) if best else (None, None)
+
+
+def attach_store_coupons(result, log):
+    """Pone el mejor código de toda la tienda en las ofertas que todavía no llevan uno."""
+    attached = {}
+    for store, (network, ident) in STORE_CODE_SOURCES.items():
+        if network == "awin":
+            code, label = _best_awin_sitewide_code(ident, log)
+        else:
+            code, label = _best_store_voucher(ident, log)
+        if not code:
+            continue
+        n = 0
+        for o in result.values():
+            if o.get("store") == store and not o.get("coupon_code"):
+                o["coupon_code"], o["coupon_label"] = code, label
+                n += 1
+        if n:
+            attached[store] = f"{code} ({n})"
+    log(f"[cupones] códigos de toda la tienda añadidos: {attached or 'ninguno'}")
+
+
 def fetch_multitienda_offers(log, local_test_files=None):
     """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path,
     'perfumeriacomas': path}) solo para pruebas locales sin red — en producción se omite y se
@@ -2461,6 +2552,10 @@ def fetch_multitienda_offers(log, local_test_files=None):
         except Exception as e:
             log(f"[{name}] aviso: fallo inesperado, se omite esta tienda este ciclo "
                 f"(las demás no se ven afectadas): {e!r}")
+    try:
+        attach_store_coupons(result, log)
+    except Exception as e:
+        log(f"[cupones] aviso: fallo añadiendo códigos, se publica sin ellos: {e!r}")
     return result
 
 
