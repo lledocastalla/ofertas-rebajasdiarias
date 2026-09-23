@@ -22,6 +22,7 @@ import io
 import json
 import os
 import re
+import time
 import urllib.parse
 import urllib.request
 
@@ -2067,6 +2068,207 @@ def fetch_acer_offers(log, local_test_file=None, cap=None):
     return {o["id"]: o for o in top}
 
 
+# ---------------------------------------------------------------------------
+# Armani Beauty ES, YSL Beauty ES y Kiwoko (23 sep 2026, aceptadas en Tradedoubler -- ver
+# RASPI_REBAJASDIARIAS.md). Los tres feeds traen precio de referencia real: `sale_price` en
+# "fields" = precio de VENTA, `offers[0].priceHistory` = precio ORIGINAL (mismo patrón que
+# Tiendanimal). Comprobado 23 sep 2026 sobre el feed entero:
+# - Armani (fid 257712, 409 productos): 266 rebajados, TODOS exactamente al 20%.
+# - YSL (fid 257717, 476 productos): 378 rebajados, TODOS exactamente al 20%.
+# - Kiwoko (fid 20632, 1.000 visibles de 4.341): 78 en el rango 30-80%.
+# Armani/YSL no llegan nunca al 30% estándar -- pedido explícito del usuario ("tener estas
+# marcas nos interesan"), mínimo bajado a 15% solo para ellas, igual que Rowenta/Tefal.
+# Además se destaca en cada oferta el mejor código de descuento vigente de la tienda
+# (coupon_code/coupon_label, mismo esquema que Huawei), sacado en vivo de la API de vouchers
+# de Tradedoubler (token distinto al de productos, ver "Tokens" en publishers.tradedoubler.com)
+# -- así caducan/cambian solos sin tocar código.
+TRADEDOUBLER_VOUCHER_TOKEN = "6B416218B4ECF6BD432739FEE79907462AFC27CF"
+
+ARMANI_FID = "257712"
+ARMANI_PROGRAM_ID = 394404
+YSL_FID = "257717"
+YSL_PROGRAM_ID = 394409
+KIWOKO_FID = "20632"
+KIWOKO_PROGRAM_ID = 231187
+LUXURY_BEAUTY_MIN_DISCOUNT_PERCENT = 15
+
+# Códigos que no sirven a cualquiera que entre desde una oferta concreta (solo primera
+# compra, solo una marca/tipo de producto, 2ª unidad...) -- se descartan al elegir el código
+# a destacar. Comprobado sobre los 82 vouchers reales del 23 sep 2026.
+_VOUCHER_EXCLUDE_RE = re.compile(
+    r"primera|bienvenid|2ª unidad|segunda unidad|marca|antiparasitario|productos para|"
+    r"cafeteras|newsletter",
+    re.IGNORECASE,
+)
+
+_td_vouchers_cache = None
+
+
+def _tradedoubler_vouchers(log):
+    """Todos los vouchers vigentes de nuestros programas (una sola petición por proceso)."""
+    global _td_vouchers_cache
+    if _td_vouchers_cache is None:
+        url = f"https://api.tradedoubler.com/1.0/vouchers.json?token={TRADEDOUBLER_VOUCHER_TOKEN}"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                _td_vouchers_cache = json.load(resp)
+        except Exception as e:
+            log(f"[tradedoubler_vouchers] aviso: no se pudieron descargar los códigos: {e}")
+            _td_vouchers_cache = []
+    return _td_vouchers_cache
+
+
+def _best_store_voucher(program_id, log):
+    """(código, texto) del mejor código porcentual vigente y válido para toda la tienda, o
+    (None, None) si no hay ninguno."""
+    now_ms = time.time() * 1000
+    best = None
+    for v in _tradedoubler_vouchers(log):
+        if v.get("programId") != program_id or not (v.get("code") or "").strip():
+            continue
+        if not v.get("isPercentage"):
+            continue
+        try:
+            if float(v.get("startDate") or 0) > now_ms or float(v.get("endDate") or 0) < now_ms:
+                continue
+            amount = float(v.get("discountAmount") or 0)
+        except (TypeError, ValueError):
+            continue
+        title = " ".join((v.get("title") or "").split())
+        if _VOUCHER_EXCLUDE_RE.search(title):
+            continue
+        if best is None or amount > best[0]:
+            best = (amount, v["code"].strip(), title)
+    return (best[1], best[2]) if best else (None, None)
+
+
+def _td_sale_price_offers(fid, log, min_pct):
+    """Productos en stock con `sale_price` < precio original y descuento en [min_pct, MAX].
+    Devuelve [(producto, offer, original, actual, pct)]."""
+    products = _download_tradedoubler_products(fid, log)
+    out = []
+    for p in products:
+        offers = p.get("offers") or []
+        if not offers:
+            continue
+        offer = offers[0]
+        if (offer.get("availability") or "").replace("_", " ").lower() != "in stock":
+            continue
+        try:
+            original = float(offer["priceHistory"][0]["price"]["value"])
+        except (KeyError, IndexError, ValueError, TypeError):
+            continue
+        sale = _td_field(p.get("fields"), "sale_price")
+        try:
+            actual = float((sale or "").split()[0]) if sale else None
+        except (ValueError, IndexError):
+            actual = None
+        if not actual or original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < min_pct or pct > MAX_DISCOUNT_PERCENT:
+            continue
+        if not (p.get("name") or "").strip() or not offer.get("sourceProductId") or not offer.get("productUrl"):
+            continue
+        out.append((p, offer, original, actual, pct))
+    return out
+
+
+_LUXURY_BEAUTY_SUBCATEGORY_ES = {
+    "makeup": "Maquillaje",
+    "skincare": "Cuidado facial",
+    "skin care": "Cuidado facial",
+}
+
+
+def _fetch_luxury_beauty_offers(log, fid, program_id, store_key, store_label, id_prefix):
+    """Armani/YSL: misma plantilla de feed (Demandware de L'Oréal Luxe). Un mismo producto
+    viene repetido por tono/tamaño (86 bases de maquillaje en Armani, p.ej.) -- se publica
+    solo una variante por `item_group_id` para no inundar la tienda del mismo artículo."""
+    rows = _td_sale_price_offers(fid, log, LUXURY_BEAUTY_MIN_DISCOUNT_PERCENT)
+    coupon_code, coupon_label = _best_store_voucher(program_id, log)
+    seen_groups = set()
+    candidates = []
+    for p, offer, original, actual, pct in rows:
+        group = _td_field(p.get("fields"), "item_group_id") or offer["sourceProductId"]
+        if group in seen_groups:
+            continue
+        seen_groups.add(group)
+        cat_path = ((p.get("categories") or [{}])[0].get("name") or "")
+        top = cat_path.split(">")[0].strip().lower()
+        if top in ("perfume", "fragrance"):
+            category, subcategory = "Perfumería", "Perfumes"
+        else:
+            category = "Belleza"
+            subcategory = _LUXURY_BEAUTY_SUBCATEGORY_ES.get(top, "Maquillaje")
+        o = {
+            "id": f"{id_prefix}_{offer['sourceProductId']}",
+            "title": p["name"].strip()[:180],
+            "category": category,
+            "subcategory": subcategory,
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": (p.get("productImage") or {}).get("url") or "",
+            "url": offer["productUrl"],
+            "store": store_key,
+            "store_label": store_label,
+        }
+        if coupon_code:
+            o["coupon_code"] = coupon_code
+            o["coupon_label"] = coupon_label
+        candidates.append(o)
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    log(f"[{store_key}] {len(candidates)} productos rebajados {LUXURY_BEAUTY_MIN_DISCOUNT_PERCENT}-80% "
+        f"(1 por grupo de variantes), código destacado: {coupon_code or 'ninguno'}")
+    return {o["id"]: o for o in candidates}
+
+
+def fetch_armani_offers(log, cap=None):
+    return _fetch_luxury_beauty_offers(log, ARMANI_FID, ARMANI_PROGRAM_ID,
+                                       "armani", "Armani Beauty", "arm")
+
+
+def fetch_ysl_offers(log, cap=None):
+    return _fetch_luxury_beauty_offers(log, YSL_FID, YSL_PROGRAM_ID,
+                                       "ysl", "YSL Beauty", "ysl")
+
+
+def fetch_kiwoko_offers(log, cap=None):
+    """Mismo formato de feed que Tiendanimal (custom_label_0 = animal, "in_stock" con guion
+    bajo). Solo 1.000 visibles de 4.341 por el límite de la API. Criterio estándar 30-80%."""
+    rows = _td_sale_price_offers(KIWOKO_FID, log, MIN_DISCOUNT_PERCENT)
+    coupon_code, coupon_label = _best_store_voucher(KIWOKO_PROGRAM_ID, log)
+    candidates = []
+    for p, offer, original, actual, pct in rows:
+        animal = (_td_field(p.get("fields"), "custom_label_0") or "").split(";")[0].strip()
+        o = {
+            "id": f"kwk_{offer['sourceProductId']}",
+            "title": p["name"].strip()[:180],
+            "category": "Mascotas",
+            "subcategory": _TIENDANIMAL_SUBCATEGORY_ES.get(animal, animal),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": (p.get("productImage") or {}).get("url") or "",
+            "url": offer["productUrl"],
+            "store": "kiwoko",
+            "store_label": "Kiwoko",
+        }
+        if coupon_code:
+            o["coupon_code"] = coupon_code
+            o["coupon_label"] = coupon_label
+        candidates.append(o)
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[kiwoko] {len(candidates)} candidatos 30-80% con stock (de un máximo de 1.000 que deja "
+        f"ver la API sobre 4.341 reales), {len(top)} publicados, código: {coupon_code or 'ninguno'}")
+    return {o["id"]: o for o in top}
+
+
 def fetch_multitienda_offers(log, local_test_files=None):
     """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path,
     'perfumeriacomas': path}) solo para pruebas locales sin red — en producción se omite y se
@@ -2105,6 +2307,9 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("bosch", fetch_bosch_offers, "bosch"),
         ("perfumeria_comas", fetch_perfumeria_comas_offers, "perfumeriacomas"),
         ("acer", fetch_acer_offers, "acer"),
+        ("armani", fetch_armani_offers, "armani"),
+        ("ysl", fetch_ysl_offers, "ysl"),
+        ("kiwoko", fetch_kiwoko_offers, "kiwoko"),
     ]
     for name, fetch_fn, key in stores:
         # 17 sep 2026: heartbeat ANTES de cada tienda -- bug real detectado en producción,
@@ -2151,6 +2356,9 @@ def generate_extended_catalog(log):
         ("deporte_outlet_extended", fetch_deporte_outlet_extended),
         ("balay_extended", fetch_balay_offers),
         ("bosch_extended", fetch_bosch_offers),
+        ("armani_extended", fetch_armani_offers),
+        ("ysl_extended", fetch_ysl_offers),
+        ("kiwoko_extended", fetch_kiwoko_offers),
     ]:
         try:
             result.update(fetch_fn(log))
