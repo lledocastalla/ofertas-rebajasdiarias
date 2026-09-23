@@ -238,6 +238,54 @@ def _scrape_toysrus(driver):
     return top
 
 
+# Fotos de producto (23 sep 2026, aviso del usuario: "rowenta y otras no tienen las imágenes de
+# sus productos"). La plantilla de sus webs no deja sacar la imagen de forma fiable, pero sus
+# feeds de Tradedoubler (fid 51943 Rowenta, 51766 Tefal) sí traen productImage -- se cruzan
+# por el código de producto (el mismo que acaba el id de la oferta, p.ej. tefal_2100126086).
+# Comprobado 23 sep 2026: 14/14 ofertas publicadas encontradas. Si el producto suelto no está
+# en el feed pero sí un pack que lo incluye, se usa la foto del pack como último recurso.
+_GROUPESEB_FEEDS = {"rowenta": "51943", "tefal": "51766"}
+
+
+def _groupeseb_feed_images(_log):
+    """{código de producto: url de imagen} a partir de los feeds de Tradedoubler."""
+    from multitienda_feeds import _download_tradedoubler_products
+
+    exact, fallback = {}, {}
+    for store, fid in _GROUPESEB_FEEDS.items():
+        try:
+            products = _download_tradedoubler_products(fid, _log)
+        except Exception as e:
+            _log(f"aviso: sin feed de imágenes de {store} este ciclo: {e}")
+            continue
+        for p in products:
+            offer = (p.get("offers") or [{}])[0]
+            image = (p.get("productImage") or {}).get("url")
+            if not image:
+                continue
+            source_codes = re.findall(r"\d{8,13}", offer.get("sourceProductId") or "")
+            url_codes = re.findall(r"\d{8,13}", urllib.parse.unquote(offer.get("productUrl") or ""))
+            if len(source_codes) == 1:
+                exact.setdefault(source_codes[0], image)
+            for code in source_codes + url_codes:
+                fallback.setdefault(code, image)
+    return {**fallback, **exact}
+
+
+def _fill_missing_images(offers, _log):
+    missing = [o for o in offers.values() if not o.get("image")]
+    if not missing:
+        return
+    images = _groupeseb_feed_images(_log)
+    filled = 0
+    for o in missing:
+        code = o["id"].split("_", 1)[-1]
+        if images.get(code):
+            o["image"] = images[code]
+            filled += 1
+    _log(f"fotos de producto desde el feed de Tradedoubler: {filled}/{len(missing)}")
+
+
 def fetch_groupeseb_toysrus_offers(log_fn=None):
     """Punto de entrada único, mismo patrón que fetch_quiksilver_roxy_offers() -- un fallo en
     una sección nunca debe tumbar las demás ni el ciclo entero de update_offers.py."""
@@ -269,6 +317,10 @@ def fetch_groupeseb_toysrus_offers(log_fn=None):
                 driver.quit()
             except Exception:
                 pass
+    try:
+        _fill_missing_images(result, _log)
+    except Exception as e:
+        _log(f"aviso: no se pudieron completar las fotos de Rowenta/Tefal: {e}")
     return result
 
 
