@@ -16,6 +16,13 @@ búsquedas ya terminadas; nunca toca una pendiente ni el resultado que ve el usu
 Además poda las búsquedas de más de 30 días (una vez al día): desde el 24 sep ni la app ni la
 web pueden borrarlas (firestore.rules), así que sin esto la colección crecería sin fin.
 
+Y lo mismo para Alertas (24 sep 2026, aviso real: "en el buscador sí veo las ofertas
+encontradas pero en alertas no salen"): cuántas ofertas tiene encontradas ahora mismo cada
+palabra (keyword_alert_offers, contado en total SIN mirar de quién es) -> keyword_alert_stats
+(lastResultCount). El panel de admin no puede leer keyword_alert_offers (privadas de cada
+usuario, firestore.rules), así que el total anónimo lo calcula aquí la Pi. Con count() de
+Firestore (1 lectura por cada 1000 documentos) y como mucho una vez por hora.
+
 Uso: cron cada 10 min, ver crontab en RASPI_REBAJASDIARIAS.md.
 """
 
@@ -135,6 +142,34 @@ def main():
             log(f"aviso: fallo podando búsquedas antiguas: {e}")
         if deleted:
             log(f"podadas {deleted} búsqueda(s) de más de {RETENTION_DAYS} días")
+
+    # Alertas: nº de ofertas encontradas por palabra, como mucho una vez por hora.
+    if time.time() - state.get("last_alerts", 0) >= 3600:
+        try:
+            alerts_written = 0
+            for d in db.collection("keyword_alert_stats").stream():
+                data = d.to_dict() or {}
+                raw = (data.get("keyword") or d.id).strip()
+                variants = {raw, raw.lower(), d.id}
+                total = 0
+                for kw in variants:
+                    agg = (
+                        db.collection("keyword_alert_offers")
+                        .where(filter=FieldFilter("keyword", "==", kw))
+                        .count()
+                        .get()
+                    )
+                    total += int(agg[0][0].value)
+                d.reference.set(
+                    {"lastResultCount": total, "lastResultAt": firestore.SERVER_TIMESTAMP},
+                    merge=True,
+                )
+                alerts_written += 1
+            state["last_alerts"] = time.time()
+            if alerts_written:
+                log(f"{alerts_written} alerta(s) actualizadas con su nº de ofertas")
+        except Exception as e:
+            log(f"aviso: fallo contando ofertas de alertas: {e}")
 
     _save_state(state)
 
