@@ -1,0 +1,401 @@
+{
+ "_comment": "Banners de tienda del carrusel de la portada (web y app). Editar aqui para cambiar el orden (order), ocultar tiendas (hidden), colores (themes) o anadir banners propios (custom) -- sin compilar la app ni desplegar la web. Los banners de tienda salen solos del catalogo real (producto mas rebajado, precio, codigo) para cada tienda con min_offers+ ofertas. Custom: title, image y (store o url) obligatorios; store abre esa tienda, url abre un enlace; opcionales subtitle, eyebrow, cta, code, code_label, logo_store, price, old_price, theme (como en themes), from/until (AAAA-MM-DD), position (0 = justo tras la diapositiva de stats). enabled:false apaga todos los banners.",
+ "enabled": true,
+ "slide_seconds": 5,
+ "text_slide_seconds": 5,
+ "min_offers": 4,
+ "order": [
+  "adidas",
+  "armani",
+  "ysl",
+  "amazon",
+  "mediamarkt",
+  "toysrus",
+  "bosch",
+  "hpstore",
+  "huawei",
+  "footlocker",
+  "leroymerlin",
+  "desigual",
+  "bershka",
+  "quiksilver",
+  "acer",
+  "allpowers",
+  "aeg",
+  "electrolux",
+  "balay",
+  "roxy",
+  "dcshoes",
+  "rowenta",
+  "tefal",
+  "foreo",
+  "perfumeriacomas",
+  "stylevana",
+  "kiwoko",
+  "tiendanimal",
+  "deporteoutlet",
+  "zapatosobi",
+  "4elementos"
+ ],
+ "hidden": [],
+ "themes": {
+  "amazon": {
+   "bg": [
+    "#131921",
+    "#232f3e"
+   ],
+   "accent": "#ff9900",
+   "cta": [
+    "#ff9900",
+    "#131921"
+   ]
+  },
+  "adidas": {
+   "bg": [
+    "#000000",
+    "#1c1c1c"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#000000"
+   ]
+  },
+  "footlocker": {
+   "bg": [
+    "#111111",
+    "#2b2b2b"
+   ],
+   "accent": "#ff3b4e",
+   "cta": [
+    "#ffffff",
+    "#111111"
+   ]
+  },
+  "quiksilver": {
+   "bg": [
+    "#0a2a43",
+    "#0f4c75"
+   ],
+   "accent": "#f2c230",
+   "cta": [
+    "#f2c230",
+    "#0a2a43"
+   ],
+   "chipDark": true
+  },
+  "roxy": {
+   "bg": [
+    "#1e2a5a",
+    "#3a2466"
+   ],
+   "accent": "#ff7aa8",
+   "cta": [
+    "#ff7aa8",
+    "#1e2a5a"
+   ],
+   "face": "round",
+   "chipDark": true
+  },
+  "dcshoes": {
+   "bg": [
+    "#111111",
+    "#333333"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#111111"
+   ]
+  },
+  "desigual": {
+   "bg": [
+    "#1a1a1a",
+    "#3a1414"
+   ],
+   "accent": "#ff5a3c",
+   "cta": [
+    "#ff5a3c",
+    "#ffffff"
+   ],
+   "face": "round"
+  },
+  "bershka": {
+   "bg": [
+    "#111111",
+    "#2a2a2a"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#111111"
+   ]
+  },
+  "4elementos": {
+   "bg": [
+    "#1d3b2a",
+    "#2f6b47"
+   ],
+   "accent": "#f4d35e",
+   "cta": [
+    "#f4d35e",
+    "#1d3b2a"
+   ]
+  },
+  "zapatosobi": {
+   "bg": [
+    "#22313f",
+    "#34495e"
+   ],
+   "accent": "#e9b44c",
+   "cta": [
+    "#e9b44c",
+    "#22313f"
+   ]
+  },
+  "deporteoutlet": {
+   "bg": [
+    "#0d3b66",
+    "#145c9e"
+   ],
+   "accent": "#ff8a5b",
+   "cta": [
+    "#f95738",
+    "#ffffff"
+   ]
+  },
+  "leroymerlin": {
+   "bg": [
+    "#1f5a1f",
+    "#3f8a1f"
+   ],
+   "accent": "#c8f07a",
+   "cta": [
+    "#ffffff",
+    "#1f5a1f"
+   ]
+  },
+  "aeg": {
+   "bg": [
+    "#1a1a1a",
+    "#2e2e2e"
+   ],
+   "accent": "#ff4a5e",
+   "cta": [
+    "#ffffff",
+    "#1a1a1a"
+   ]
+  },
+  "electrolux": {
+   "bg": [
+    "#041e42",
+    "#0a3a7a"
+   ],
+   "accent": "#9ec5ff",
+   "cta": [
+    "#ffffff",
+    "#041e42"
+   ]
+  },
+  "balay": {
+   "bg": [
+    "#0b2a4a",
+    "#16436f"
+   ],
+   "accent": "#b9d4ef",
+   "cta": [
+    "#ffffff",
+    "#0b2a4a"
+   ]
+  },
+  "bosch": {
+   "bg": [
+    "#0a2540",
+    "#005691"
+   ],
+   "accent": "#ff5363",
+   "cta": [
+    "#ffffff",
+    "#0a2540"
+   ]
+  },
+  "rowenta": {
+   "bg": [
+    "#0d2c54",
+    "#1b4a82"
+   ],
+   "accent": "#9ad0ec",
+   "cta": [
+    "#ffffff",
+    "#0d2c54"
+   ]
+  },
+  "tefal": {
+   "bg": [
+    "#9e0b22",
+    "#c8102e"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#9e0b22"
+   ]
+  },
+  "hpstore": {
+   "bg": [
+    "#004f7c",
+    "#0096d6"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#004f7c"
+   ]
+  },
+  "huawei": {
+   "bg": [
+    "#111111",
+    "#3a0a12"
+   ],
+   "accent": "#ff4d63",
+   "cta": [
+    "#ffffff",
+    "#111111"
+   ]
+  },
+  "acer": {
+   "bg": [
+    "#10240f",
+    "#1f4a1c"
+   ],
+   "accent": "#9ed42a",
+   "cta": [
+    "#9ed42a",
+    "#10240f"
+   ]
+  },
+  "mediamarkt": {
+   "bg": [
+    "#a80000",
+    "#df0000"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#a80000"
+   ],
+   "face": "round"
+  },
+  "tiendanimal": {
+   "bg": [
+    "#00574f",
+    "#00897b"
+   ],
+   "accent": "#ffd166",
+   "cta": [
+    "#ffd166",
+    "#00574f"
+   ],
+   "face": "round"
+  },
+  "allpowers": {
+   "bg": [
+    "#15171b",
+    "#2c3036"
+   ],
+   "accent": "#ff5a3d",
+   "cta": [
+    "#ff5a3d",
+    "#ffffff"
+   ]
+  },
+  "toysrus": {
+   "bg": [
+    "#0a3a8c",
+    "#1d5fd0"
+   ],
+   "accent": "#ffd100",
+   "cta": [
+    "#ffd100",
+    "#0a3a8c"
+   ],
+   "face": "round"
+  },
+  "kiwoko": {
+   "bg": [
+    "#c41f25",
+    "#e0383e"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#c41f25"
+   ],
+   "face": "round"
+  },
+  "armani": {
+   "bg": [
+    "#141518",
+    "#2c2e33"
+   ],
+   "accent": "#d8c6a4",
+   "cta": [
+    "#f1ece3",
+    "#141518"
+   ],
+   "face": "serif",
+   "stage": "disc"
+  },
+  "ysl": {
+   "bg": [
+    "#050505",
+    "#1b1408"
+   ],
+   "accent": "#c9a45c",
+   "cta": [
+    "#c9a45c",
+    "#050505"
+   ],
+   "face": "serif",
+   "stage": "disc"
+  },
+  "perfumeriacomas": {
+   "bg": [
+    "#3a1d2e",
+    "#6b2d4a"
+   ],
+   "accent": "#f3c7d8",
+   "cta": [
+    "#f3c7d8",
+    "#3a1d2e"
+   ],
+   "face": "serif",
+   "stage": "disc"
+  },
+  "stylevana": {
+   "bg": [
+    "#7a1f5c",
+    "#c2185b"
+   ],
+   "accent": "#ffe0ef",
+   "cta": [
+    "#ffffff",
+    "#7a1f5c"
+   ],
+   "face": "round"
+  },
+  "foreo": {
+   "bg": [
+    "#5e3a8c",
+    "#8b5fbf"
+   ],
+   "accent": "#ffe3f4",
+   "cta": [
+    "#ffffff",
+    "#5e3a8c"
+   ],
+   "face": "round"
+  }
+ },
+ "custom": []
+}
