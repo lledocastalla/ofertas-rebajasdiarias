@@ -2238,7 +2238,7 @@ def fetch_armani_offers(log, cap=None):
 
 def fetch_ysl_offers(log, cap=None):
     return _fetch_luxury_beauty_offers(log, YSL_FID, YSL_PROGRAM_ID,
-                                       "ysl", "YSL Beauty", "ysl")
+                                       "ysl", "Yves Saint Laurent", "ysl")
 
 
 def fetch_kiwoko_offers(log, cap=None):
