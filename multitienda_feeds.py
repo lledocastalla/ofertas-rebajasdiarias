@@ -2409,6 +2409,81 @@ def fetch_toysrus_offers(log, cap=None):
 
 
 # ---------------------------------------------------------------------------
+# ALLPOWERS ES (24 sep 2026, invitación de Awin aceptada -- advertiser 107468). Su feed de Awin
+# (fid 98528) NO sirve: sin precio anterior y sin actualizar desde mayo 2026. Su web es Shopify,
+# que publica el catálogo en /products.json con `compare_at_price` (precio anterior) -- JSON
+# público de la propia tienda, sin scraping de HTML ni navegador. Comprobado 24 sep 2026: 134
+# productos, 54 con 30-80% real y stock. Enlace de afiliado: deeplink estándar de Awin.
+ALLPOWERS_ADVERTISER_ID = 107468
+AWIN_PUBLISHER_ID_NUM = "3029543"
+
+
+def _awin_deeplink(advertiser_id, url):
+    return (f"https://www.awin1.com/cread.php?awinmid={advertiser_id}&awinaffid={AWIN_PUBLISHER_ID_NUM}"
+            f"&ued={urllib.parse.quote(url, safe='')}")
+
+
+def _allpowers_category(title):
+    t = title.lower()
+    if "panel" in t and "generador" not in t:
+        return "Paneles solares"
+    if "almacenamiento" in t or "batería" in t or "bateria" in t:
+        return "Baterías y almacenamiento"
+    if "generador" in t:
+        return "Generadores solares"
+    return "Estaciones de energía portátil"
+
+
+def fetch_allpowers_offers(log, cap=None):
+    products, page = [], 1
+    while page <= 5:
+        req = urllib.request.Request(f"https://iallpowers.es/products.json?limit=250&page={page}",
+                                     headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            batch = json.load(resp).get("products") or []
+        products += batch
+        if len(batch) < 250:
+            break
+        page += 1
+    candidates = []
+    for p in products:
+        variant = next((v for v in p.get("variants") or [] if v.get("available")), None)
+        if not variant:
+            continue
+        try:
+            actual = float(variant["price"])
+            original = float(variant.get("compare_at_price") or 0)
+        except (TypeError, ValueError):
+            continue
+        if not (original > actual >= MIN_PRICE_EUR):
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+        title = (p.get("title") or "").strip()
+        url = f"https://iallpowers.es/products/{p['handle']}"
+        image = ((p.get("images") or [{}])[0] or {}).get("src") or ""
+        candidates.append({
+            "id": f"alp_{p['id']}",
+            "title": title[:180],
+            "category": "Tecnología",
+            "subcategory": _allpowers_category(title),
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": _awin_deeplink(ALLPOWERS_ADVERTISER_ID, url),
+            "store": "allpowers",
+            "store_label": "ALLPOWERS",
+        })
+    candidates.sort(key=lambda o: o["discount_percent"], reverse=True)
+    top = candidates if cap is None else candidates[:cap]
+    log(f"[allpowers] {len(products)} productos, {len(candidates)} con 30-80% real y stock")
+    return {o["id"]: o for o in top}
+
+
+# ---------------------------------------------------------------------------
 # Código de descuento de toda la tienda en cada oferta (23 sep 2026, pedido explícito: "si tiene
 # códigos debemos ponerlos también en la web y en la app"). La app y la web ya pintan
 # coupon_code/coupon_label en la tarjeta y los recogen en "Cupones" -- basta con rellenarlos.
@@ -2422,7 +2497,7 @@ STORE_CODE_SOURCES = {
     # Awin (advertiserId)
     "perfumeriacomas": ("awin", 33073), "stylevana": ("awin", 31535),
     "zapatosobi": ("awin", 115587), "leroymerlin": ("awin", 20598), "acer": ("awin", 17132),
-    "deporteoutlet": ("awin", 19598),
+    "deporteoutlet": ("awin", 19598), "allpowers": ("awin", 107468),
     # Tradedoubler (programId)
     "tiendanimal": ("td", 306110), "aeg": ("td", 323375), "electrolux": ("td", 396967),
     "mediamarkt": ("td", 270504), "hpstore": ("td", 245745), "bosch": ("td", 316288),
@@ -2572,6 +2647,7 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("ysl", fetch_ysl_offers, "ysl"),
         ("kiwoko", fetch_kiwoko_offers, "kiwoko"),
         ("toysrus", fetch_toysrus_offers, "toysrus"),
+        ("allpowers", fetch_allpowers_offers, "allpowers"),
     ]
     for name, fetch_fn, key in stores:
         # 17 sep 2026: heartbeat ANTES de cada tienda -- bug real detectado en producción,
@@ -2625,6 +2701,7 @@ def generate_extended_catalog(log):
         ("armani_extended", fetch_armani_offers),
         ("ysl_extended", fetch_ysl_offers),
         ("kiwoko_extended", fetch_kiwoko_offers),
+        ("allpowers_extended", fetch_allpowers_offers),
     ]:
         try:
             result.update(fetch_fn(log))
