@@ -2244,6 +2244,19 @@ def main():
         new_offer["last_seen"] = now_iso
         merged[asin] = new_offer
 
+    # Nombre de tienda al día en TODAS sus ofertas (24 sep 2026, hallazgo real: tras cambiar
+    # "YSL Beauty" -> "Yves Saint Laurent", las ofertas viejas no vistas en este ciclo seguían
+    # con el nombre antiguo y la app podía enseñar cualquiera de los dos). Se toma el
+    # store_label de lo recién visto en este ciclo para cada tienda.
+    fresh_labels = {}
+    for o in new_or_updated.values():
+        if o.get("store") and o.get("store_label"):
+            fresh_labels[o["store"]] = o["store_label"]
+    for o in merged.values():
+        label = fresh_labels.get(o.get("store"))
+        if label and o.get("store_label") != label:
+            o["store_label"] = label
+
     # Códigos de descuento caducados fuera de todo el catálogo (23 sep 2026, ver
     # prune_expired_coupons en multitienda_feeds.py).
     try:
