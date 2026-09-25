@@ -399,13 +399,27 @@
  },
  "custom": [
   {
+   "title": "Miembros FLX: 5% extra 🔥",
+   "eyebrow": "Foot Locker · hasta -50%",
+   "subtitle": "Looks de otoño con hasta un 50% de descuento real, y un 5% extra si te haces socio FLX (gratis). Del 25 de septiembre al 12 de octubre.",
+   "store": "footlocker",
+   "logo_store": "footlocker",
+   "cta": "Ir a la tienda",
+   "image": "https://images.footlocker.com/is/image/FLEU/319302231640?wid=620&hei=620&fmt=png-alpha",
+   "price": 5.0,
+   "old_price": 19.99,
+   "from": "2026-09-25",
+   "until": "2026-10-12",
+   "position": 0
+  },
+  {
    "title": "Rebajas Diarias™",
    "eyebrow": "Ofertas reales, verificadas",
    "subtitle": "Descuento real de al menos un 30% en Amazon, Adidas, Leroy Merlin y muchas más tiendas -- nada de precios inflados ni descuentos falsos.",
    "url": "https://rebajasdiarias.es",
    "cta": "Ver catálogo",
    "image": "https://rebajasdiarias.es/assets/logo.png",
-   "position": 0
+   "position": 1
   },
   {
    "title": "Nueva tienda: Armani Beauty ✨",
