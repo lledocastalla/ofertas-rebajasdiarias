@@ -3,15 +3,7 @@
     {
       "title": "Ofertas reales, verificadas",
       "subtitle": "Buscamos entre miles de productos de Amazon, Adidas, Leroy Merlin, Huawei y muchas más tiendas las ofertas con descuento real de al menos un 30%, las organizamos por categoría y actualizamos el catálogo varias veces al día. Nada de descuentos falsos ni precios \"tachados\" artificialmente: el precio anterior es el que tenía el producto antes de la rebaja."
-    },
-    {
-      "title": "Estamos empezando… ¡y esto promete! 🚀",
-      "subtitle": "Un proyecto que acaba de nacer, hecho con mimo: ofertas reales de varias tiendas, sin descuentos falsos ni precios inflados. Cuantos más seáis, más crece el catálogo — únete ahora, antes de que se corra la voz."
-    },
-    {
-      "title": "Ahora también con Alertas 🔍",
-      "subtitle": "Busca por palabra clave (marca, talla, modelo...) y te avisamos en cuanto encontramos una oferta real que encaje, sin que tengas que estar mirando tú."
     }
   ],
-  "_comment": "Editar aqui para cambiar el texto que rota en el banner del hero de la web y la app -sin necesidad de desplegar nada ni pasar por Play Store-. Cada variante necesita title y subtitle. Se lee cada carga de pagina/apertura de app, asi que el cambio se ve casi al momento. 15 sep 2026: quitada la de 'Ahora también Leroy Merlin y Stylevana' (noticia ya vieja, esas tiendas llevan tiempo en el catálogo) y añadida la de Alertas."
+  "_comment": "Editar aqui para cambiar el texto que rota en el banner del hero de la web y la app -sin necesidad de desplegar nada ni pasar por Play Store-. Cada variante necesita title y subtitle. Se lee cada carga de pagina/apertura de app, asi que el cambio se ve casi al momento. 25 sep 2026, pedido explicito ('la 2 3 4 5 33 y 34 eliminarlas' / 'los cambios deben ser cambios que no tiene que compilar'): quitadas las variantes 'Estamos empezando...' y 'Ahora tambien con Alertas' -- junto con la app/web tratando cada campaña de campaign.json (active:false) sin generar ya una diapositiva de texto duplicada, esto deja el carrusel del hero con solo la diapositiva de stats + los banners reales de marca, sin ninguna diapositiva de texto plano de mas. Solo 1 variante por ahora; anadir mas aqui si algun dia se quiere volver a rotar mensajes."
 }

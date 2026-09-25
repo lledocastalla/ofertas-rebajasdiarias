@@ -397,5 +397,47 @@
    "face": "round"
   }
  },
- "custom": []
+ "custom": [
+  {
+   "title": "Nueva tienda: Armani Beauty ✨",
+   "subtitle": "Perfumes y maquillaje de Armani rebajados, y además un 15% extra con el código ARMANI15, exclusivo para afiliados.",
+   "store": "armani",
+   "logo_store": "armani",
+   "cta": "Ir a la tienda",
+   "code": "ARMANI15",
+   "code_label": "15% extra, exclusivo afiliados",
+   "image": "https://www.armanibeauty.es/dw/image/v2/AAQP_PRD/on/demandware.static/-/Sites-gac-master-catalog/default/dw53f041a9/products/2025/ww-01050-arm/3614274752106/50ml_3614274752106-power_of_you-main-v2.jpg?sw=1024&sh=1024&sm=fit&bgcolor=FFFFFF",
+   "price": 78.75,
+   "old_price": 105.0,
+   "from": "2026-09-23"
+  },
+  {
+   "title": "Nueva tienda: YSL Beauty 🖤",
+   "subtitle": "Libre, Black Opium, La Nuit y maquillaje de Yves Saint Laurent rebajados. Código YSLBACK: 30% de descuento hasta el 30 de septiembre.",
+   "store": "ysl",
+   "logo_store": "ysl",
+   "cta": "Ir a la tienda",
+   "code": "YSLBACK",
+   "code_label": "30% dto hasta el 30 sep",
+   "image": "https://www.yslbeauty.es/dw/image/v2/AAQP_PRD/on/demandware.static/-/Sites-ysl-master-catalog/default/dw6614dad3/images/PACKSHOTS/FRAGRANCE/FOR_HER/WW-51508YSL_libre_berry/3614274521368_libre_berry_30ml_alt1.png?sw=1024&sh=1024&sm=fit",
+   "price": 77.6,
+   "old_price": 97.0,
+   "from": "2026-09-23",
+   "until": "2026-09-30"
+  },
+  {
+   "title": "Nueva tienda: Kiwoko 🐶",
+   "subtitle": "Collares, arneses, juguetes y premios para tu mascota hasta un 50% más baratos. Código COLLINKWK: 15% extra en compras de más de 69 € hasta el 30 de septiembre.",
+   "store": "kiwoko",
+   "logo_store": "kiwoko",
+   "cta": "Ir a la tienda",
+   "code": "COLLINKWK",
+   "code_label": "15% extra en compras +69€",
+   "image": "https://www.kiwoko.com/on/demandware.static/-/Sites-kiwoko-master-catalog/default/dw0f79b17d/images/Arlon_collar_de_cuero_y_metal_rojo_para_perros_WON45175_M.jpg",
+   "price": 8.54,
+   "old_price": 17.09,
+   "from": "2026-09-23",
+   "until": "2026-09-30"
+  }
+ ]
 }

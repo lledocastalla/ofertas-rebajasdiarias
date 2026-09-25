@@ -1,7 +1,7 @@
 {
   "campaigns": [
     {
-      "active": true,
+      "active": false,
       "title": "FOREO: hasta 50% en dispositivos de belleza 🎁",
       "subtitle": "Training Season Sale de FOREO: packs con hasta un 50% de descuento real (con cupón incluido). Solo del 17 al 27 de septiembre.",
       "colorHex": "#8B5FBF",
@@ -23,7 +23,7 @@
       "endDate": "2026-09-28"
     },
     {
-      "active": true,
+      "active": false,
       "title": "adidas: MidSeason Sales, hasta 30% dto 🔥",
       "subtitle": "Descuento real de hasta el 30% en una selección de artículos adidas, aplicado directamente en la web. Del 25 de septiembre al 13 de octubre.",
       "colorHex": "#FF5A3C",
@@ -34,7 +34,7 @@
       "endDate": "2026-10-13"
     },
     {
-      "active": true,
+      "active": false,
       "appOnly": true,
       "title": "Nueva tienda: Armani Beauty ✨",
       "subtitle": "Perfumes y maquillaje de Armani rebajados, y además un 15% extra con el código ARMANI15, exclusivo para afiliados.",
@@ -45,7 +45,7 @@
       "startDate": "2026-09-23"
     },
     {
-      "active": true,
+      "active": false,
       "appOnly": true,
       "title": "Nueva tienda: YSL Beauty 🖤",
       "subtitle": "Libre, Black Opium, La Nuit y maquillaje de Yves Saint Laurent rebajados. Código YSLBACK: 30% de descuento hasta el 30 de septiembre.",
@@ -57,7 +57,7 @@
       "endDate": "2026-09-30"
     },
     {
-      "active": true,
+      "active": false,
       "appOnly": true,
       "title": "Nueva tienda: Kiwoko 🐶",
       "subtitle": "Collares, arneses, juguetes y premios para tu mascota hasta un 50% más baratos. Código COLLINKWK: 15% extra en compras de más de 69 € hasta el 30 de septiembre.",
