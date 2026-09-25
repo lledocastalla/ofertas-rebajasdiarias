@@ -399,6 +399,15 @@
  },
  "custom": [
   {
+   "title": "Rebajas Diarias™",
+   "eyebrow": "Ofertas reales, verificadas",
+   "subtitle": "Descuento real de al menos un 30% en Amazon, Adidas, Leroy Merlin y muchas más tiendas -- nada de precios inflados ni descuentos falsos.",
+   "url": "https://rebajasdiarias.es",
+   "cta": "Ver catálogo",
+   "image": "https://rebajasdiarias.es/assets/logo.png",
+   "position": 0
+  },
+  {
    "title": "Nueva tienda: Armani Beauty ✨",
    "subtitle": "Perfumes y maquillaje de Armani rebajados, y además un 15% extra con el código ARMANI15, exclusivo para afiliados.",
    "store": "armani",
