@@ -424,7 +424,7 @@
    "old_price": 19.99,
    "from": "2026-09-25",
    "until": "2026-10-12",
-   "position": 0
+   "position": 1
   },
   {
    "title": "Nueva tienda: Leroy Merlin Outlet 🏷️",
@@ -437,7 +437,7 @@
    "price": 99.99,
    "old_price": 289.0,
    "from": "2026-09-28",
-   "position": 1
+   "position": 2
   },
   {
    "title": "Rebajas Diarias™",
@@ -446,7 +446,7 @@
    "url": "https://rebajasdiarias.es",
    "cta": "Ver catálogo",
    "image": "https://rebajasdiarias.es/assets/logo.png",
-   "position": 2
+   "position": 0
   },
   {
    "title": "Nueva tienda: Armani Beauty ✨",
