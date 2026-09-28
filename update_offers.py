@@ -291,6 +291,16 @@ NETLIFY_SITE_ID = "4ccf86b0-43aa-4cbe-b66c-258b773795b8"
 # tener que guardar/gestionar un token por dispositivo. Mismo proyecto/credenciales de Firebase
 # que ya se usan arriba para Firestore.
 CATALOG_UPDATES_TOPIC = "catalog_updates"
+# Push de catálogo UNA vez al día (28 sep 2026, pedido explícito: "que solo mande una
+# notificación de actualización de catálogo sobre las 19, no como ahora, porque la gente se
+# cansa; la de alertas sí"). Antes salía en cada ciclo con cambios (hasta 6 al día). Ahora cada
+# ciclo solo apunta las ofertas nuevas (queue_catalog_push) y el aviso sale una sola vez a
+# partir de esta hora local (send_daily_catalog_push_if_due, llamado por sync_search_stats.py
+# cada 10 min -> ~19:07, y al final de cada ciclo como respaldo). Las alertas por palabra
+# clave y los avisos de precio de favoritos (topics user_<uid>) siguen saliendo en cada ciclo.
+CATALOG_PUSH_HOUR = 19
+CATALOG_PUSH_STATE_PATH = f"{HOME}/catalog_push_state.json"
+CATALOG_PUSH_MAX_PENDING = 500
 MAX_WATCHED_DIRECT_VISITS_PER_RUN = 15  # límite de visitas directas por ejecución (además de
                                          # las búsquedas normales) — cinturón de seguridad por
                                          # si algún día hay muchos favoritos vigilados a la vez
@@ -1038,8 +1048,69 @@ def notify_app_push(all_offers, new_asins=None):
         )
         messaging.send(message)
         log("Push de catálogo actualizado enviado a la app.")
+        return True
     except Exception as e:
         log(f"aviso: no se pudo enviar el push del catálogo a la app: {e}")
+        return False
+
+
+def _with_catalog_push_state(fn):
+    """Lee/modifica/guarda el estado del push diario con un lock de archivo -- lo tocan
+    update_offers.py, check_submissions.py y sync_search_stats.py, que pueden coincidir."""
+    with open(f"{CATALOG_PUSH_STATE_PATH}.lock", "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            with open(CATALOG_PUSH_STATE_PATH, encoding="utf-8") as f:
+                state = json.load(f)
+        except Exception:
+            state = {}
+        result = fn(state)
+        with open(CATALOG_PUSH_STATE_PATH, "w", encoding="utf-8") as f:
+            json.dump(state, f)
+        return result
+
+
+def queue_catalog_push(new_asins=None):
+    """Apunta que el catálogo ha cambiado (y qué ofertas son nuevas) para el push diario de
+    las CATALOG_PUSH_HOUR, en vez de mandarlo en el momento. Nunca debe tumbar el ciclo."""
+    def _queue(state):
+        seen = set(state.get("pending", []))
+        pending = [a for a in dict.fromkeys(new_asins or []) if a not in seen]
+        state["pending"] = (pending + state.get("pending", []))[:CATALOG_PUSH_MAX_PENDING]
+        state["has_update"] = True
+    try:
+        _with_catalog_push_state(_queue)
+    except Exception as e:
+        log(f"aviso: no se pudo apuntar el push de catálogo pendiente: {e}")
+
+
+def send_daily_catalog_push_if_due():
+    """Manda el push de catálogo si ya son las CATALOG_PUSH_HOUR (hora local de la Pi, la
+    misma que usa el cron), hoy no se ha mandado todavía y ha habido algún cambio desde el
+    último. Lleva las ofertas nuevas acumuladas desde el último envío que sigan en el catálogo."""
+    now = datetime.now()
+    if now.hour < CATALOG_PUSH_HOUR:
+        return
+    today = now.date().isoformat()
+
+    def _send(state):
+        if state.get("last_sent") == today or not state.get("has_update"):
+            return
+        try:
+            with open(OFFERS_PATH, encoding="utf-8") as f:
+                offers = json.load(f).get("offers", [])
+        except Exception as e:
+            log(f"aviso: no se pudo leer offers.json para el push diario: {e}")
+            return
+        live_ids = {o.get("id") for o in offers}
+        new_ids = [a for a in state.get("pending", []) if a in live_ids]
+        if notify_app_push(offers, new_asins=new_ids):
+            state.update(last_sent=today, pending=[], has_update=False)
+
+    try:
+        _with_catalog_push_state(_send)
+    except Exception as e:
+        log(f"aviso: no se pudo comprobar el push diario de catálogo: {e}")
 
 
 def notify_submitter_push(uid, offer):
@@ -2427,9 +2498,11 @@ def main():
             f"{len(merged)} en total."
         )
         # Push a la app (11 ago 2026) — solo aquí, en la rama donde hubo un commit/push real;
-        # nunca en un ciclo sin cambios (evita avisos vacíos "actualizado" cuando no hay nada
-        # nuevo que ver).
-        notify_app_push(list(merged.values()), new_asins=brand_new_asins)
+        # nunca en un ciclo sin cambios. Desde el 28 sep ya no se manda en el momento: se apunta
+        # y sale una sola vez al día a las CATALOG_PUSH_HOUR (ver queue_catalog_push). La
+        # llamada de después es solo el respaldo por si sync_search_stats.py no lo mandó.
+        queue_catalog_push(brand_new_asins)
+        send_daily_catalog_push_if_due()
         # Avisos personales de cambio de precio en favoritos (27 ago 2026) -- misma rama que el
         # push genérico de arriba, con las mismas garantías (solo en ciclos con push real).
         notify_favorite_price_changes(price_changes, merged)

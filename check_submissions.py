@@ -131,7 +131,8 @@ def main():
         uo.notify_telegram(
             f"⚡ Oferta sugerida por un usuario publicada al instante: {len(approved)} nueva(s)."
         )
-        uo.notify_app_push(list(merged.values()))
+        # Push de catálogo: una sola vez al día (28 sep 2026, ver uo.queue_catalog_push).
+        uo.queue_catalog_push(list(approved))
 
 
 if __name__ == "__main__":
