@@ -83,6 +83,51 @@ def sync_app_version(db):
         log(f"aviso: no se pudo sincronizar app_config/version: {e}")
 
 
+HISTORY_BACKFILL_DAYS = 7
+# Margen para emparejar una entrada de search_history con su search_request: las dos se crean a
+# la vez desde la app/web (AmazonSearchService.createSearchRequest + _logSearchHistory), con
+# serverTimestamp cada una, así que en la práctica difieren en milisegundos.
+HISTORY_MATCH_SECONDS = 120
+
+
+def _fill_search_history_counts(db, FieldFilter, since, done_requests):
+    """28 sep 2026, aviso real: "solo veo las ofertas encontradas con los que tienen la versión
+    vieja, los que tienen la nueva no". En el panel "Qué pide la gente", las filas de la versión
+    nueva salen de search_history (hora exacta), que la app escribe SIN resultCount; las de la
+    versión vieja salen de search_stats.lastResultCount (rellenado arriba). Aquí se copia el
+    resultCount de cada search_request terminada a su entrada de search_history (mismo término,
+    misma hora +-HISTORY_MATCH_SECONDS), sin tocar la app ni el buscador. Solo mira la ventana de
+    este ciclo (mismas lecturas que ya se hacen), salvo la primera vez (7 días)."""
+    if not done_requests:
+        return
+    by_term = {}
+    for term, at, rc in done_requests:
+        by_term.setdefault(term, []).append((at, rc))
+    filled = 0
+    try:
+        for d in (
+            db.collection("search_history")
+            .where(filter=FieldFilter("requestedAt", ">=", since))
+            .stream()
+        ):
+            data = d.to_dict() or {}
+            if isinstance(data.get("resultCount"), (int, float)):
+                continue
+            term = (data.get("query") or "").strip().lower()
+            at = data.get("requestedAt")
+            if not term or at is None or term not in by_term:
+                continue
+            best = min(by_term[term], key=lambda x: abs((x[0] - at).total_seconds()))
+            if abs((best[0] - at).total_seconds()) > HISTORY_MATCH_SECONDS:
+                continue
+            d.reference.set({"resultCount": best[1]}, merge=True)
+            filled += 1
+    except Exception as e:
+        log(f"aviso: no se pudo rellenar resultCount en search_history: {e}")
+    if filled:
+        log(f"{filled} búsqueda(s) del histórico con su nº de ofertas")
+
+
 def main():
     if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
         return
@@ -110,7 +155,12 @@ def main():
     # después -- reescribir el mismo número dos veces no hace daño.
     since -= timedelta(minutes=15)
 
+    # Una sola vez: rellenar también el histórico de los últimos 7 días (lo que enseña el panel).
+    if not state.get("history_backfilled"):
+        since = min(since, now - timedelta(days=HISTORY_BACKFILL_DAYS))
+
     latest = {}  # término normalizado -> (requestedAt, resultCount)
+    done_requests = []  # (término, requestedAt, resultCount) de cada búsqueda terminada
     docs = (
         db.collection("search_requests")
         .where(filter=FieldFilter("requestedAt", ">=", since))
@@ -129,6 +179,7 @@ def main():
         term = (data.get("query") or "").strip().lower()
         if not isinstance(rc, (int, float)) or at is None or not term or "/" in term:
             continue
+        done_requests.append((term, at, int(rc)))
         if term not in latest or at > latest[term][0]:
             latest[term] = (at, int(rc))
 
@@ -144,6 +195,8 @@ def main():
     if written:
         log(f"{written} término(s) actualizados con su nº de ofertas")
 
+    _fill_search_history_counts(db, FieldFilter, since, done_requests)
+    state["history_backfilled"] = True
     state["since"] = now.isoformat()
 
     # Poda diaria.
