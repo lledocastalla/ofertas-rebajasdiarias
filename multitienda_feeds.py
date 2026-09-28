@@ -276,6 +276,120 @@ def fetch_leroy_merlin_offers_all(log):
     return result
 
 
+# ---------------------------------------------------------------------------
+# Leroy Merlin Outlet (28 sep 2026): tienda aparte ("leroymerlin_outlet", no se mezcla con
+# "leroymerlin"), a partir de un correo real de Awin (25 sep 2026, "LEROY MERLIN | Selección
+# Outlet hasta -65% dto") -- Awin no da un feed CSV separado de "solo outlet" para Leroy
+# Merlin, solo un email con 23 referencias concretas, de las que 17 llegan al 30% mínimo de
+# siempre (se descartan Ref. 95598561 -28%, 82211322 -23%, 17567683 -21%, 78870650 -20%,
+# 85205549 -13%). Primer intento (28 sep 2026): escrapear la ficha de cada producto en
+# leroymerlin.es directamente (Selenium, como Quiksilver/Roxy) -- descartado, la web devuelve
+# un reto de DataDome/captcha-delivery.com al Chrome headless de la Pi (nunca se intenta
+# sortear un captcha, ver reglas del proyecto). Comprobado en su lugar contra los feeds
+# OFICIALES de Awin que ya usa fetch_leroy_merlin_offers(): 16 de las 17 referencias aparecen
+# en el feed "1P (productos propios)" (fid 84166) con precio/stock que cuadran exactos con los
+# del email -- ese es el único de los 7 feeds que hace falta mirar (los otros 6 son el mismo
+# catálogo propio repartido por categoría, mismos productos duplicados). La 17ª (71322045,
+# suelo laminado roble AC5) no aparece en NINGÚN feed de Awin pese a seguir viva en la propia
+# web -- sin feed no hay forma de comprobar su precio/stock real cada ciclo sin escrapear la
+# ficha (bloqueada), así que se descarta y quedan 16. Mismo criterio "saving = precio de venta
+# actual, search_price = precio antes" que ya usa _fetch_leroy_merlin_feed() (bug de
+# interpretación ya corregido el 24 ago, ver RASPI_REBAJASDIARIAS.md §6.1.f).
+LEROY_MERLIN_OUTLET_FEED_FID = "84166"  # "1P (productos propios)"
+
+# merchant_product_id ("Ref." del email) -> categoría (mismo criterio que
+# LEROY_MERLIN_CATEGORY_MAP: Climatización/Suelos -> Bricolaje, Baños -> Cocinas y Baños).
+LEROY_MERLIN_OUTLET_REFS = {
+    "90209448": "Bricolaje",         # Ventilador de techo DC Arte Confort Atenea
+    "89080663": "Bricolaje",         # Emisor térmico cerámico Ceramic 1500W
+    "89535747": "Bricolaje",         # Termo eléctrico Tiber C 80l
+    "85684057": "Bricolaje",         # Radiador toallero NTW 11B 500W
+    "45950002": "Bricolaje",         # Estufa de leña Panadero Eco Delta 8kW
+    "85338975": "Cocinas y Baños",   # Mueble de baño Prima roble claro
+    "92452528": "Cocinas y Baños",   # Lavabo sobre encimera Romero
+    "91802903": "Cocinas y Baños",   # Mueble de baño Zoe blanco 100cm
+    "75715677": "Cocinas y Baños",   # Mueble de baño Armobany Zoe 120cm
+    "74977676": "Cocinas y Baños",   # Mampara de ducha Vitalio
+    "89941900": "Cocinas y Baños",   # Conjunto de baño Four teca natural mate
+    "79997346": "Bricolaje",         # Baldosa gres Estilker Fez Indigo Blue
+    "96332272": "Bricolaje",         # Suelo vinílico Forte Virtuo Nevada beige
+    "82363345": "Bricolaje",         # Suelo porcelánico Hydraulic multicolor
+    "90109081": "Decoración",        # Funda nórdica Cami multicolor
+    "90105143": "Jardín",            # Caseta de metal Wasabi Light Anthracite
+}
+
+
+def fetch_leroy_merlin_outlet_offers(log, local_test_file=None):
+    """Mismo perfil de llamada que el resto de fetch_fn de fetch_multitienda_offers
+    (`fetch_fn(log, local_test_files.get(key))`) -- local_test_file si se quiere probar contra
+    un CSV.GZ local en vez de descargar el feed real."""
+    columns = (
+        "aw_deep_link,product_name,aw_product_id,merchant_product_id,"
+        "merchant_image_url,merchant_category,search_price,saving,in_stock"
+    )
+    if local_test_file:
+        reader = _stream_feed_rows(local_test_file, log, is_local_file=True)
+    else:
+        url = _awin_feed_url(AWIN_API_KEY, LEROY_MERLIN_OUTLET_FEED_FID, columns)
+        reader = _stream_feed_rows(url, log)
+
+    pending = dict(LEROY_MERLIN_OUTLET_REFS)
+    result = {}
+    try:
+        for row in reader:
+            if not pending:
+                break
+            mpid = (row.get("merchant_product_id") or "").strip()
+            category = pending.get(mpid)
+            if not category:
+                continue
+            del pending[mpid]
+            if (row.get("in_stock") or "1").strip() == "0":
+                log(f"[leroy_merlin_outlet] descartado (sin stock): ref {mpid}")
+                continue
+            sp = row.get("search_price") or ""
+            sv = row.get("saving") or ""
+            title = (row.get("product_name") or "").strip()
+            image = (row.get("merchant_image_url") or "").strip()
+            aff_url = (row.get("aw_deep_link") or "").strip()
+            if not sp.strip() or not sv.strip() or not title or not aff_url:
+                continue
+            try:
+                original = float(sp)
+                actual = float(re.sub(r"[^0-9.]", "", sv))
+            except ValueError:
+                continue
+            if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+                continue
+            pct = (original - actual) / original * 100
+            if pct < MIN_DISCOUNT_PERCENT:
+                log(f"[leroy_merlin_outlet] descartado (ya no llega al {MIN_DISCOUNT_PERCENT}%): {title}")
+                continue
+            result[f"lmo_{mpid}"] = {
+                "id": f"lmo_{mpid}",
+                "title": title[:180],
+                "category": category,
+                "price": round(actual, 2),
+                "original_price": round(original, 2),
+                "discount_percent": int(round(pct)),
+                "is_flash": True,
+                "image": image,
+                "url": aff_url,
+                "store": "leroymerlin_outlet",
+                "store_label": "Leroy Merlin Outlet",
+            }
+    except Exception as e:
+        log(f"[leroy_merlin_outlet] error descargando/procesando el feed: {e}")
+        if not result:
+            return {}
+        log(f"[leroy_merlin_outlet] se sigue con los {len(result)} ya vistos antes del fallo")
+
+    if pending:
+        log(f"[leroy_merlin_outlet] {len(pending)} referencia(s) no encontradas en el feed esta vez: {sorted(pending)}")
+    log(f"[leroy_merlin_outlet] {len(result)}/{len(LEROY_MERLIN_OUTLET_REFS)} publicados esta vez")
+    return result
+
+
 # Catálogo ampliado para el buscador (26 ago 2026, "por que no podimaos meter todo el catalogo
 # de leroy y de comas en algún sitio... que el buscador lo pueda encontrar el producto"):
 # comprobado con los 7 feeds reales sin tope -> 682.332 productos cualificando (30-80% dto.) en
@@ -2498,6 +2612,7 @@ STORE_CODE_SOURCES = {
     "perfumeriacomas": ("awin", 33073), "stylevana": ("awin", 31535),
     "zapatosobi": ("awin", 115587), "leroymerlin": ("awin", 20598), "acer": ("awin", 17132),
     "deporteoutlet": ("awin", 19598), "allpowers": ("awin", 107468),
+    "leroymerlin_outlet": ("awin", 20598),
     # Tradedoubler (programId)
     "tiendanimal": ("td", 306110), "aeg": ("td", 323375), "electrolux": ("td", 396967),
     "mediamarkt": ("td", 270504), "hpstore": ("td", 245745), "bosch": ("td", 316288),
@@ -2625,6 +2740,7 @@ def fetch_multitienda_offers(log, local_test_files=None):
     result = {}
     stores = [
         ("leroy_merlin", fetch_leroy_merlin_offers, "leroymerlin"),
+        ("leroy_merlin_outlet", fetch_leroy_merlin_outlet_offers, "leroymerlin_outlet"),
         ("stylevana", fetch_stylevana_offers, "stylevana"),
         ("obi", fetch_obi_offers, "obi"),
         ("4elementos", fetch_4elementos_offers, "4elementos"),
