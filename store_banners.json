@@ -413,6 +413,32 @@
  },
  "custom": [
   {
+   "title": "Prime Big Deal Days: prepárate 🛒",
+   "eyebrow": "Amazon · 6-7 de octubre",
+   "subtitle": "48 horas de ofertas exclusivas para socios Prime en más de 35 categorías. No olvides entrar esos días para encontrar los mejores descuentos reales.",
+   "store": "amazon",
+   "logo_store": "amazon",
+   "cta": "Ir a Amazon",
+   "image": "https://m.media-amazon.com/images/I/61sPhOjursL._AC_UL320_.jpg",
+   "price": 79.89,
+   "old_price": 399.45,
+   "until": "2026-10-07",
+   "position": 0
+  },
+  {
+   "title": "Prime Big Deal Days: prepárate 🛒",
+   "eyebrow": "Amazon · 6-7 de octubre",
+   "subtitle": "48 horas de ofertas exclusivas para socios Prime en más de 35 categorías. No olvides entrar esos días para encontrar los mejores descuentos reales.",
+   "store": "amazon",
+   "logo_store": "amazon",
+   "cta": "Ir a Amazon",
+   "image": "https://m.media-amazon.com/images/I/61sPhOjursL._AC_UL320_.jpg",
+   "price": 79.89,
+   "old_price": 399.45,
+   "until": "2026-10-07",
+   "position": 10
+  },
+  {
    "title": "Miembros FLX: 5% extra 🔥",
    "eyebrow": "Foot Locker · hasta -50%",
    "subtitle": "Looks de otoño con hasta un 50% de descuento real, y un 5% extra si te haces socio FLX (gratis). Del 25 de septiembre al 12 de octubre.",
