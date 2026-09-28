@@ -24,6 +24,7 @@ cuando nadie está buscando) se mantiene aquí también, en un hilo aparte.
 import os
 import threading
 import time
+from datetime import timedelta
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -44,6 +45,48 @@ db = None
 
 def log(msg):
     print(f"[search_requests_listener] {msg}", flush=True)
+
+
+# 28 sep 2026, bug real encontrado con datos reales de Firestore: varias búsquedas seguidas
+# ("impresoras de mano/portatil/con tinta", tecleadas en pocos minutos refinando la misma
+# búsqueda) salían en el panel "Qué pide la gente" sin nº de ofertas -- para siempre, no un
+# simple retraso. Causa real: hasta ahora solo sync_search_stats.py (cron de la Pi, cada 10
+# min) copiaba el resultCount de search_requests a su search_history correspondiente
+# (emparejando por término+hora) -- pero AmazonSearchService.deleteSearchRequest() (app/web)
+# borra search_requests en cuanto el usuario sale de la pantalla de búsqueda, y si eso pasa
+# antes de que le toque el turno al cron (segundos, si se encadenan varias búsquedas, contra
+# los 10 min del cron), el documento fuente ya no existe cuando le toca sincronizar. Arreglo
+# real: escribirlo aquí mismo, nada más completarse la búsqueda (segundos después de crearse,
+# mucho antes de que exista ninguna oportunidad de borrado) -- mismo criterio de emparejamiento
+# que _fill_search_history_counts() en sync_search_stats.py (± HISTORY_MATCH_SECONDS), pero
+# para un solo término en vez de en lote. Sin tocar la app -- va por delante de todo eso.
+HISTORY_MATCH_SECONDS = 120
+
+
+def _fill_matching_search_history(query_text, requested_at, result_count):
+    if requested_at is None:
+        return
+    term = query_text.strip().lower()
+    if not term:
+        return
+    try:
+        since = requested_at - timedelta(seconds=HISTORY_MATCH_SECONDS)
+        until = requested_at + timedelta(seconds=HISTORY_MATCH_SECONDS)
+        docs = (
+            db.collection("search_history")
+            .where(filter=FieldFilter("requestedAt", ">=", since))
+            .where(filter=FieldFilter("requestedAt", "<=", until))
+            .stream()
+        )
+        for d in docs:
+            data = d.to_dict() or {}
+            if isinstance(data.get("resultCount"), (int, float)):
+                continue
+            if (data.get("query") or "").strip().lower() != term:
+                continue
+            d.reference.set({"resultCount": result_count}, merge=True)
+    except Exception as e:
+        log(f"aviso: no se pudo rellenar resultCount en search_history para {query_text!r}: {e}")
 
 
 def _process_request(doc_id, data):
@@ -109,6 +152,10 @@ def _process_request_inner(doc_id, doc_ref, query_text, data):
             merge=True,
         )
         log(f"{query_text!r}: {len(offers)} resultado(s) con descuento real")
+        # No en el camino de alertas de arriba (notifyPush) a propósito -- ese término vive en
+        # keyword_alert_stats, no en search_stats/search_history (ver comentario de
+        # _fill_search_history_counts() en sync_search_stats.py, mismo criterio aquí).
+        _fill_matching_search_history(query_text, data.get("requestedAt"), len(offers))
     except Exception as e:
         log(f"ERROR buscando {query_text!r}: {e}")
         try:
