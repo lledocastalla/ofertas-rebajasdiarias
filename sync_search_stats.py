@@ -60,6 +60,29 @@ def _save_state(state):
         log(f"aviso: no se pudo guardar el estado: {e}")
 
 
+APP_VERSION_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_version.json")
+APP_VERSION_FIELDS = ("latestAndroid", "latestAndroidBuild", "latestIOS", "latestIOSBuild")
+
+
+def sync_app_version(db):
+    """Copia app_version.json (repo) a Firestore app_config/version, que es lo que lee la app
+    para enseñar el cartel de "hay una versión nueva" (update_service.dart). 28 sep 2026: así se
+    activa el cartel editando un archivo del repo, sin SSH. Solo escribe si algo cambió."""
+    try:
+        with open(APP_VERSION_PATH, encoding="utf-8") as f:
+            wanted = {k: str(v) for k, v in json.load(f).items() if k in APP_VERSION_FIELDS}
+        if not wanted:
+            return
+        ref = db.collection("app_config").document("version")
+        current = (ref.get().to_dict() or {})
+        if all(current.get(k) == v for k, v in wanted.items()):
+            return
+        ref.set(wanted, merge=True)
+        log(f"app_config/version actualizado: {wanted}")
+    except Exception as e:
+        log(f"aviso: no se pudo sincronizar app_config/version: {e}")
+
+
 def main():
     if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
         return
@@ -74,6 +97,7 @@ def main():
     # Push diario de catálogo a las 19 (28 sep 2026) -- aquí porque este cron corre cada
     # 10 min y así sale ~19:07 sin tocar el crontab (ver update_offers.queue_catalog_push).
     send_daily_catalog_push_if_due()
+    sync_app_version(db)
 
     state = _load_state()
     now = datetime.now(timezone.utc)

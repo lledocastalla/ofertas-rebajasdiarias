@@ -1,0 +1,7 @@
+{
+  "_nota": "Última versión publicada en cada tienda. La Pi la copia a Firestore app_config/version (sync_search_stats.py, cada 10 min) y la app enseña el cartel de 'hay una versión nueva' a quien tenga una más vieja. Cambiar SOLO cuando la versión ya esté publicada de verdad en la tienda.",
+  "latestAndroid": "1.19.3",
+  "latestAndroidBuild": "2026092503",
+  "latestIOS": "1.19.3",
+  "latestIOSBuild": "2026092503"
+}
