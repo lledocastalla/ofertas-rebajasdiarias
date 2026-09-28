@@ -31,7 +31,7 @@ import os
 import time
 from datetime import datetime, timedelta, timezone
 
-from update_offers import FIREBASE_CREDENTIALS_PATH
+from update_offers import FIREBASE_CREDENTIALS_PATH, send_daily_catalog_push_if_due
 
 HOME = os.path.expanduser("~")
 STATE_PATH = f"{HOME}/sync_search_stats_state.json"
@@ -70,6 +70,10 @@ def main():
     if not firebase_admin._apps:
         firebase_admin.initialize_app(credentials.Certificate(FIREBASE_CREDENTIALS_PATH))
     db = firestore.client()
+
+    # Push diario de catálogo a las 19 (28 sep 2026) -- aquí porque este cron corre cada
+    # 10 min y así sale ~19:07 sin tocar el crontab (ver update_offers.queue_catalog_push).
+    send_daily_catalog_push_if_due()
 
     state = _load_state()
     now = datetime.now(timezone.utc)
