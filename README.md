@@ -58,6 +58,14 @@ franja 08:00-23:00 (nunca de madrugada). Cada ejecución:
   y, si el nombre coincide, `latest*Build` con su número de compilación. Editar SOLO cuando la
   versión ya esté publicada de verdad en la tienda. Hoy: 1.19.3, build `2026092503`.
 
+## "Qué pide la gente": nº de ofertas en el histórico (28 sep 2026)
+
+`sync_search_stats.py` copia además el `resultCount` de cada `search_request` terminada a su
+entrada de `search_history` (mismo término, ±2 min; la primera vez, los últimos 7 días). Antes
+solo las filas aproximadas (versión vieja, `search_stats.lastResultCount`) tenían nº de
+ofertas; las exactas (versión nueva) salían sin él. La web lo lee desde el commit `28df9e2` de
+`rebajasdiarias-web` (hace falta `netlify deploy --prod`).
+
 ## Esquema de `offers.json`
 
 ```json
