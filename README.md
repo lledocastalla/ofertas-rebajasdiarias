@@ -33,8 +33,30 @@ franja 08:00-23:00 (nunca de madrugada). Cada ejecución:
   productos, el script ABORTA sin tocar `offers.json` ni hacer commit/push. Nunca
   se deja la app/web sin ofertas por un fallo puntual.
 - De paso (mismo proceso, no un paso aparte): publica destacados en un grupo de
-  Telegram, manda un push de "catálogo actualizado" a la app (Firebase Cloud
-  Messaging) y comprueba precios de favoritos vigilados por usuarios de la app.
+  Telegram, apunta las ofertas nuevas para el push diario de "catálogo actualizado"
+  (ver abajo) y comprueba precios de favoritos vigilados por usuarios de la app.
+
+## Notificaciones push y cartel de actualizar (28 sep 2026)
+
+- **Push de "catálogo actualizado" (topic `catalog_updates`): una sola vez al día, a las 19:00**
+  hora local de la Pi (pedido explícito: "la gente se cansa"). Antes salía en cada ciclo con
+  cambios (hasta 6 al día). Ahora:
+  - Cada ciclo de `update_offers.py` (y `check_submissions.py` al publicar una sugerencia) solo
+    llama a `queue_catalog_push()`, que apunta las ofertas nuevas en
+    `~/catalog_push_state.json` (fuera del repo, con lock de archivo).
+  - `send_daily_catalog_push_if_due()` manda el aviso si ya son las `CATALOG_PUSH_HOUR` (19), hoy
+    no se ha mandado y hubo cambios. Lo llama `sync_search_stats.py` (cron cada 10 min → sale
+    ~19:07, sin tocar el crontab) y, como respaldo, el final de cada ciclo (el de las 20:00).
+  - Lleva en `data.ids` las ofertas nuevas acumuladas desde el último envío que sigan en
+    `offers.json` (máx. `APP_PUSH_MAX_IDS`), así al tocarlo la app abre solo esas.
+  - **No cambian**: alertas por palabra clave y avisos de precio de favoritos (topics
+    `user_<uid>`), que siguen saliendo en cada ciclo; ni la frecuencia de actualización del
+    catálogo.
+- **`app_version.json`** → Firestore `app_config/version`: `sync_app_version()` en
+  `sync_search_stats.py` lo copia cada 10 min (solo escribe si cambia). La app lo usa para el
+  cartel de "hay una versión nueva" (`update_service.dart`): compara `latestAndroid`/`latestIOS`
+  y, si el nombre coincide, `latest*Build` con su número de compilación. Editar SOLO cuando la
+  versión ya esté publicada de verdad en la tienda. Hoy: 1.19.3, build `2026092503`.
 
 ## Esquema de `offers.json`
 
