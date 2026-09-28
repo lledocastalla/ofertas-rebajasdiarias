@@ -16,6 +16,7 @@
   "huawei",
   "footlocker",
   "leroymerlin",
+  "leroymerlin_outlet",
   "desigual",
   "bershka",
   "quiksilver",
@@ -37,7 +38,9 @@
   "zapatosobi",
   "4elementos"
  ],
- "hidden": [],
+ "hidden": [
+  "leroymerlin_outlet"
+ ],
  "themes": {
   "amazon": {
    "bg": [
@@ -172,6 +175,17 @@
    "accent": "#c8f07a",
    "cta": [
     "#ffffff",
+    "#1f5a1f"
+   ]
+  },
+  "leroymerlin_outlet": {
+   "bg": [
+    "#1f5a1f",
+    "#3f8a1f"
+   ],
+   "accent": "#ffb545",
+   "cta": [
+    "#ffb545",
     "#1f5a1f"
    ]
   },
@@ -413,13 +427,26 @@
    "position": 0
   },
   {
+   "title": "Nueva tienda: Leroy Merlin Outlet 🏷️",
+   "eyebrow": "Leroy Merlin · hasta -65%",
+   "subtitle": "Liquidación real de bricolaje, baño, suelos y jardín -- selección verificada directamente del programa de afiliados de Leroy Merlin, con hasta un 65% de descuento.",
+   "store": "leroymerlin_outlet",
+   "logo_store": "leroymerlin",
+   "cta": "Ir a la tienda",
+   "image": "https://media.adeo.com/media/3930960/media.jpg",
+   "price": 99.99,
+   "old_price": 289.0,
+   "from": "2026-09-28",
+   "position": 1
+  },
+  {
    "title": "Rebajas Diarias™",
    "eyebrow": "Ofertas reales, verificadas",
    "subtitle": "Descuento real de al menos un 30% en Amazon, Adidas, Leroy Merlin y muchas más tiendas -- nada de precios inflados ni descuentos falsos.",
    "url": "https://rebajasdiarias.es",
    "cta": "Ver catálogo",
    "image": "https://rebajasdiarias.es/assets/logo.png",
-   "position": 1
+   "position": 2
   },
   {
    "title": "Nueva tienda: Armani Beauty ✨",
