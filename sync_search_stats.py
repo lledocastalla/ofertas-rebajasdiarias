@@ -31,7 +31,11 @@ import os
 import time
 from datetime import datetime, timedelta, timezone
 
-from update_offers import FIREBASE_CREDENTIALS_PATH, send_daily_catalog_push_if_due
+from update_offers import (
+    FIREBASE_CREDENTIALS_PATH,
+    send_daily_catalog_push_if_due,
+    send_prime_day_reminders_if_due,
+)
 
 HOME = os.path.expanduser("~")
 STATE_PATH = f"{HOME}/sync_search_stats_state.json"
@@ -142,6 +146,9 @@ def main():
     # Push diario de catálogo a las 19 (28 sep 2026) -- aquí porque este cron corre cada
     # 10 min y así sale ~19:07 sin tocar el crontab (ver update_offers.queue_catalog_push).
     send_daily_catalog_push_if_due()
+    # Avisos de Prime Big Deal Days (28 sep 2026, ver update_offers.PRIME_DAY_REMINDERS) --
+    # mismo criterio, aprovecha este mismo cron de 10 min, no hace falta tocar el crontab.
+    send_prime_day_reminders_if_due()
     sync_app_version(db)
 
     state = _load_state()

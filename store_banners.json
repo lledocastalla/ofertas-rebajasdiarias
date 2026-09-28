@@ -422,6 +422,7 @@
    "image": "https://m.media-amazon.com/images/I/61sPhOjursL._AC_UL320_.jpg",
    "price": 79.89,
    "old_price": 399.45,
+   "slide_seconds": 10,
    "until": "2026-10-07",
    "position": 0
   },
@@ -435,6 +436,7 @@
    "image": "https://m.media-amazon.com/images/I/61sPhOjursL._AC_UL320_.jpg",
    "price": 79.89,
    "old_price": 399.45,
+   "slide_seconds": 10,
    "until": "2026-10-07",
    "position": 10
   },

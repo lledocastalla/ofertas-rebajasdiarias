@@ -1113,6 +1113,64 @@ def send_daily_catalog_push_if_due():
         log(f"aviso: no se pudo comprobar el push diario de catálogo: {e}")
 
 
+# Avisos de Amazon Prime Big Deal Days (28 sep 2026, pedido explícito del usuario: cuenta atrás
+# en los dos días previos + aviso de que ya está en marcha -- fechas reales confirmadas por
+# fuera, 6-7 de octubre 2026). Textos EXACTOS confirmados por el usuario antes de programarlos.
+# Un solo intento por fecha (estado propio en disco, mismo patrón que
+# send_daily_catalog_push_if_due), llamado desde sync_search_stats.py cada 10 min -- no hace
+# falta ninguna hora concreta, se manda en cuanto cambie el día local de la Pi.
+PRIME_DAY_REMINDERS_STATE_PATH = f"{HOME}/.rebajas_prime_day_reminders.json"
+PRIME_DAY_REMINDERS = {
+    "2026-10-04": (
+        "🛒 Prime Big Deal Days en 2 días",
+        "6 y 7 de octubre, 48h de ofertas exclusivas Prime en Amazon. ¡Prepárate!",
+    ),
+    "2026-10-05": (
+        "🛒 Prime Big Deal Days empieza mañana",
+        "6 y 7 de octubre. No te lo pierdas.",
+    ),
+    "2026-10-06": (
+        "🛒 ¡Ya está aquí! Prime Big Deal Days",
+        "Entra ahora y descubre las mejores ofertas reales de Amazon.",
+    ),
+}
+
+
+def send_prime_day_reminders_if_due():
+    today = datetime.now().date().isoformat()
+    if today not in PRIME_DAY_REMINDERS:
+        return
+    try:
+        with open(PRIME_DAY_REMINDERS_STATE_PATH, encoding="utf-8") as f:
+            state = json.load(f)
+    except Exception:
+        state = {}
+    if state.get(today):
+        return
+    if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
+        log("aviso: no se encuentra el archivo de credenciales de Firebase, se omite el aviso de Prime Day")
+        return
+    title, body = PRIME_DAY_REMINDERS[today]
+    try:
+        import firebase_admin
+        from firebase_admin import credentials, messaging
+
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+            firebase_admin.initialize_app(cred)
+        message = messaging.Message(
+            notification=messaging.Notification(title=title, body=body),
+            topic=CATALOG_UPDATES_TOPIC,
+        )
+        messaging.send(message)
+        state[today] = True
+        with open(PRIME_DAY_REMINDERS_STATE_PATH, "w", encoding="utf-8") as f:
+            json.dump(state, f)
+        log(f"Push de Prime Day ({today}) enviado.")
+    except Exception as e:
+        log(f"aviso: no se pudo enviar el push de Prime Day ({today}): {e}")
+
+
 def notify_submitter_push(uid, offer):
     """Aviso personal al autor de una sugerencia en cuanto se publica (26 ago 2026, pedido
     explícito: "que si alguien ha publicado una oferta que salte una notificación") --
