@@ -54,6 +54,7 @@ from firebase_admin import firestore, messaging
 from google.cloud.firestore_v1.base_query import FieldFilter
 
 import update_offers as uo
+import amazon_paapi as paapi
 
 MIN_SAVING_PERCENT_KEYWORD_ALERT = 1
 MAX_SAVING_PERCENT_KEYWORD_ALERT = 100  # "hasta el máximo" -- sin techo, a diferencia del 80%
@@ -280,15 +281,38 @@ def _scrape_keyword_live_once(
     min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
     max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
 ):
-    """Un único intento -- abre un Chrome real (perfil propio, aparte del ciclo normal) y busca
-    `keyword` en Amazon.es. Umbral bajo de las alertas por defecto (min/max sin tocar en las
+    """Un único intento. Umbral bajo de las alertas por defecto (min/max sin tocar en las
     llamadas de siempre); el buscador principal (20 sep 2026, ver search_requests_listener.py)
     pasa el umbral estándar del resto del catálogo (30-80%) en su lugar -- mismo motor real,
     solo cambia el filtro de descuento. NO gestiona el candado ni la pausa del ciclo normal --
     eso lo hace _scrape_keyword_live(), que envuelve TODA la secuencia de reintentos de una vez
-    (ver comentario ahí). Devuelve None si algo falla de verdad al abrir/usar Chrome (fallo
-    temporal, NO se debe tocar nada de lo ya guardado). Devuelve una lista (puede estar vacía)
-    si se completó bien."""
+    (ver comentario ahí). Devuelve None si algo falla de verdad (fallo temporal, NO se debe
+    tocar nada de lo ya guardado). Devuelve una lista (puede estar vacía) si se completó bien.
+
+    28 sep 2026, pedido explícito tras confirmar 12 envíos cualificados en 7 días: se prueba
+    primero la Creators API real (amazon_paapi.py) -- ya funciona en vivo (comprobado por SSH,
+    10/10 resultados reales sin 403), es mucho más rápida (una petición HTTP, sin abrir Chrome)
+    y no compite por la memoria de la Pi con el ciclo normal. Solo si la API no está disponible
+    ahora mismo (`search_amazon()` devuelve None -- sin credenciales, cupo agotado, menos de 10
+    ventas cualificadas otra vez...) se cae al scraping de Selenium de siempre, sin cambiar nada
+    de ese camino. `max_discount_percent` no se puede pedir a la API (no tiene ese parámetro,
+    Amazon no pone techo) -- en la práctica no importa, ninguna llamada real de este proyecto
+    pone un `max` por debajo de 100 salvo el 80% de siempre, y ese 80% ya lo aplica el resto del
+    catálogo por su cuenta más tarde si hiciera falta."""
+    try:
+        api_items = paapi.search_amazon(
+            keyword, item_count=10, min_saving_percent=min_discount_percent
+        )
+    except Exception as e:
+        log(f"aviso: fallo inesperado llamando a la Creators API para '{keyword}': {e}")
+        api_items = None
+    if api_items is not None:
+        offers = paapi.offers_from_items(
+            api_items, category=CATEGORY_LABEL, min_discount_percent=min_discount_percent
+        )
+        log(f"'{keyword}': {len(offers)} resultado(s) reales vía Creators API")
+        return offers
+
     _wait_for_memory_headroom()
     driver = None
     try:
