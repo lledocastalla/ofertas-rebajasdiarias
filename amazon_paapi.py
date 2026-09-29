@@ -144,6 +144,16 @@ def search_amazon(keywords: str, item_count: int = 10, min_saving_percent: int =
             "images.primary.large",
             "itemInfo.title",
             "offersV2.listings.price",
+            # 28 sep 2026, aviso real: "en los resultados de la api no salen las estrellas como
+            # en los resultados de la otra búsqueda" -- comprobado en vivo: son nombres de
+            # recurso válidos (no dan 400 al pedirlos, vienen listados en el enum real de la
+            # API), pero Amazon NO los rellena en la práctica para esta cuenta/mercado (probado
+            # con 5 productos reales distintos, ninguno trae `customerReviews` en la respuesta,
+            # aunque se pidan). Se piden igualmente por si Amazon empieza a devolverlos más
+            # adelante -- offers_from_items() de abajo ya sabe leerlos si algún día aparecen,
+            # sin más cambios aquí.
+            "customerReviews.starRating",
+            "customerReviews.count",
         ],
     }
 
@@ -199,6 +209,10 @@ def offers_from_items(items, category="Amazon", min_discount_percent: int = MIN_
             title = item["itemInfo"]["title"]["displayValue"]
             image = item.get("images", {}).get("primary", {}).get("large", {}).get("url", "")
             url = item.get("detailPageURL", "")
+            # 28 sep 2026: None si Amazon no lo trae (caso real de hoy, ver comentario de
+            # search_amazon() sobre customerReviews) -- nunca inventado, mismo criterio que
+            # parse_rating()/parse_rating_count() del scraping en update_offers.py.
+            reviews = item.get("customerReviews") or {}
             offers.append({
                 "id": item.get("asin", title[:40]),
                 "title": title[:180],
@@ -209,6 +223,8 @@ def offers_from_items(items, category="Amazon", min_discount_percent: int = MIN_
                 "image": image,
                 "url": url,
                 "store": "amazon",
+                "rating": reviews.get("starRating"),
+                "rating_count": reviews.get("count"),
             })
         except (KeyError, TypeError, IndexError, ZeroDivisionError):
             continue  # item con una forma inesperada -- se descarta, no debe tumbar el resto
