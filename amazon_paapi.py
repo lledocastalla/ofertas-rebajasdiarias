@@ -60,6 +60,34 @@ MIN_DISCOUNT_PERCENT = 30
 _cached_token = None
 _cached_token_expires_at = 0
 
+# Marcas conocidas para poder recuperar una búsqueda de dos palabras pegadas sin espacio (29 sep
+# 2026, aviso real del usuario: alguien buscó "applewhach" y salieron 10 ofertas sin relación con
+# Apple Watch, pero "apple whach" -- con espacio, aunque siga con la errata -- sí encontraba algo
+# relevante). Amazon.es hace bien el fuzzy-matching palabra a palabra (tolera "whach"/"whatch"
+# como errata de "watch"), pero no separa una sola palabra pegada en dos términos por su cuenta.
+# Lista corta a propósito, solo marcas de electrónica/deporte habituales en este catálogo -- no
+# un diccionario genérico, para no partir por error una palabra real que empiece igual.
+_KNOWN_BRAND_PREFIXES = (
+    "apple", "samsung", "xiaomi", "huawei", "adidas", "nike", "sony", "philips",
+    "braun", "logitech", "garmin", "fitbit", "nintendo", "playstation", "lenovo",
+    "asus", "bosch", "dyson", "jbl", "bose", "gopro", "canon", "nikon",
+)
+
+
+def _split_glued_query(keywords: str):
+    """Si `keywords` es una sola palabra (sin espacios) que empieza por una marca conocida y le
+    sobra texto de verdad detrás (ej. "applewhach" -> "apple whach"), devuelve la versión con
+    espacio. None si no aplica -- consulta ya con espacios, demasiado corta, o no empieza por
+    ninguna marca de la lista (nunca se inventa una marca que no está ahí)."""
+    q = keywords.strip()
+    if " " in q or len(q) < 6:
+        return None
+    lower = q.lower()
+    for brand in _KNOWN_BRAND_PREFIXES:
+        if lower.startswith(brand) and len(lower) - len(brand) >= 3:
+            return f"{q[:len(brand)]} {q[len(brand):]}"
+    return None
+
 
 def _load_credentials():
     """None si el fichero no existe todavía (el usuario no lo ha creado) o está incompleto --
@@ -113,26 +141,11 @@ def _get_access_token(client_id: str, client_secret: str):
     return token
 
 
-def search_amazon(keywords: str, item_count: int = 10, min_saving_percent: int = MIN_DISCOUNT_PERCENT):
-    """Busca en Amazon.es por texto libre. Devuelve la lista cruda de 'items' de la Creators
-    API (puede estar vacía si de verdad no hay resultados con descuento real), o None si la API
-    no está disponible ahora mismo (sin credenciales, sin red, sin acceso -- menos de 10 ventas
-    en 30 días, token inválido, cupo agotado...). Nunca lanza.
-
-    `min_saving_percent` es parametrizable (14 sep 2026, ver keyword_alert_search.py) -- las
-    alertas de palabra clave usan un umbral mucho más bajo (1%) que el resto del catálogo (30%,
-    MIN_DISCOUNT_PERCENT de siempre): es una palabra muy concreta pedida por una persona en
-    Ajustes, pedido explícito "desde 1% de descuento hasta el máximo" -- mejor un 5% real que
-    nada. El buscador normal de la app (search_requests_listener.py, camino sin
-    notifyPush) sigue usando el 30% de siempre, sin tocar nada ahí."""
-    creds = _load_credentials()
-    if not creds:
-        return None
-
-    token = _get_access_token(creds["client_id"], creds["client_secret"])
-    if not token:
-        return None
-
+def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, creds, token):
+    """Una única llamada real a SearchItems -- extraído de search_amazon() el 29 sep 2026 para
+    poder repetir la petición con una segunda variante de `keywords` (ver _split_glued_query) sin
+    duplicar la construcción del payload ni el manejo de errores. Mismo contrato de siempre:
+    lista (puede ir vacía) o None si la API no responde bien."""
     # "marketplace" NO va en el cuerpo -- verificado contra el modelo real del SDK
     # (SearchItemsRequestContent no tiene ese campo), solo existe como cabecera x-marketplace.
     payload = {
@@ -182,6 +195,53 @@ def search_amazon(keywords: str, item_count: int = 10, min_saving_percent: int =
     except ValueError:
         return None
     return data.get("searchResult", {}).get("items", [])
+
+
+def search_amazon(keywords: str, item_count: int = 10, min_saving_percent: int = MIN_DISCOUNT_PERCENT):
+    """Busca en Amazon.es por texto libre. Devuelve la lista cruda de 'items' de la Creators
+    API (puede estar vacía si de verdad no hay resultados con descuento real), o None si la API
+    no está disponible ahora mismo (sin credenciales, sin red, sin acceso -- menos de 10 ventas
+    en 30 días, token inválido, cupo agotado...). Nunca lanza.
+
+    `min_saving_percent` es parametrizable (14 sep 2026, ver keyword_alert_search.py) -- las
+    alertas de palabra clave usan un umbral mucho más bajo (1%) que el resto del catálogo (30%,
+    MIN_DISCOUNT_PERCENT de siempre): es una palabra muy concreta pedida por una persona en
+    Ajustes, pedido explícito "desde 1% de descuento hasta el máximo" -- mejor un 5% real que
+    nada. El buscador normal de la app (search_requests_listener.py, camino sin
+    notifyPush) sigue usando el 30% de siempre, sin tocar nada ahí.
+
+    29 sep 2026, aviso real del usuario: "applewhach" (pegado) no encontraba nada de Apple Watch,
+    pero "apple whach" (con espacio) sí. Si `keywords` parece dos palabras pegadas empezando por
+    una marca conocida (ver _split_glued_query), se hace TAMBIÉN una segunda búsqueda con la
+    versión separada y se combinan los resultados (sin duplicar ASIN) -- puramente aditivo, la
+    búsqueda con la palabra pegada de siempre sigue haciéndose igual, esto solo puede añadir
+    resultados que antes no aparecían, nunca quitar los que ya salían."""
+    creds = _load_credentials()
+    if not creds:
+        return None
+
+    token = _get_access_token(creds["client_id"], creds["client_secret"])
+    if not token:
+        return None
+
+    items = _search_items_once(keywords, item_count, min_saving_percent, creds, token)
+    if items is None:
+        return None
+
+    split_query = _split_glued_query(keywords)
+    if split_query:
+        extra_items = _search_items_once(split_query, item_count, min_saving_percent, creds, token)
+        if extra_items:
+            seen_asins = {item.get("asin") for item in items if item.get("asin")}
+            for item in extra_items:
+                asin = item.get("asin")
+                if asin and asin in seen_asins:
+                    continue
+                items.append(item)
+                if asin:
+                    seen_asins.add(asin)
+
+    return items[: min(max(item_count, 1), 10)]
 
 
 def offers_from_items(items, category="Amazon", min_discount_percent: int = MIN_DISCOUNT_PERCENT):
