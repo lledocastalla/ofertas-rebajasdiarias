@@ -1,9 +1,10 @@
 {
- "_comment": "Banners de tienda del carrusel de la portada (web y app). Editar aqui para cambiar el orden (order), ocultar tiendas (hidden), colores (themes) o anadir banners propios (custom) -- sin compilar la app ni desplegar la web. Los banners de tienda salen solos del catalogo real (producto mas rebajado, precio, codigo) para cada tienda con min_offers+ ofertas. Custom: title, image y (store o url) obligatorios; store abre esa tienda, url abre un enlace; opcionales subtitle, eyebrow, cta, code, code_label, logo_store, price, old_price, theme (como en themes), from/until (AAAA-MM-DD), position (0 = justo tras la diapositiva de stats). enabled:false apaga todos los banners.",
+ "_comment": "Banners de tienda del carrusel de la portada (web y app -- app SOLO desde la version que ya incluya HeroSizes, ver README.md 'Proxima compilacion'). Editar aqui para cambiar el orden (order), ocultar tiendas (hidden), colores (themes), tamanos (sizes) o anadir banners propios (custom) -- sin compilar la app ni desplegar la web. Los banners de tienda salen solos del catalogo real (producto mas rebajado, precio, codigo) para cada tienda con min_offers+ ofertas. Custom: title, image y (store o url) obligatorios; store abre esa tienda, url abre un enlace; opcionales subtitle, eyebrow, cta, code, code_label, logo_store, price, old_price, theme (como en themes), from/until (AAAA-MM-DD), position (0 = justo tras la diapositiva de stats), slide_seconds (duracion propia, si no cae al slide_seconds global). enabled:false apaga todos los banners. sizes (app, 28 sep 2026): objeto opcional con hero_height_wide/narrow, brand_art_wide/narrow, stats_art_wide/narrow, grid_aspect_ratio, grid_max_cross_axis_extent -- todos opcionales, caen a los valores de siempre si no se tocan (ver HeroSizes en store_banners_service.dart). Pensado sobre todo para poder corregir en caliente un overflow real (tipo iPhone Pro Max) sin esperar a una compilacion.",
  "enabled": true,
  "slide_seconds": 5,
  "text_slide_seconds": 5,
  "min_offers": 4,
+ "sizes": {},
  "order": [
   "adidas",
   "armani",
