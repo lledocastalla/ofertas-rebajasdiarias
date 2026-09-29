@@ -2,17 +2,6 @@
   "campaigns": [
     {
       "active": false,
-      "title": "Vuelta al Hogar: hasta 30% en Leroy Merlin 🏡",
-      "subtitle": "Renueva cada rincón de tu casa después del verano: bricolaje, decoración, cocinas y baños, muebles y jardín con descuento real. Solo hasta el 28 de septiembre.",
-      "colorHex": "#4A90A4",
-      "icon": "cart",
-      "categoryTarget": null,
-      "storeTarget": "leroymerlin",
-      "startDate": "2026-08-25",
-      "endDate": "2026-09-28"
-    },
-    {
-      "active": false,
       "title": "adidas: MidSeason Sales, hasta 30% dto 🔥",
       "subtitle": "Descuento real de hasta el 30% en una selección de artículos adidas, aplicado directamente en la web. Del 25 de septiembre al 13 de octubre.",
       "colorHex": "#FF5A3C",
