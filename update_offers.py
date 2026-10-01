@@ -47,6 +47,7 @@ from multitienda_feeds import fetch_multitienda_offers
 from quiksilver_roxy_scraper import fetch_quiksilver_roxy_offers
 # 20 sep 2026, mismo motivo/patrón que la línea de arriba (import circular a propósito).
 from groupeseb_toysrus_scraper import fetch_groupeseb_toysrus_offers
+import amazon_paapi as paapi
 
 # --- Configuración ---
 HOME = os.path.expanduser("~")
@@ -2062,6 +2063,50 @@ def _checkpoint_progress(existing_offers, new_or_updated):
         log(f"  aviso: no se pudo guardar el progreso intermedio: {e}")
 
 
+def refresh_amazon_offers(merged, now_iso, log):
+    """Revalida con GetItems (amazon_paapi.get_items(), hasta 10 ASIN por llamada) el precio
+    real de TODAS las ofertas de Amazon que ya están en `merged` -- antes solo se reconfirmaban
+    si el muestreo aleatorio de keywords de ese ciclo las volvía a tocar (ver
+    KEYWORDS_PER_CATEGORY_RANGE/CATEGORY_GROUPS), podían pasar casi los 2 días de
+    STALE_AFTER_DAYS sin revisarse. Pedido explícito del usuario (1 oct 2026): "muchas veces no
+    me coincide en los precios cuando entro en amazon, como si hubiesen caducado". Se llama ANTES
+    de reconstruir watched_prices.json para que los favoritos vigilados también lleven el precio
+    recién confirmado. Nunca lanza ni aborta el ciclo: si la API no está disponible, se deja el
+    catálogo de Amazon tal cual estaba."""
+    amazon_ids = [k for k, o in merged.items() if "amazon.es/dp/" in (o.get("url") or "")]
+    if not amazon_ids:
+        return
+    result = paapi.get_items(amazon_ids)
+    if result is None:
+        log(f"[amazon-refresh] Creators API no disponible este ciclo, se deja tal cual el "
+            f"precio de los {len(amazon_ids)} productos de Amazon del catálogo.")
+        return
+    raw_items, failed_asins = result
+    fresh_by_asin = {o["id"]: o for o in paapi.offers_from_items(raw_items)}
+    updated = removed = 0
+    for asin in amazon_ids:
+        if asin in failed_asins:
+            continue  # lote con fallo de red/API -- se deja como estaba, no es "ya no existe"
+        fresh = fresh_by_asin.get(asin)
+        if fresh is None:
+            # Comprobado de verdad y Amazon no lo devuelve: descatalogado, sin stock o el
+            # descuento real ya no llega al mínimo -- se retira ya, no hace falta esperar a
+            # STALE_AFTER_DAYS para algo que ya sabemos que no vale.
+            del merged[asin]
+            removed += 1
+            continue
+        o = merged[asin]
+        if o.get("price") != fresh["price"] or o.get("discount_percent") != fresh["discount_percent"]:
+            o["price"] = fresh["price"]
+            o["original_price"] = fresh["original_price"]
+            o["discount_percent"] = fresh["discount_percent"]
+            updated += 1
+        o["last_seen"] = now_iso  # confirmado de verdad ahora mismo, aunque no lo tocara ninguna keyword
+    log(f"[amazon-refresh] {len(amazon_ids)} ASIN de Amazon revalidados con GetItems "
+        f"({len(failed_asins)} sin comprobar por fallo de red/API): {updated} con precio "
+        f"actualizado, {removed} retiradas (descatalogadas, sin stock o ya sin 30-80% real).")
+
+
 def main():
     log("=== Inicio ===")
 
@@ -2405,6 +2450,14 @@ def main():
             merged.pop(offer_id, None)
     except Exception as e:
         log(f"aviso: fallo comprobando sugerencias borradas por su autor, se omite esta vez: {e}")
+
+    # Revalida con GetItems el precio real de todo lo de Amazon ya en el catálogo (ver
+    # refresh_amazon_offers() arriba) -- ANTES de watched_prices.json para que los favoritos
+    # vigilados también lleven el precio recién confirmado, no el de hasta 2 días atrás.
+    try:
+        refresh_amazon_offers(merged, now_iso, log)
+    except Exception as e:
+        log(f"aviso: fallo revalidando precios de Amazon con GetItems, se omite esta vez: {e!r}")
 
     # Favoritos vigilados: si se ha podido preguntar a Firestore esta vez (watched_asins no es
     # None), se reconstruye watched_prices.json entero a partir de la lista actual — así un

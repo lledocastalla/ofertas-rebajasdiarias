@@ -46,6 +46,7 @@ AMAZON_CREDENTIALS_PATH = f"{HOME}/amazon-paapi-credentials.json"
 TOKEN_ENDPOINT = "https://api.amazon.co.uk/auth/o2/token"
 API_BASE = "https://creatorsapi.amazon"
 SEARCH_ITEMS_PATH = "/catalog/v1/searchItems"
+GET_ITEMS_PATH = "/catalog/v1/getItems"
 MARKETPLACE = "www.amazon.es"
 
 # Mismo umbral que el resto del catálogo (ver MIN_DISCOUNT_PERCENT en update_offers.py) -- se
@@ -242,6 +243,81 @@ def search_amazon(keywords: str, item_count: int = 10, min_saving_percent: int =
                     seen_asins.add(asin)
 
     return items[: min(max(item_count, 1), 10)]
+
+
+def _get_items_once(asins, creds, token):
+    """Una única llamada a GetItems -- hasta 10 ASIN por petición (mismo límite que itemCount
+    en SearchItems, ver GetItemsRequestContent del SDK oficial, max_length=10). Mismo contrato
+    que _search_items_once(): lista de 'items' (un ASIN descatalogado simplemente no aparece en
+    la respuesta, no es un error) o None si la petición en sí falla."""
+    payload = {
+        "partnerTag": creds["partner_tag"],
+        "itemIds": asins,
+        "resources": [
+            "images.primary.large",
+            "itemInfo.title",
+            "offersV2.listings.price",
+            "customerReviews.starRating",
+            "customerReviews.count",
+        ],
+    }
+    try:
+        resp = requests.post(
+            f"{API_BASE}{GET_ITEMS_PATH}",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "x-marketplace": MARKETPLACE,
+            },
+            data=json.dumps(payload),
+            timeout=15,
+        )
+    except requests.RequestException:
+        return None
+
+    if resp.status_code != 200:
+        return None
+    try:
+        data = resp.json()
+    except ValueError:
+        return None
+    return (data.get("itemsResult") or {}).get("items", [])
+
+
+def get_items(asins):
+    """Revalida en bloque el precio/stock REAL de una lista de ASIN ya conocidos del catálogo
+    (1 oct 2026, pedido explícito: "muchas veces no me coincide en los precios cuando entro en
+    amazon, como si hubiesen caducado"). A diferencia de search_amazon() (que DESCUBRE productos
+    nuevos por palabra clave, con muestreo aleatorio 1-2 keywords/categoría -- un producto
+    concreto podía pasar casi 2 días sin reconfirmarse, ver STALE_AFTER_DAYS en
+    update_offers.py), esto solo confirma si los que ya están en offers.json siguen con el mismo
+    precio/descuento, en llamadas baratas de hasta 10 ASIN cada una -- sin Selenium, sin abrir
+    Chrome, así que no suma ningún riesgo de "parecer un bot" nuevo.
+
+    Devuelve (items, failed_asins): `items` es la lista cruda de la API para los lotes que sí
+    respondieron (un ASIN ausente ahí de verdad ya no existe o perdió el descuento real);
+    `failed_asins` son los que quedaron sin comprobar porque su lote de 10 falló (red, 429...) --
+    quien llama NO debe tratarlos como "ya no existen", solo como "sin novedad esta vez" (mismo
+    principio de todo el proyecto: mejor un precio de hace unas horas que romper el catálogo por
+    un fallo de red puntual). Devuelve None (nada comprobado) si la API no está disponible en
+    absoluto esta vez (sin credenciales, sin token) -- nunca lanza."""
+    creds = _load_credentials()
+    if not creds:
+        return None
+    token = _get_access_token(creds["client_id"], creds["client_secret"])
+    if not token:
+        return None
+
+    items = []
+    failed_asins = set()
+    for i in range(0, len(asins), 10):
+        batch = asins[i:i + 10]
+        result = _get_items_once(batch, creds, token)
+        if result is None:
+            failed_asins.update(batch)
+        else:
+            items.extend(result)
+    return items, failed_asins
 
 
 def offers_from_items(items, category="Amazon", min_discount_percent: int = MIN_DISCOUNT_PERCENT):
