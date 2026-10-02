@@ -152,7 +152,13 @@ def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, 
     payload = {
         "partnerTag": creds["partner_tag"],
         "keywords": keywords,
-        "itemCount": min(max(item_count, 1), 10),
+        # 1 oct 2026, límite corregido: SearchItemsRequestContent del SDK oficial permite
+        # itemCount hasta 100 (confirmado contra el modelo real) -- el 10 de antes era el
+        # límite de GetItems (otra operación distinta), copiado aquí por error. Con 10 el
+        # buscador/alertas daban menos resultados que el scraping de Selenium de antes (hasta
+        # 24, ver MAX_PRODUCTS_KEYWORD_ALERT), aviso real del usuario: "parece que encuentre
+        # ahora menos que cuando hacía scrapping".
+        "itemCount": min(max(item_count, 1), 100),
         "minSavingPercent": min_saving_percent,
         "resources": [
             "images.primary.large",
@@ -198,7 +204,7 @@ def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, 
     return data.get("searchResult", {}).get("items", [])
 
 
-def search_amazon(keywords: str, item_count: int = 10, min_saving_percent: int = MIN_DISCOUNT_PERCENT):
+def search_amazon(keywords: str, item_count: int = 24, min_saving_percent: int = MIN_DISCOUNT_PERCENT):
     """Busca en Amazon.es por texto libre. Devuelve la lista cruda de 'items' de la Creators
     API (puede estar vacía si de verdad no hay resultados con descuento real), o None si la API
     no está disponible ahora mismo (sin credenciales, sin red, sin acceso -- menos de 10 ventas
@@ -242,7 +248,7 @@ def search_amazon(keywords: str, item_count: int = 10, min_saving_percent: int =
                 if asin:
                     seen_asins.add(asin)
 
-    return items[: min(max(item_count, 1), 10)]
+    return items[: min(max(item_count, 1), 100)]
 
 
 def _get_items_once(asins, creds, token):
