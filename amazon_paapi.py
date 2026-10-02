@@ -204,7 +204,7 @@ def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, 
     return data.get("searchResult", {}).get("items", [])
 
 
-def search_amazon(keywords: str, item_count: int = 24, min_saving_percent: int = MIN_DISCOUNT_PERCENT):
+def search_amazon(keywords: str, item_count: int = 100, min_saving_percent: int = MIN_DISCOUNT_PERCENT):
     """Busca en Amazon.es por texto libre. Devuelve la lista cruda de 'items' de la Creators
     API (puede estar vacía si de verdad no hay resultados con descuento real), o None si la API
     no está disponible ahora mismo (sin credenciales, sin red, sin acceso -- menos de 10 ventas

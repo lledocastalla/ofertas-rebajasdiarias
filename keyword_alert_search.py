@@ -300,10 +300,12 @@ def _scrape_keyword_live_once(
     pone un `max` por debajo de 100 salvo el 80% de siempre, y ese 80% ya lo aplica el resto del
     catálogo por su cuenta más tarde si hiciera falta."""
     try:
-        # item_count=24: iguala MAX_PRODUCTS_KEYWORD_ALERT, el tope que ya daba el scraping de
-        # Selenium (1 oct 2026, el 10 de antes se quedaba corto -- ver amazon_paapi.py).
+        # item_count=100 (2 oct 2026, pedido explícito: "pon más búsquedas"): es el tope REAL
+        # de SearchItems (ver amazon_paapi.py) -- una sola petición HTTP, no cuesta más pedir
+        # 100 que 10. MAX_PRODUCTS_KEYWORD_ALERT (24) se deja solo para el scraping de Selenium
+        # de abajo, que sí está limitado a lo que trae una página de resultados.
         api_items = paapi.search_amazon(
-            keyword, item_count=MAX_PRODUCTS_KEYWORD_ALERT, min_saving_percent=min_discount_percent
+            keyword, item_count=100, min_saving_percent=min_discount_percent
         )
     except Exception as e:
         log(f"aviso: fallo inesperado llamando a la Creators API para '{keyword}': {e}")
