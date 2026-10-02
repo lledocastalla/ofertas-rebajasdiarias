@@ -31,10 +31,8 @@ resource_path='/catalog/v1/searchItems') -- no hizo falta añadir el SDK entero 
 de la Pi, este fichero ya acertaba en los dos puntos críticos antes de la verificación.
 """
 
-import concurrent.futures
 import json
 import os
-import re
 import time
 
 import requests
@@ -49,7 +47,6 @@ TOKEN_ENDPOINT = "https://api.amazon.co.uk/auth/o2/token"
 API_BASE = "https://creatorsapi.amazon"
 SEARCH_ITEMS_PATH = "/catalog/v1/searchItems"
 GET_ITEMS_PATH = "/catalog/v1/getItems"
-GET_VARIATIONS_PATH = "/catalog/v1/getVariations"
 MARKETPLACE = "www.amazon.es"
 
 # Mismo umbral que el resto del catálogo (ver MIN_DISCOUNT_PERCENT en update_offers.py) -- se
@@ -374,143 +371,3 @@ def offers_from_items(items, category="Amazon", min_discount_percent: int = MIN_
         except (KeyError, TypeError, IndexError, ZeroDivisionError):
             continue  # item con una forma inesperada -- se descarta, no debe tumbar el resto
     return offers
-
-
-# ---------------------------------------------------------------------------
-# Tallas reales por variante (2 oct 2026, aviso real del usuario: "si pongo adidas 42 que salgan
-# ofertas de la talla 42, por qué me ha salido de la 44 al 30% y entro y veo que son 44 y le doy
-# al 42 y estaba al 51%" + "pero de ropa también no solo calzado"). La tarjeta de resultados de
-# búsqueda de Amazon enseña el precio de LA VARIANTE QUE AMAZON DECIDE, sin ninguna relación con
-# la talla escrita en la búsqueda -- hace falta GetVariations (ASIN -> todas las tallas hermanas,
-# cada una con su precio real) para saber de verdad cuál es el precio de la talla pedida.
-# Numérica: calzado+ropa europea se solapan en 34-52, no hace falta distinguir cuál de las dos es
-# -- da igual, se busca igual entre las tallas reales del producto que sea. Letra: XS-XXXL, con
-# límite de palabra para no enganchar una "S"/"M" suelta dentro de otra palabra.
-_SIZE_NUMERIC_RE = re.compile(r"(?<!\d)(3[4-9]|4[0-9]|5[0-2])(?!\d)")
-_SIZE_LETTER_RE = re.compile(r"\b(XXS|XS|S|M|L|XL|XXL|XXXL|[234]XL)\b", re.IGNORECASE)
-
-
-def extract_size_query(keywords: str):
-    """Talla (calzado o ropa) mencionada en la búsqueda -- numérica (34-52) o por letra
-    (XS-XXXL), lo que aparezca primero. None si no hay ninguna."""
-    m = _SIZE_NUMERIC_RE.search(keywords)
-    if m:
-        return m.group(0)
-    m = _SIZE_LETTER_RE.search(keywords)
-    return m.group(0).upper() if m else None
-
-
-def _size_matches(value, size):
-    """¿El valor real de una variante (p.ej. '42', 'M', 'Talla M (38-40)') corresponde a la
-    talla `size` detectada en la búsqueda? Numérica: mismo número exacto, sin pegar a otro
-    dígito (42 no debe colar dentro de 142). Letra: misma letra como palabra suelta, sin colar
-    dentro de otra palabra -- así 'M' no cuela con 'Medium' escrito distinto, pero si sí
-    aparece 'M' suelta (uso habitual de Amazon) sí."""
-    if not value:
-        return False
-    if size.isdigit():
-        return re.search(rf"(?<!\d){size}(?!\d)", value) is not None
-    return re.search(rf"\b{re.escape(size)}\b", value, re.IGNORECASE) is not None
-
-
-def _get_variations_once(asin, creds, token):
-    """Una única llamada a GetVariations -- mismo contrato que _get_items_once(): lista de
-    'items' (las tallas/variantes hermanas de `asin`, incluida ella misma) o None si la
-    petición en sí falla."""
-    payload = {
-        "partnerTag": creds["partner_tag"],
-        "asin": asin,
-        "variationCount": 10,
-        "resources": ["itemInfo.title", "offersV2.listings.price"],
-    }
-    try:
-        resp = requests.post(
-            f"{API_BASE}{GET_VARIATIONS_PATH}",
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-                "x-marketplace": MARKETPLACE,
-            },
-            data=json.dumps(payload),
-            timeout=15,
-        )
-    except requests.RequestException:
-        return None
-
-    if resp.status_code != 200:
-        return None
-    try:
-        data = resp.json()
-    except ValueError:
-        return None
-    return (data.get("variationsResult") or {}).get("items", [])
-
-
-def get_variations(asin):
-    """Tallas/variantes hermanas de `asin` (lista cruda de 'items' de GetVariations), o None si
-    la API no está disponible ahora mismo. Mismo contrato de siempre: nunca lanza."""
-    creds = _load_credentials()
-    if not creds:
-        return None
-    token = _get_access_token(creds["client_id"], creds["client_secret"])
-    if not token:
-        return None
-    return _get_variations_once(asin, creds, token)
-
-
-def _variant_size_value(item):
-    """Valor del atributo de talla de un item de GetVariations (p.ej. '42', 'M'), o None si no
-    tiene ningún atributo de variación de talla -- un producto sin tallas (no es ropa/calzado,
-    o varía solo por color) nunca debe tratarse como "sin la talla pedida", solo como "no
-    aplica"."""
-    for attr in item.get("variationAttributes") or []:
-        name = (attr.get("name") or "").lower()
-        if "size" in name or "talla" in name:
-            return (attr.get("value") or "").strip()
-    return None
-
-
-def resolve_offers_for_size(offers, size, min_discount_percent, log=None, max_checks=5):
-    """Revisa como mucho los `max_checks` primeros `offers` (los de mejor descuento, ya vienen
-    ordenados así por Amazon) contra GetVariations para confirmar que el precio es de verdad el
-    de la talla `size` -- no el que decidiera enseñar la tarjeta de búsqueda. En paralelo
-    (ThreadPoolExecutor, mismo patrón que _filter_dead_footlocker_links en multitienda_feeds.py)
-    para no multiplicar la latencia del buscador en vivo por cada comprobación.
-
-    Por cada oferta comprobada:
-    - Si GetVariations falla (API caída a medio buscar): se deja la oferta tal cual -- mejor un
-      precio sin verificar que perder el resultado por un fallo puntual.
-    - Si el producto no tiene tallas (no es ropa/calzado, o solo varía por color): se deja tal
-      cual, la talla pedida no le aplica.
-    - Si SÍ tiene tallas pero la pedida no está entre ellas: se retira -- no se puede demostrar
-      que el precio mostrado sea el de esa talla.
-    - Si SÍ está: se sustituye price/original_price/discount_percent/id/url por los reales de
-      esa talla concreta (si ya no llega al descuento mínimo, también se retira)."""
-    checked = offers[:max_checks]
-    rest = offers[max_checks:]
-
-    def _resolve(offer):
-        raw = get_variations(offer["id"])
-        if raw is None:
-            return offer  # sin verificar, se deja como estaba
-        if not any(_variant_size_value(item) is not None for item in raw):
-            return offer  # no es un producto con tallas, "42" no le aplica aquí
-        for item in raw:
-            value = _variant_size_value(item)
-            if _size_matches(value, size):
-                matched = offers_from_items([item], category=offer["category"], min_discount_percent=0)
-                if not matched or matched[0]["discount_percent"] < min_discount_percent:
-                    return None  # la talla existe pero ya no llega al descuento mínimo
-                fresh = matched[0]
-                return {**offer, **fresh}
-        return None  # tiene tallas, pero la pedida no está entre ellas
-
-    resolved = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_checks) as executor:
-        for offer, result in zip(checked, executor.map(_resolve, checked)):
-            if result is not None:
-                resolved.append(result)
-            elif log:
-                log(f"  '{offer['title'][:50]}': descartada, la talla {size} no coincide con el precio mostrado")
-
-    return resolved + rest
