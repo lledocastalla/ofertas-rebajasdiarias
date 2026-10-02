@@ -413,15 +413,17 @@ def _size_matches(value, size):
     return re.search(rf"\b{re.escape(size)}\b", value, re.IGNORECASE) is not None
 
 
-def _get_variations_once(asin, creds, token):
-    """Una única llamada a GetVariations -- mismo contrato que _get_items_once(): lista de
-    'items' (las tallas/variantes hermanas de `asin`, incluida ella misma) o None si la
-    petición en sí falla."""
+def _get_variations_once(asin, creds, token, page=1):
+    """Una única página de GetVariations (como mucho 10 variantes, límite real de la API --
+    ver variationCount en GetVariationsRequestContent). Devuelve (items, page_count) -- items
+    de esa página y el número total de páginas que tiene el producto (variationSummary.
+    pageCount, 1 si no viene) -- o (None, None) si la petición en sí falla."""
     payload = {
         "partnerTag": creds["partner_tag"],
         "asin": asin,
         "variationCount": 10,
-        "resources": ["itemInfo.title", "offersV2.listings.price"],
+        "variationPage": page,
+        "resources": ["itemInfo.title", "offersV2.listings.price", "variationSummary.variationDimension"],
     }
     try:
         resp = requests.post(
@@ -435,27 +437,55 @@ def _get_variations_once(asin, creds, token):
             timeout=15,
         )
     except requests.RequestException:
-        return None
+        return None, None
 
     if resp.status_code != 200:
-        return None
+        return None, None
     try:
         data = resp.json()
     except ValueError:
-        return None
-    return (data.get("variationsResult") or {}).get("items", [])
+        return None, None
+    vr = data.get("variationsResult") or {}
+    page_count = (vr.get("variationSummary") or {}).get("pageCount") or 1
+    return vr.get("items", []), page_count
 
 
-def get_variations(asin):
-    """Tallas/variantes hermanas de `asin` (lista cruda de 'items' de GetVariations), o None si
-    la API no está disponible ahora mismo. Mismo contrato de siempre: nunca lanza."""
+def get_variations(asin, max_pages=5):
+    """Todas las tallas/variantes hermanas de `asin` que se puedan reunir, paginando si hace
+    falta -- 2 oct 2026, aviso real: un producto con tallas Y colores puede tener 70+ variantes
+    repartidas en 8 páginas de 10 (comprobado en vivo, B0DL6PPX3L: 71 variantes, 8 páginas); con
+    una sola página la talla pedida podía no estar ahí aunque el producto SÍ la tenga. Pide la
+    página 1 primero (trae el número real de páginas) y, si hay más, el resto en paralelo hasta
+    `max_pages` páginas (tope para no multiplicar la latencia del buscador en vivo en productos
+    con muchísimas variantes) -- un producto más allá de ese tope simplemente no se cubre del
+    todo, mejor eso que esperar 8 peticiones seguidas por un solo candidato.
+    Devuelve la lista combinada de 'items', o None si la API no está disponible ahora mismo
+    (ni siquiera la página 1 respondió)."""
     creds = _load_credentials()
     if not creds:
         return None
     token = _get_access_token(creds["client_id"], creds["client_secret"])
     if not token:
         return None
-    return _get_variations_once(asin, creds, token)
+
+    items, page_count = _get_variations_once(asin, creds, token, page=1)
+    if items is None:
+        return None
+    page_count = min(page_count or 1, max_pages)
+    if page_count <= 1:
+        return items
+
+    all_items = list(items)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=page_count - 1) as executor:
+        futures = [
+            executor.submit(_get_variations_once, asin, creds, token, p)
+            for p in range(2, page_count + 1)
+        ]
+        for future in futures:
+            more_items, _ = future.result()
+            if more_items:
+                all_items.extend(more_items)
+    return all_items
 
 
 def _variant_size_value(item):
