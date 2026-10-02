@@ -314,6 +314,17 @@ def _scrape_keyword_live_once(
         offers = paapi.offers_from_items(
             api_items, category=CATEGORY_LABEL, min_discount_percent=min_discount_percent
         )
+        # 2 oct 2026, aviso real del usuario: "si pongo adidas 42 que salgan ofertas de la
+        # talla 42... me ha salido de la 44 al 30%... le doy al 42 y estaba al 51%" -- la
+        # tarjeta de búsqueda enseña el precio de la variante que decide Amazon, no el de la
+        # talla escrita. Si la búsqueda lleva una talla de calzado, se verifica contra
+        # GetVariations antes de devolver nada (ver resolve_offers_for_size en amazon_paapi.py).
+        size = paapi.extract_size_query(keyword)
+        if size:
+            before = len(offers)
+            offers = paapi.resolve_offers_for_size(offers, size, min_discount_percent, log=log)
+            log(f"'{keyword}': talla {size} verificada con GetVariations "
+                f"({before} candidatos -> {len(offers)} con precio confirmado para esa talla)")
         log(f"'{keyword}': {len(offers)} resultado(s) reales vía Creators API")
         return offers
 
