@@ -151,11 +151,18 @@ def _process_request_inner(doc_id, doc_ref, query_text, data):
     # como "done" desde la primera tanda -- es el único que los clientes pintan; con un estado
     # nuevo tipo "partial" se quedarían en "Buscando…" y habría que tocar web y app.
     entregadas = 0
+    # Una escritura por página serían ~10 por búsqueda. La primera tanda se escribe siempre (es
+    # la que hace que la búsqueda se sienta rápida); a partir de ahí se agrupan de
+    # TANDA_MINIMA en TANDA_MINIMA para gastar la mitad de escrituras sin que se note el salto.
+    # La escritura final de abajo lleva igualmente la lista completa, así que no se pierde nada.
+    TANDA_MINIMA = 10
 
     def _entregar_parcial(offers_hasta_ahora):
         nonlocal entregadas
         if len(offers_hasta_ahora) <= entregadas:
             return  # nada nuevo que escribir, no se gasta una escritura de Firestore de más
+        if entregadas and len(offers_hasta_ahora) - entregadas < TANDA_MINIMA:
+            return  # todavía son pocas nuevas, se esperan a la siguiente página
         entregadas = len(offers_hasta_ahora)
         try:
             doc_ref.set(

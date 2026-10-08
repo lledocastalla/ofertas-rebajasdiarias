@@ -522,10 +522,11 @@ def refresh_keyword_alert(db, uid, keyword, notify_new=True, first_search=False)
             removed += 1
 
     new_offers = []
+    sin_cambios = 0
     for o in offers:
         is_new = o["id"] not in existing_by_asin
         doc_id = f"{uid}_{keyword}_{o['id']}"
-        coll.document(doc_id).set({
+        payload = {
             "uid": uid,
             "keyword": keyword,
             "asin": o["id"],
@@ -545,11 +546,31 @@ def refresh_keyword_alert(db, uid, keyword, notify_new=True, first_search=False)
             # _title_matches_keyword() arriba. false = probablemente un sustituto de Amazon,
             # no lo que se buscó de verdad; la app lo marca con un aviso en vez de nada.
             "exactMatch": _title_matches_keyword(o["title"], keyword),
-            "updatedAt": firestore.SERVER_TIMESTAMP,
-        }, merge=True)
+        }
+        # 8 oct 2026, problema real de cuota: esto reescribía TODAS las ofertas de TODAS las
+        # alertas en cada repaso (cada hora), cambiara algo o no -- el `updatedAt` de abajo
+        # siempre cambia, así que ningún `merge=True` se ahorraba nada. Con ~7 ofertas por
+        # alerta pasaba desapercibido (~4.000 escrituras/día), pero al paginar la búsqueda
+        # (ver SEARCH_MAX_PAGES en amazon_paapi.py) son ~45 por alerta: ~26.000 escrituras/día,
+        # por encima del límite de 20.000 del plan Spark (gratis). Y al agotarse la cuota deja
+        # de escribir TODO Firestore, no solo esto: comunidad, favoritos, búsquedas...
+        # Ahora solo se escribe cuando algo cambia de verdad (precio, descuento, título...).
+        # En régimen normal la mayoría de ofertas siguen igual de una hora a la otra, así que
+        # las escrituras caen a las pocas que de verdad se mueven.
+        prev = (existing_by_asin[o["id"]].to_dict() or {}) if not is_new else {}
+        if not is_new and all(prev.get(k) == v for k, v in payload.items()):
+            sin_cambios += 1
+            continue
+        # `updatedAt` solo se toca cuando hay cambio real. La app ordena por este campo
+        # (keyword_alert_offers_service.dart), así que el orden pasa a ser "lo que se ha movido
+        # más recientemente primero" en vez de "todo a la vez" -- que es justo lo que interesa.
+        payload["updatedAt"] = firestore.SERVER_TIMESTAMP
+        coll.document(doc_id).set(payload, merge=True)
         if is_new:
             new_offers.append(o)
 
+    if sin_cambios:
+        log(f"'{keyword}' ({uid}): {sin_cambios} oferta(s) sin cambios, no reescritas")
     if removed:
         log(f"'{keyword}' ({uid}): {removed} oferta(s) quitada(s), ya no vigente(s)")
     if new_offers:
