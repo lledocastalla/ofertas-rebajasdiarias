@@ -141,8 +141,37 @@ def _process_request_inner(doc_id, doc_ref, query_text, data):
     # _scrape_keyword_live(), que son los mismos de las alertas (1%-100%, MIN/MAX_SAVING_
     # PERCENT_KEYWORD_ALERT), no el 30-80% estándar del resto del catálogo. import amazon_paapi
     # se deja arriba sin usar aquí por si hiciera falta más adelante para otra cosa.
+    # 8 oct 2026, pedido explícito ("necesito que tarde poco como antes, que vayan apareciendo y
+    # luego se le vayan añadiendo abajo y así no se notará que tarda más"): desde que la búsqueda
+    # pagina (ver SEARCH_MAX_PAGES en amazon_paapi.py) reunir los ~90 resultados tarda unos
+    # segundos, pero no hace falta esperar a tenerlos todos para enseñar algo. Cada tanda que
+    # llega se escribe ya en el MISMO documento que la web y la app están escuchando en vivo
+    # (onSnapshot/snapshots()): la primera cae en ~1 s, igual de rápido que antes, y el resto se
+    # van añadiendo solos debajo sin que nadie espere mirando un círculo. Por eso el estado va
+    # como "done" desde la primera tanda -- es el único que los clientes pintan; con un estado
+    # nuevo tipo "partial" se quedarían en "Buscando…" y habría que tocar web y app.
+    entregadas = 0
+
+    def _entregar_parcial(offers_hasta_ahora):
+        nonlocal entregadas
+        if len(offers_hasta_ahora) <= entregadas:
+            return  # nada nuevo que escribir, no se gasta una escritura de Firestore de más
+        entregadas = len(offers_hasta_ahora)
+        try:
+            doc_ref.set(
+                {"status": "done", "results": offers_hasta_ahora,
+                 "resultCount": len(offers_hasta_ahora)},
+                merge=True,
+            )
+        except Exception as e:
+            # Una tanda intermedia que no se pueda escribir no debe tumbar la búsqueda: la
+            # escritura final de abajo lleva igualmente la lista completa.
+            log(f"aviso: no se pudo escribir una tanda parcial de {query_text!r}: {e!r}")
+
     try:
-        offers = keyword_alert_search._scrape_keyword_live(query_text)
+        offers = keyword_alert_search._scrape_keyword_live(
+            query_text, on_partial=_entregar_parcial
+        )
         if offers is None:
             doc_ref.set({"status": "unavailable"}, merge=True)
             log(f"{query_text!r}: no se pudo completar el scraping ahora mismo")

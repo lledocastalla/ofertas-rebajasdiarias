@@ -280,6 +280,7 @@ def _scrape_keyword_live_once(
     keyword,
     min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
     max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
+    on_partial=None,
 ):
     """Un único intento. Umbral bajo de las alertas por defecto (min/max sin tocar en las
     llamadas de siempre); el buscador principal (20 sep 2026, ver search_requests_listener.py)
@@ -298,14 +299,36 @@ def _scrape_keyword_live_once(
     de ese camino. `max_discount_percent` no se puede pedir a la API (no tiene ese parámetro,
     Amazon no pone techo) -- en la práctica no importa, ninguna llamada real de este proyecto
     pone un `max` por debajo de 100 salvo el 80% de siempre, y ese 80% ya lo aplica el resto del
-    catálogo por su cuenta más tarde si hiciera falta."""
+    catálogo por su cuenta más tarde si hiciera falta.
+
+    `on_partial(ofertas_hasta_ahora)` (8 oct 2026) se llama con el acumulado cada vez que la API
+    devuelve una página nueva, para poder ir enseñando resultados mientras el resto todavía se
+    pide. La lista final que se devuelve al terminar sigue siendo la misma de siempre: quien no
+    pase `on_partial` no nota ningún cambio."""
     try:
-        # item_count=100 (2 oct 2026, pedido explícito: "pon más búsquedas"): es el tope REAL
-        # de SearchItems (ver amazon_paapi.py) -- una sola petición HTTP, no cuesta más pedir
-        # 100 que 10. MAX_PRODUCTS_KEYWORD_ALERT (24) se deja solo para el scraping de Selenium
-        # de abajo, que sí está limitado a lo que trae una página de resultados.
+        # item_count=100 (2 oct 2026, pedido explícito: "pon más búsquedas"). OJO, corregido el
+        # 8 oct 2026: esto NO es "una sola petición HTTP" desde entonces -- medido contra la API,
+        # `itemCount` no amplía nada (100 y 10 devuelven 10 igual), así que search_amazon() ahora
+        # pagina con `itemPage` hasta reunir estos 100, con pausa entre páginas para no comerse
+        # el 429 de Amazon (ver SEARCH_MAX_PAGES en amazon_paapi.py). Una búsqueda larga puede
+        # tardar ~11 s; a cambio devuelve 3-5 veces más resultados.
+        # MAX_PRODUCTS_KEYWORD_ALERT (24) se deja solo para el scraping de Selenium de abajo,
+        # que sí está limitado a lo que trae una página de resultados.
+        # on_page -> on_partial (8 oct 2026): cada tanda que llega se convierte ya a ofertas y
+        # se entrega hacia arriba, para que el buscador pueda ir pintándolas en vez de esperar a
+        # tenerlas todas. Solo el camino de la API: el de Selenium de abajo trae su única página
+        # de golpe, no hay nada que entregar por partes ahí.
+        def _entregar(items_hasta_ahora):
+            if on_partial is None:
+                return
+            on_partial(paapi.offers_from_items(
+                items_hasta_ahora, category=CATEGORY_LABEL,
+                min_discount_percent=min_discount_percent,
+            ))
+
         api_items = paapi.search_amazon(
-            keyword, item_count=100, min_saving_percent=min_discount_percent
+            keyword, item_count=100, min_saving_percent=min_discount_percent,
+            on_page=_entregar if on_partial is not None else None,
         )
     except Exception as e:
         log(f"aviso: fallo inesperado llamando a la Creators API para '{keyword}': {e}")
@@ -349,6 +372,7 @@ def _scrape_keyword_live(
     keyword,
     min_discount_percent=MIN_SAVING_PERCENT_KEYWORD_ALERT,
     max_discount_percent=MAX_SAVING_PERCENT_KEYWORD_ALERT,
+    on_partial=None,
 ):
     """Como _scrape_keyword_live_once(), pero con reintentos (14 sep 2026, pedido explícito: "si
     sale un error en la búsqueda que arranque al rato otra vez hasta que vaya") -- un fallo
@@ -381,7 +405,7 @@ def _scrape_keyword_live(
         try:
             for attempt in range(1, KEYWORD_ALERT_RETRY_ATTEMPTS + 1):
                 result = _scrape_keyword_live_once(
-                    keyword, min_discount_percent, max_discount_percent
+                    keyword, min_discount_percent, max_discount_percent, on_partial=on_partial
                 )
                 if result is not None:
                     return result
@@ -394,7 +418,7 @@ def _scrape_keyword_live(
                 f"que la memoria se asiente")
             time.sleep(KEYWORD_ALERT_MEMORY_GRACE_SECONDS)
             result = _scrape_keyword_live_once(
-                keyword, min_discount_percent, max_discount_percent
+                keyword, min_discount_percent, max_discount_percent, on_partial=on_partial
             )
             if result is not None:
                 return result

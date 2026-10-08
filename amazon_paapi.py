@@ -54,6 +54,21 @@ MARKETPLACE = "www.amazon.es"
 # falta pedir de más para luego descartar la mitad a mano.
 MIN_DISCOUNT_PERCENT = 30
 
+# Paginación de SearchItems (8 oct 2026, hallazgo real midiendo contra la API: `itemCount` NO
+# amplía nada -- pedir 100 y pedir 10 devuelve exactamente 10 items en los dos casos, así que
+# TODA búsqueda en vivo venía topada en 10 resultados, con cualquier término). El comentario
+# anterior ("itemCount hasta 100, confirmado contra el modelo real") era cierto sobre lo que el
+# modelo ACEPTA, pero no sobre lo que la respuesta DEVUELVE. Lo que sí amplía es `itemPage`:
+# cada página trae 10 productos distintos, sin repetir ASIN (probado: cafetera 10 -> 55,
+# zapatillas 10 -> 40, auriculares 9 -> 29). `page` y `offset` los ignora, solo vale `itemPage`.
+SEARCH_ITEMS_PER_PAGE = 10  # lo que devuelve de verdad una llamada, pase lo que pase en itemCount
+SEARCH_MAX_PAGES = 10  # techo de páginas por búsqueda; el de verdad lo marca item_count del que llama
+# Amazon corta con 429 a partir de 4-6 llamadas seguidas (medido). Pausa entre páginas para no
+# provocarlo. Con 0,6 s las 10 páginas tardan ~7 s en total, pero eso ya no se nota: los
+# resultados se entregan por tandas según llegan (`on_page`), la primera en ~1 s.
+SEARCH_PAGE_PAUSE_SECONDS = 0.6
+SEARCH_RATE_LIMIT_RETRY_SECONDS = 3.0  # un único reintento si aun así salta el 429
+
 # Token cacheado en memoria del proceso -- cada ejecución de check_search_requests.py es un
 # proceso nuevo (cron), así que esto solo ahorra llamadas dentro de un mismo ciclo si hay varias
 # búsquedas pendientes a la vez (ver SEARCH_REQUESTS_MAX_PER_CYCLE). No hace falta persistirlo
@@ -142,11 +157,17 @@ def _get_access_token(client_id: str, client_secret: str):
     return token
 
 
-def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, creds, token):
+def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, creds, token,
+                       item_page: int = 1):
     """Una única llamada real a SearchItems -- extraído de search_amazon() el 29 sep 2026 para
     poder repetir la petición con una segunda variante de `keywords` (ver _split_glued_query) sin
-    duplicar la construcción del payload ni el manejo de errores. Mismo contrato de siempre:
-    lista (puede ir vacía) o None si la API no responde bien."""
+    duplicar la construcción del payload ni el manejo de errores.
+
+    Devuelve `(items, status)`: `items` es la lista de la página pedida (puede ir vacía) o None
+    si la llamada no salió bien, y `status` es el código HTTP (0 si ni siquiera hubo respuesta).
+    El código hace falta fuera para distinguir un 429 --límite de peticiones por segundo, se
+    reintenta y se sigue con lo que ya haya-- de un fallo de verdad, donde no tiene sentido
+    seguir pidiendo páginas (8 oct 2026, ver SEARCH_MAX_PAGES)."""
     # "marketplace" NO va en el cuerpo -- verificado contra el modelo real del SDK
     # (SearchItemsRequestContent no tiene ese campo), solo existe como cabecera x-marketplace.
     payload = {
@@ -159,6 +180,9 @@ def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, 
         # 24, ver MAX_PRODUCTS_KEYWORD_ALERT), aviso real del usuario: "parece que encuentre
         # ahora menos que cuando hacía scrapping".
         "itemCount": min(max(item_count, 1), 100),
+        # 8 oct 2026: la página es lo único que amplía de verdad el número de resultados -- ver
+        # SEARCH_MAX_PAGES arriba. itemPage=1 es el comportamiento de siempre.
+        "itemPage": max(int(item_page), 1),
         "minSavingPercent": min_saving_percent,
         "resources": [
             "images.primary.large",
@@ -189,22 +213,88 @@ def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, 
             timeout=15,
         )
     except requests.RequestException:
-        return None
+        return None, 0
 
     if resp.status_code != 200:
         # 429 (límite de peticiones), 401/403 (sin acceso -- menos de 10 ventas en 30 días,
         # token caducado...), 404 (ruta equivocada, ver aviso al principio del fichero) o
         # cualquier otro fallo: "no disponible ahora mismo", nunca un error visible.
-        return None
+        return None, resp.status_code
 
     try:
         data = resp.json()
     except ValueError:
-        return None
-    return data.get("searchResult", {}).get("items", [])
+        return None, resp.status_code
+    return data.get("searchResult", {}).get("items", []), resp.status_code
 
 
-def search_amazon(keywords: str, item_count: int = 100, min_saving_percent: int = MIN_DISCOUNT_PERCENT):
+def _search_items_paginated(keywords, want, min_saving_percent, creds, token, seen_asins,
+                            log=None, on_page=None, already=None):
+    """Pide páginas de SearchItems hasta reunir `want` productos distintos, o hasta que Amazon
+    deje de dar más (8 oct 2026). Devuelve `(items, api_ok)`: la lista acumulada ya sin ASIN
+    repetidos y un booleano que dice si la API respondió bien al menos una vez -- si la primera
+    página ya falla por algo que no sea el límite de peticiones, `api_ok` es False y quien llama
+    debe tratarlo como "API no disponible" de siempre (y caerse al scraping de Selenium).
+
+    No se corta al ver una página con menos de 10 productos: medido en vivo, Amazon devuelve
+    páginas cortas intercaladas y después sigue dando resultados (cafetera: página 3 trajo 8 y
+    las páginas 4-6 trajeron 25 más). Solo para de verdad con una página vacía, con un 429 que
+    tampoco se recupera tras el reintento, o con un fallo real de la API.
+
+    `on_page(items_acumulados)` se llama después de cada página que aporte algo nuevo (8 oct
+    2026, pedido explícito: "necesito que tarde poco como antes, que vayan apareciendo y luego
+    se le vayan añadiendo abajo"). Sirve para ir entregando resultados mientras el resto todavía
+    se está pidiendo, en vez de esperar a tenerlo todo. `already` son los productos que quien
+    llama ya tiene de una búsqueda anterior, para que el acumulado que se pasa a `on_page` sea
+    la lista completa y no solo el trozo de esta llamada. Si falla, no se corta la búsqueda:
+    entregar de más es un extra, no la función principal."""
+    items = []
+    api_ok = False
+    max_pages = min(SEARCH_MAX_PAGES, max(1, -(-want // SEARCH_ITEMS_PER_PAGE)))
+    for page in range(1, max_pages + 1):
+        if page > 1:
+            time.sleep(SEARCH_PAGE_PAUSE_SECONDS)
+        page_items, status = _search_items_once(
+            keywords, SEARCH_ITEMS_PER_PAGE, min_saving_percent, creds, token, item_page=page
+        )
+        if page_items is None and status == 429:
+            # Un único reintento con más margen; si vuelve a saltar, nos quedamos con lo que haya
+            # (mejor 30 resultados reales que ninguno por insistir).
+            time.sleep(SEARCH_RATE_LIMIT_RETRY_SECONDS)
+            page_items, status = _search_items_once(
+                keywords, SEARCH_ITEMS_PER_PAGE, min_saving_percent, creds, token, item_page=page
+            )
+        if page_items is None:
+            if log and page == 1:
+                log(f"[amazon_paapi] '{keywords}': la API no respondió (HTTP {status})")
+            break
+        api_ok = True
+        if not page_items:
+            break  # Amazon ya no tiene más para este término
+        nuevos = 0
+        for item in page_items:
+            asin = item.get("asin")
+            if asin and asin in seen_asins:
+                continue
+            items.append(item)
+            if asin:
+                seen_asins.add(asin)
+            nuevos += 1
+        if not nuevos:
+            break  # página entera repetida: no hay nada más que rascar
+        if on_page is not None:
+            try:
+                on_page(list(already or []) + items)
+            except Exception as e:
+                if log:
+                    log(f"[amazon_paapi] aviso: fallo entregando la tanda parcial: {e!r}")
+        if len(items) >= want:
+            break
+    return items, api_ok
+
+
+def search_amazon(keywords: str, item_count: int = 100,
+                  min_saving_percent: int = MIN_DISCOUNT_PERCENT, log=None, on_page=None):
     """Busca en Amazon.es por texto libre. Devuelve la lista cruda de 'items' de la Creators
     API (puede estar vacía si de verdad no hay resultados con descuento real), o None si la API
     no está disponible ahora mismo (sin credenciales, sin red, sin acceso -- menos de 10 ventas
@@ -231,24 +321,27 @@ def search_amazon(keywords: str, item_count: int = 100, min_saving_percent: int 
     if not token:
         return None
 
-    items = _search_items_once(keywords, item_count, min_saving_percent, creds, token)
-    if items is None:
+    want = min(max(item_count, 1), 100)
+    seen_asins = set()
+    items, api_ok = _search_items_paginated(
+        keywords, want, min_saving_percent, creds, token, seen_asins, log=log, on_page=on_page
+    )
+    if not api_ok:
         return None
 
     split_query = _split_glued_query(keywords)
-    if split_query:
-        extra_items = _search_items_once(split_query, item_count, min_saving_percent, creds, token)
-        if extra_items:
-            seen_asins = {item.get("asin") for item in items if item.get("asin")}
-            for item in extra_items:
-                asin = item.get("asin")
-                if asin and asin in seen_asins:
-                    continue
-                items.append(item)
-                if asin:
-                    seen_asins.add(asin)
+    if split_query and len(items) < want:
+        # Comparte `seen_asins` con la búsqueda de arriba: así la variante separada solo añade
+        # ASIN que no estuvieran ya, igual que antes, y además no gasta páginas repitiendo.
+        # `already=items` para que las tandas parciales de esta segunda búsqueda sigan llevando
+        # también los resultados de la primera -- si no, el cliente las vería desaparecer.
+        extra_items, _ = _search_items_paginated(
+            split_query, want - len(items), min_saving_percent, creds, token, seen_asins,
+            log=log, on_page=on_page, already=items,
+        )
+        items.extend(extra_items)
 
-    return items[: min(max(item_count, 1), 100)]
+    return items[:want]
 
 
 def _get_items_once(asins, creds, token):
