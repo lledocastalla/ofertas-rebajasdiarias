@@ -80,7 +80,18 @@ def _fill_matching_search_history(query_text, requested_at, result_count):
         )
         for d in docs:
             data = d.to_dict() or {}
-            if isinstance(data.get("resultCount"), (int, float)):
+            # 8 oct 2026, bug real con datos de Firestore: el panel "Qué pide la gente" enseñaba
+            # 9/10 en búsquedas que de verdad habían encontrado 58, 65 o 71 (log de la Pi:
+            # 'tommy hombre M': 71 -> search_history guardaba 9). Causa: desde que la búsqueda
+            # entrega por tandas (_entregar_parcial más abajo), el documento pasa a "done" ya en
+            # la PRIMERA tanda, así que el nº que escribe la app (updateSearchHistoryResultCount)
+            # es el de esa tanda -- y este relleno se lo saltaba, porque hasta ahora bastaba con
+            # que hubiera cualquier número para no tocarlo (candado del 28 sep, puesto cuando
+            # "done" llegaba una sola vez y ese número ya era el bueno). El total definitivo no
+            # entraba nunca: quedaba congelado en 10 para siempre. Ahora solo se respeta el que
+            # ya hay si es >= al definitivo -- nunca se baja un número, solo se completa.
+            existing = data.get("resultCount")
+            if isinstance(existing, (int, float)) and existing >= result_count:
                 continue
             if (data.get("query") or "").strip().lower() != term:
                 continue

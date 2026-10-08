@@ -115,14 +115,20 @@ def _fill_search_history_counts(db, FieldFilter, since, done_requests):
             .stream()
         ):
             data = d.to_dict() or {}
-            if isinstance(data.get("resultCount"), (int, float)):
-                continue
             term = (data.get("query") or "").strip().lower()
             at = data.get("requestedAt")
             if not term or at is None or term not in by_term:
                 continue
             best = min(by_term[term], key=lambda x: abs((x[0] - at).total_seconds()))
             if abs((best[0] - at).total_seconds()) > HISTORY_MATCH_SECONDS:
+                continue
+            # 8 oct 2026, mismo arreglo que en _fill_matching_search_history() de
+            # search_requests_listener.py (ver el comentario largo de allí): desde que la
+            # búsqueda entrega por tandas, el número que hay escrito puede ser el de la PRIMERA
+            # tanda (9/10) en vez del total real (58, 65, 71). Ya no basta con que haya un
+            # número para dejarlo estar -- solo se respeta si es >= al de la búsqueda terminada.
+            existing = data.get("resultCount")
+            if isinstance(existing, (int, float)) and existing >= best[1]:
                 continue
             d.reference.set({"resultCount": best[1]}, merge=True)
             filled += 1
