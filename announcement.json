@@ -1,6 +1,6 @@
 {
   "_comment": "Anuncio/aviso emergente al abrir la app (10 oct 2026). Editar aqui para encender/apagar y cambiar el contenido SIN compilar ni pasar por la tienda (netlify/GitHub, igual que store_banners.json). Sale UNA vez por 'id' a cada persona: cambia el 'id' cuando quieras que un anuncio nuevo vuelva a salir a todos. OJO: se muestra a TODOS (Android y iPhone), la app instalada no filtra por plataforma. Campos: active (true/false), id (unico por anuncio), title, body, image (opcional, URL), button_text (opcional), action_type ('url'|'store'|'offer'|'none'), action_value (segun action_type: una URL / clave de tienda p.ej. 'adidas' / id-asin de una oferta).",
-  "active": true,
+  "active": false,
   "id": "android-update-1194-2026-10-10",
   "title": "¡Nueva versión disponible! 🎉",
   "body": "Si usas Android, ya puedes actualizar RebajasDiarias a la última versión en Google Play: mejoras en los filtros y en la página principal para encontrar antes lo que buscas. (En iPhone llega en unos días.)",
