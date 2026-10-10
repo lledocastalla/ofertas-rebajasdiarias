@@ -1447,7 +1447,10 @@ return Array.from(document.querySelectorAll(
   // resultado real). 'h2' a secas junta el texto de todos los spans internos.
   var titleEl = card.querySelector('h2');
   var imgEl = card.querySelector('img.s-image');
-  var flashEl = card.querySelector(".s-coupon-highlight-color, [aria-label*='Flash' i]");
+  // 10 oct 2026 (pedido del usuario: "en flash solo ofertas flash, no cosas que no lo sean"):
+  // se quitó ".s-coupon-highlight-color" de aquí -- ESO es un CUPÓN, no una oferta flash, y
+  // colaba ofertas con cupón en la sección Flash. Solo cuenta como flash el badge real de Flash.
+  var flashEl = card.querySelector("[aria-label*='Flash' i]");
   // 26 ago 2026, variante del mismo bug detectada por el usuario ("se van repitiendo las
   // ofertas muchas veces"): en ciertas tarjetas (vistas en búsquedas por marca, ej. "gafas de
   // sol Tommy Hilfiger") el propio <h2> SOLO contiene la marca de verdad, sin truncar nada --
@@ -2558,18 +2561,32 @@ def main():
         )
         candidate_asins = [o["id"] for o in amazon_offers[:500]]
         if candidate_asins:
+            from datetime import datetime, timezone, timedelta
+            # 10 oct 2026 (pedido del usuario: "12 dias no es flash"): dealDetails.endTime de la
+            # API incluye deals largos (promos de semanas), no solo Lightning Deals. Solo cuenta
+            # como FLASH el que termina dentro de este margen; los mas largos NO son flash (ni
+            # cuenta atras ni van a la seccion Flash). Ajustable aqui.
+            FLASH_MAX_HOURS = 48
+            now_utc = datetime.now(timezone.utc)
             details = paapi.fetch_deal_details(candidate_asins)
             enriched = 0
             for o in merged.values():
                 d = details.get(o.get("id"))
-                if d:
-                    o["flash_end"] = d["flash_end"]
-                    o["is_flash"] = True  # oferta temporal real -> va a Flash con cuenta atras
-                    if d.get("percent_claimed") is not None:
-                        o["percent_claimed"] = d["percent_claimed"]
-                    enriched += 1
-            log(f"Contador flash: {enriched} ofertas Amazon con hora de fin real de la API "
-                f"(de {len(candidate_asins)} consultadas).")
+                if not d:
+                    continue
+                try:
+                    end_dt = datetime.fromisoformat(d["flash_end"].replace("Z", "+00:00"))
+                except Exception:
+                    continue
+                if end_dt - now_utc > timedelta(hours=FLASH_MAX_HOURS):
+                    continue  # deal real pero demasiado largo: no es flash
+                o["flash_end"] = d["flash_end"]
+                o["is_flash"] = True  # oferta temporal real y CORTA -> Flash con cuenta atras
+                if d.get("percent_claimed") is not None:
+                    o["percent_claimed"] = d["percent_claimed"]
+                enriched += 1
+            log(f"Contador flash: {enriched} ofertas Amazon flash reales (<= {FLASH_MAX_HOURS}h) "
+                f"de {len(candidate_asins)} consultadas.")
     except Exception as e:
         log(f"aviso: no se pudo enriquecer la hora de fin de los flash ({e}); "
             "se sigue sin contador, con el aviso genérico.")
