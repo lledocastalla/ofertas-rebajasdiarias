@@ -2545,23 +2545,31 @@ def main():
     # sin Selenium. Degradación limpia: si la API falla o no devuelve una oferta, esa se queda
     # sin flash_end y la app cae al aviso genérico "TERMINA PRONTO" -- nunca se inventa una hora.
     try:
-        flash_asins = [
-            o["id"]
-            for o in merged.values()
-            if o.get("is_flash") and o.get("store") == "amazon" and o.get("id")
-        ][:200]  # tope de cortesía con la API (20 llamadas GetItems de 10)
-        if flash_asins:
-            details = paapi.fetch_deal_details(flash_asins)
+        # 10 oct 2026 (fix): las ofertas flash REALES de Amazon se detectan preguntando a la API
+        # cuales tienen dealDetails.endTime -- NO por el is_flash del scraper (marca cualquier
+        # badge de oferta, sin hora de fin) ni por un campo store (Amazon se reconoce por la URL
+        # amazon.es/dp/, como amazon_ids mas arriba). Se prioriza por descuento (las temporales
+        # reales suelen tener mas descuento) y se cap a 500 ASIN (50 llamadas GetItems de 10).
+        amazon_offers = sorted(
+            (o for o in merged.values()
+             if "amazon.es/dp/" in (o.get("url") or "") and o.get("id")),
+            key=lambda o: o.get("discount_percent") or 0,
+            reverse=True,
+        )
+        candidate_asins = [o["id"] for o in amazon_offers[:500]]
+        if candidate_asins:
+            details = paapi.fetch_deal_details(candidate_asins)
             enriched = 0
             for o in merged.values():
                 d = details.get(o.get("id"))
                 if d:
                     o["flash_end"] = d["flash_end"]
+                    o["is_flash"] = True  # oferta temporal real -> va a Flash con cuenta atras
                     if d.get("percent_claimed") is not None:
                         o["percent_claimed"] = d["percent_claimed"]
                     enriched += 1
-            log(f"Contador flash: {enriched}/{len(flash_asins)} ofertas flash con hora de fin "
-                "real de la API.")
+            log(f"Contador flash: {enriched} ofertas Amazon con hora de fin real de la API "
+                f"(de {len(candidate_asins)} consultadas).")
     except Exception as e:
         log(f"aviso: no se pudo enriquecer la hora de fin de los flash ({e}); "
             "se sigue sin contador, con el aviso genérico.")
