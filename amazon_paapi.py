@@ -188,6 +188,8 @@ def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, 
             "images.primary.large",
             "itemInfo.title",
             "offersV2.listings.price",
+            # 10 oct 2026: endTime/percentClaimed de las ofertas flash (contador de los Flash).
+            "offersV2.listings.dealDetails",
             # 28 sep 2026, aviso real: "en los resultados de la api no salen las estrellas como
             # en los resultados de la otra búsqueda" -- comprobado en vivo: son nombres de
             # recurso válidos (no dan 400 al pedirlos, vienen listados en el enum real de la
@@ -356,6 +358,9 @@ def _get_items_once(asins, creds, token):
             "images.primary.large",
             "itemInfo.title",
             "offersV2.listings.price",
+            # 10 oct 2026: dealDetails trae endTime/percentClaimed de las ofertas flash reales
+            # (verificado en vivo contra la API) -- para el contador de tiempo de los Flash.
+            "offersV2.listings.dealDetails",
             "customerReviews.starRating",
             "customerReviews.count",
         ],
@@ -381,6 +386,50 @@ def _get_items_once(asins, creds, token):
     except ValueError:
         return None
     return (data.get("itemsResult") or {}).get("items", [])
+
+
+def _deal_details_from_item(item):
+    """Saca (flash_end_iso, percent_claimed) del primer listing con dealDetails.endTime de un
+    item crudo de la API. Devuelve (None, None) si no es una oferta flash con hora de fin."""
+    for listing in (item.get("offersV2", {}).get("listings") or []):
+        dd = listing.get("dealDetails") or {}
+        end = dd.get("endTime")
+        if end:
+            return end, dd.get("percentClaimed")
+    return None, None
+
+
+def fetch_deal_details(asins):
+    """Para una lista de ASIN ya conocidos (los que el scraping marcó como flash), consulta la
+    API en lotes de 10 y devuelve {asin: {"flash_end": iso8601, "percent_claimed": int|None}}
+    SOLO para los que de verdad son una oferta flash con hora de fin (10 oct 2026, para el
+    contador de los Flash). HTTP puro, sin Selenium. Fallo silencioso: lo que no se pueda
+    confirmar simplemente no sale en el dict, y quien llama deja esa oferta sin contador (se
+    cae al aviso genérico "TERMINA PRONTO"). Nunca lanza."""
+    out = {}
+    try:
+        creds = _load_credentials()
+        if not creds:
+            return out
+        token = _get_access_token(creds["client_id"], creds["client_secret"])
+        if not token:
+            return out
+        for i in range(0, len(asins), 10):
+            batch = asins[i:i + 10]
+            items = _get_items_once(batch, creds, token)
+            if not items:
+                continue
+            for item in items:
+                asin = item.get("asin")
+                if not asin:
+                    continue
+                end, pct = _deal_details_from_item(item)
+                if end:
+                    out[asin] = {"flash_end": end, "percent_claimed": pct}
+            time.sleep(1)  # cortesía con el límite de peticiones por segundo
+    except Exception:
+        return out
+    return out
 
 
 def get_items(asins):
@@ -448,7 +497,10 @@ def offers_from_items(items, category="Amazon", min_discount_percent: int = MIN_
             # search_amazon() sobre customerReviews) -- nunca inventado, mismo criterio que
             # parse_rating()/parse_rating_count() del scraping en update_offers.py.
             reviews = item.get("customerReviews") or {}
-            offers.append({
+            # 10 oct 2026: hora de fin real de la oferta flash, si la API la trae -- para el
+            # contador de los Flash. None si no es flash (no se inventa nada).
+            flash_end, percent_claimed = _deal_details_from_item(item)
+            offer = {
                 "id": item.get("asin", title[:40]),
                 "title": title[:180],
                 "category": category,
@@ -460,7 +512,13 @@ def offers_from_items(items, category="Amazon", min_discount_percent: int = MIN_
                 "store": "amazon",
                 "rating": reviews.get("starRating"),
                 "rating_count": reviews.get("count"),
-            })
+            }
+            if flash_end:
+                offer["is_flash"] = True
+                offer["flash_end"] = flash_end
+                if percent_claimed is not None:
+                    offer["percent_claimed"] = percent_claimed
+            offers.append(offer)
         except (KeyError, TypeError, IndexError, ZeroDivisionError):
             continue  # item con una forma inesperada -- se descarta, no debe tumbar el resto
     return offers

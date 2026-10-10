@@ -2538,6 +2538,34 @@ def main():
     log(f"Ofertas nuevas/actualizadas esta ejecución: {len(new_or_updated)}. "
         f"Catálogo final: {len(merged)}.")
 
+    # 10 oct 2026: hora de fin REAL de las ofertas flash de Amazon, para el contador de los
+    # Flash en la app. El scraping (Selenium) solo marca is_flash sí/no; la hora de fin la trae
+    # la Creators API vía dealDetails (verificado en vivo). Aquí, tras armar el catálogo, se
+    # pregunta por los ASIN flash de Amazon y se les añade flash_end/percent_claimed. HTTP puro,
+    # sin Selenium. Degradación limpia: si la API falla o no devuelve una oferta, esa se queda
+    # sin flash_end y la app cae al aviso genérico "TERMINA PRONTO" -- nunca se inventa una hora.
+    try:
+        flash_asins = [
+            o["id"]
+            for o in merged.values()
+            if o.get("is_flash") and o.get("store") == "amazon" and o.get("id")
+        ][:200]  # tope de cortesía con la API (20 llamadas GetItems de 10)
+        if flash_asins:
+            details = paapi.fetch_deal_details(flash_asins)
+            enriched = 0
+            for o in merged.values():
+                d = details.get(o.get("id"))
+                if d:
+                    o["flash_end"] = d["flash_end"]
+                    if d.get("percent_claimed") is not None:
+                        o["percent_claimed"] = d["percent_claimed"]
+                    enriched += 1
+            log(f"Contador flash: {enriched}/{len(flash_asins)} ofertas flash con hora de fin "
+                "real de la API.")
+    except Exception as e:
+        log(f"aviso: no se pudo enriquecer la hora de fin de los flash ({e}); "
+            "se sigue sin contador, con el aviso genérico.")
+
     output = {
         "updated_at": now_iso,
         "affiliate_tag": AFFILIATE_TAG,
