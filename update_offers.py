@@ -2561,7 +2561,6 @@ def main():
         )
         candidate_asins = [o["id"] for o in amazon_offers[:500]]
         if candidate_asins:
-            from datetime import datetime, timezone, timedelta
             # 10 oct 2026 (pedido del usuario: "12 dias no es flash"): dealDetails.endTime de la
             # API incluye deals largos (promos de semanas), no solo Lightning Deals. Solo cuenta
             # como FLASH el que termina dentro de este margen; los mas largos NO son flash (ni
