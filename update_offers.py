@@ -2154,24 +2154,37 @@ def _flash_guess_category(title):
     return "Tecnología"  # la mayoria de las deals de Amazon son electronica
 
 
-def scrape_amazon_deal_asins(max_scrolls=14):
+def scrape_amazon_deal_asins(max_scrolls=60):
     """Scrapea la pagina de Ofertas por tiempo limitado de Amazon y devuelve una lista de ASIN
-    (sin repetir, en orden). Perfil de Chrome APARTE. Nunca lanza: si algo falla, devuelve []."""
+    (sin repetir, en orden). Scrollea hasta que dejan de aparecer nuevos (o max_scrolls) para
+    pillar TODA la pagina, no solo lo de arriba. Perfil de Chrome APARTE. Nunca lanza -> []."""
     driver = None
     try:
         driver = build_driver(profile_dir=AMAZON_DEALS_PROFILE_DIR)
         driver.get(AMAZON_DEALS_URL)
         time.sleep(5)
-        for _ in range(max_scrolls):
-            driver.execute_script("window.scrollBy(0, 2500);")
-            time.sleep(1.3)
-        html = driver.page_source
         asins = []
         seen = set()
-        for a in re.findall(r"/dp/([A-Z0-9]{10})", html):
-            if a not in seen:
-                seen.add(a)
-                asins.append(a)
+
+        def _harvest():
+            for a in re.findall(r"/dp/([A-Z0-9]{10})", driver.page_source):
+                if a not in seen:
+                    seen.add(a)
+                    asins.append(a)
+
+        stale = 0
+        for _ in range(max_scrolls):
+            _harvest()
+            before = len(seen)
+            driver.execute_script("window.scrollBy(0, 3000);")
+            time.sleep(1.4)
+            _harvest()
+            if len(seen) == before:
+                stale += 1
+                if stale >= 5:
+                    break
+            else:
+                stale = 0
         return asins
     except Exception as e:
         log(f"  aviso: no se pudo scrapear la pagina de deals de Amazon: {e}")
@@ -2640,18 +2653,24 @@ def main():
                 deal_items or [], min_discount_percent=FLASH_MIN_DISCOUNT)
             now_utc = datetime.now(timezone.utc)
             for o in deal_offers:
-                fe = o.get("flash_end")
-                if not fe:
-                    continue
-                try:
-                    end_dt = datetime.fromisoformat(fe.replace("Z", "+00:00"))
-                except Exception:
-                    continue
-                if end_dt <= now_utc or (end_dt - now_utc) > timedelta(hours=FLASH_MAX_HOURS):
-                    continue
                 asin = o["id"]
-                o["url"] = f"https://www.amazon.es/dp/{asin}?tag={AFFILIATE_TAG}"
+                # Todas las de la deals page con >=30% entran en Flash. La cuenta atras (flash_end)
+                # se conserva SOLO si la API la da y termina pronto (<=FLASH_MAX_HOURS); si no, la
+                # oferta sale con sello FLASH pero sin contador (no se inventa una hora ni se
+                # muestra "termina en 12 dias").
+                fe = o.get("flash_end")
+                keep_end = False
+                if fe:
+                    try:
+                        end_dt = datetime.fromisoformat(fe.replace("Z", "+00:00"))
+                        keep_end = now_utc < end_dt <= now_utc + timedelta(hours=FLASH_MAX_HOURS)
+                    except Exception:
+                        keep_end = False
+                if not keep_end:
+                    o.pop("flash_end", None)
+                    o.pop("percent_claimed", None)
                 o["is_flash"] = True
+                o["url"] = f"https://www.amazon.es/dp/{asin}?tag={AFFILIATE_TAG}"
                 existing = merged.get(asin)
                 if existing and existing.get("category"):
                     o["category"] = existing["category"]  # conservar categoria real si ya la habia
