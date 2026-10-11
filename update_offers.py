@@ -2110,6 +2110,80 @@ def refresh_amazon_offers(merged, now_iso, log):
         f"actualizado, {removed} retiradas (descatalogadas, sin stock o ya sin 30-80% real).")
 
 
+
+# --- Ofertas Flash reales de Amazon (11 oct 2026) -------------------------------------------
+# El scraper normal (por keyword/categoria) casi no pilla flash. Las flash de verdad estan en la
+# pagina "Ofertas por tiempo limitado" de Amazon (amazon.es/deals). De ahi sacamos los ASIN y la
+# API (GetItems -> dealDetails.endTime) confirma cuales son flash reales y hasta cuando. Perfil
+# de Chrome APARTE para no competir con el ciclo normal.
+AMAZON_DEALS_URL = "https://www.amazon.es/deals"
+AMAZON_DEALS_PROFILE_DIR = f"{HOME}/.rebajas_chrome_profile_deals"
+FLASH_MAX_HOURS = 48          # "a punto de terminar": las que acaban en <=48h cuentan como flash
+FLASH_MIN_DISCOUNT = 30       # productos buenos: solo flash con 30%+ de descuento real
+
+# categoria por palabras del titulo (las deals de Amazon suelen ser electronica/hogar); solo se
+# usa para que la oferta caiga en una categoria razonable al EXPLORAR POR CATEGORIA -- la seccion
+# Flash en si va mezclada, sin categorias.
+_FLASH_CAT_KEYWORDS = [
+    ("Gaming", ["playstation", "ps5", "xbox", "nintendo", "switch", "mando gaming", "gaming",
+        "videojuego"]),
+    ("Hogar", ["cafetera", "freidora", "aspirador", "robot aspirador", "batidora", "plancha",
+        "calefactor", "ventilador", "sarten", "olla", "colchon", "sabanas", "almohada",
+        "nespresso", "licuadora", "tostadora", "microondas", "humidificador", "purificador",
+        "mopa", "cecotec", "rowenta", "moulinex", "freidora de aire"]),
+    ("Belleza", ["perfume", "colonia", "crema facial", "maquillaje", "secador", "depiladora",
+        "cepillo dental", "oral-b", "maquinilla", "alisador"]),
+    ("Juguetes", ["lego", "playmobil", "nerf", "barbie", "muneca", "hot wheels", "funko",
+        "juguete"]),
+    ("Deporte", ["bicicleta", "mancuerna", "fitness", "cinta de correr", "yoga", "patinete"]),
+    ("Bricolaje", ["taladro", "atornillador", "herramienta", "bosch professional",
+        "black+decker", "lijadora"]),
+    ("Tecnología", ["fire tv", "echo", "alexa", "kindle", "tablet", "portatil", "laptop", "ssd",
+        "disco duro", "raton", "teclado", "monitor", "auricular", "airpods", "cascos", "router",
+        "movil", "smartphone", "cargador", "powerbank", "altavoz", "bluetooth", "webcam",
+        "impresora", "proyector", "smartwatch", "reloj intelig", "televisor", " tv ", "ring ",
+        "ipad", "usb", "gpu", "procesador", "memoria ram", "ssd", "camara", "camara"]),
+]
+
+
+def _flash_guess_category(title):
+    t = (title or "").lower()
+    for cat, kws in _FLASH_CAT_KEYWORDS:
+        if any(k in t for k in kws):
+            return cat
+    return "Tecnología"  # la mayoria de las deals de Amazon son electronica
+
+
+def scrape_amazon_deal_asins(max_scrolls=14):
+    """Scrapea la pagina de Ofertas por tiempo limitado de Amazon y devuelve una lista de ASIN
+    (sin repetir, en orden). Perfil de Chrome APARTE. Nunca lanza: si algo falla, devuelve []."""
+    driver = None
+    try:
+        driver = build_driver(profile_dir=AMAZON_DEALS_PROFILE_DIR)
+        driver.get(AMAZON_DEALS_URL)
+        time.sleep(5)
+        for _ in range(max_scrolls):
+            driver.execute_script("window.scrollBy(0, 2500);")
+            time.sleep(1.3)
+        html = driver.page_source
+        asins = []
+        seen = set()
+        for a in re.findall(r"/dp/([A-Z0-9]{10})", html):
+            if a not in seen:
+                seen.add(a)
+                asins.append(a)
+        return asins
+    except Exception as e:
+        log(f"  aviso: no se pudo scrapear la pagina de deals de Amazon: {e}")
+        return []
+    finally:
+        if driver is not None:
+            try:
+                driver.quit()
+            except Exception:
+                pass
+
+
 def main():
     log("=== Inicio ===")
 
@@ -2547,48 +2621,47 @@ def main():
     # pregunta por los ASIN flash de Amazon y se les añade flash_end/percent_claimed. HTTP puro,
     # sin Selenium. Degradación limpia: si la API falla o no devuelve una oferta, esa se queda
     # sin flash_end y la app cae al aviso genérico "TERMINA PRONTO" -- nunca se inventa una hora.
+    # Ofertas Flash reales de Amazon desde la pagina "Ofertas por tiempo limitado" (11 oct 2026).
+    # Cada ciclo se reconstruye: se LIMPIA is_flash de todas las de Amazon (las caducadas y las
+    # que ya no esten en deals salen solas de la seccion Flash, que filtra por is_flash en la app)
+    # y se re-marcan solo las que la API confirma como deal con endTime dentro de FLASH_MAX_HOURS.
     try:
-        # 10 oct 2026 (fix): las ofertas flash REALES de Amazon se detectan preguntando a la API
-        # cuales tienen dealDetails.endTime -- NO por el is_flash del scraper (marca cualquier
-        # badge de oferta, sin hora de fin) ni por un campo store (Amazon se reconoce por la URL
-        # amazon.es/dp/, como amazon_ids mas arriba). Se prioriza por descuento (las temporales
-        # reales suelen tener mas descuento) y se cap a 500 ASIN (50 llamadas GetItems de 10).
-        amazon_offers = sorted(
-            (o for o in merged.values()
-             if "amazon.es/dp/" in (o.get("url") or "") and o.get("id")),
-            key=lambda o: o.get("discount_percent") or 0,
-            reverse=True,
-        )
-        candidate_asins = [o["id"] for o in amazon_offers[:500]]
-        if candidate_asins:
-            # 10 oct 2026 (pedido del usuario: "12 dias no es flash"): dealDetails.endTime de la
-            # API incluye deals largos (promos de semanas), no solo Lightning Deals. Solo cuenta
-            # como FLASH el que termina dentro de este margen; los mas largos NO son flash (ni
-            # cuenta atras ni van a la seccion Flash). Ajustable aqui.
-            FLASH_MAX_HOURS = 48
+        for _o in merged.values():
+            if "amazon.es/dp/" in (_o.get("url") or "") and _o.get("is_flash"):
+                _o["is_flash"] = False
+                _o.pop("flash_end", None)
+                _o.pop("percent_claimed", None)
+        deal_asins = scrape_amazon_deal_asins()
+        log(f"Deals Amazon: {len(deal_asins)} ASIN en la pagina de ofertas por tiempo limitado.")
+        added = 0
+        if deal_asins:
+            deal_items, _deal_failed = paapi.get_items(deal_asins)
+            deal_offers = paapi.offers_from_items(
+                deal_items or [], min_discount_percent=FLASH_MIN_DISCOUNT)
             now_utc = datetime.now(timezone.utc)
-            details = paapi.fetch_deal_details(candidate_asins)
-            enriched = 0
-            for o in merged.values():
-                d = details.get(o.get("id"))
-                if not d:
+            for o in deal_offers:
+                fe = o.get("flash_end")
+                if not fe:
                     continue
                 try:
-                    end_dt = datetime.fromisoformat(d["flash_end"].replace("Z", "+00:00"))
+                    end_dt = datetime.fromisoformat(fe.replace("Z", "+00:00"))
                 except Exception:
                     continue
-                if end_dt - now_utc > timedelta(hours=FLASH_MAX_HOURS):
-                    continue  # deal real pero demasiado largo: no es flash
-                o["flash_end"] = d["flash_end"]
-                o["is_flash"] = True  # oferta temporal real y CORTA -> Flash con cuenta atras
-                if d.get("percent_claimed") is not None:
-                    o["percent_claimed"] = d["percent_claimed"]
-                enriched += 1
-            log(f"Contador flash: {enriched} ofertas Amazon flash reales (<= {FLASH_MAX_HOURS}h) "
-                f"de {len(candidate_asins)} consultadas.")
+                if end_dt <= now_utc or (end_dt - now_utc) > timedelta(hours=FLASH_MAX_HOURS):
+                    continue
+                asin = o["id"]
+                o["url"] = f"https://www.amazon.es/dp/{asin}?tag={AFFILIATE_TAG}"
+                o["is_flash"] = True
+                existing = merged.get(asin)
+                if existing and existing.get("category"):
+                    o["category"] = existing["category"]  # conservar categoria real si ya la habia
+                else:
+                    o["category"] = _flash_guess_category(o.get("title"))
+                merged[asin] = {**(existing or {}), **o}
+                added += 1
+        log(f"Ofertas Flash (<= {FLASH_MAX_HOURS}h, >= {FLASH_MIN_DISCOUNT}%): {added} desde la deals page.")
     except Exception as e:
-        log(f"aviso: no se pudo enriquecer la hora de fin de los flash ({e}); "
-            "se sigue sin contador, con el aviso genérico.")
+        log(f"aviso: fallo trayendo ofertas flash de Amazon ({e}); se sigue sin ellas.")
 
     output = {
         "updated_at": now_iso,
