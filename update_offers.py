@@ -2118,7 +2118,7 @@ def refresh_amazon_offers(merged, now_iso, log):
 # de Chrome APARTE para no competir con el ciclo normal.
 AMAZON_DEALS_URL = "https://www.amazon.es/deals"
 AMAZON_DEALS_PROFILE_DIR = f"{HOME}/.rebajas_chrome_profile_deals"
-FLASH_MAX_HOURS = 48          # "a punto de terminar": las que acaban en <=48h cuentan como flash
+FLASH_MAX_HOURS = 168         # con cuenta atras y hasta 7 dias (lo que Amazon muestra con timer). 12 dias NO
 FLASH_MIN_DISCOUNT = 30       # productos buenos: solo flash con 30%+ de descuento real
 
 # categoria por palabras del titulo (las deals de Amazon suelen ser electronica/hogar); solo se
