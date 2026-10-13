@@ -22,8 +22,11 @@ cuando nadie está buscando) se mantiene aquí también, en un hilo aparte.
 """
 
 import os
+import smtplib
+import sys
 import threading
 import time
+from email.message import EmailMessage
 from datetime import timedelta
 
 import firebase_admin
@@ -240,8 +243,82 @@ def _health_check_loop():
             log(f"aviso: fallo en el sondeo periódico de disponibilidad: {e}")
 
 
+
+# --- Auto-recuperacion + aviso (13 oct 2026) ------------------------------------------------
+REJUVENATE_HOURS = 2  # cada cuanto se renueva el watch de Firestore (preventivo anti-GOAWAY)
+# Fichero con credenciales de email para avisos (NO en git): 2-3 lineas ->
+#   1: remitente (gmail)   2: contraseña de APLICACION de Gmail (16 car.)   3 (opc): destinatario
+EMAIL_ALERT_CREDS_PATH = os.path.expanduser("~/.rebajas_email_alert.txt")
+OWNER_EMAIL = "rebajasdiarias21@gmail.com"
+
+
+def _send_alert_email(subject, body):
+    if not os.path.isfile(EMAIL_ALERT_CREDS_PATH):
+        return False
+    try:
+        with open(EMAIL_ALERT_CREDS_PATH, encoding="utf-8") as fh:
+            lines = [ln.strip() for ln in fh if ln.strip()]
+        sender, app_pw = lines[0], lines[1]
+        to = lines[2] if len(lines) > 2 else sender
+        msg = EmailMessage()
+        msg["Subject"] = subject
+        msg["From"] = sender
+        msg["To"] = to
+        msg.set_content(body)
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as smtp:
+            smtp.login(sender, app_pw)
+            smtp.send_message(msg)
+        log("aviso por email enviado correctamente")
+        return True
+    except Exception as e:
+        log(f"aviso: no se pudo enviar email de alerta: {e}")
+        return False
+
+
+def _alert_search_down(reason):
+    """Avisa al dueño de que el buscador se cayo (y se reinicia solo). Nunca lanza."""
+    subject = "[RebajasDiarias] BUSCADOR CAIDO - reiniciandose"
+    body = ("El listener de busquedas ha fallado y se esta reiniciando automaticamente.\n\n"
+            f"Motivo: {reason}\n"
+            f"Hora: {time.ctime()}\n\n"
+            "El servicio (systemd, Restart=always) deberia volver en ~10s. Si recibes esto varias "
+            "veces seguidas, hay algo mas y conviene revisar la Pi.")
+    if not _send_alert_email(subject, body):
+        try:
+            from firebase_admin import auth, messaging
+            uid = auth.get_user_by_email(OWNER_EMAIL).uid
+            messaging.send(messaging.Message(
+                notification=messaging.Notification(
+                    title="\u26a0\ufe0f Buscador caido (se reinicia solo)",
+                    body=f"Fallo del buscador: {reason}. Reiniciandose."),
+                topic=f"user_{uid}"))
+            log("aviso por push (dueño) enviado")
+        except Exception as e:
+            log(f"aviso: no se pudo mandar push de alerta: {e}")
+
+
+def _thread_excepthook(args):
+    """Si CUALQUIER hilo muere por una excepcion no capturada (incluido el hilo interno del watch
+    de Firestore), avisamos y matamos el proceso -> systemd lo revive limpio. os._exit porque
+    sys.exit dentro de un hilo no mata el proceso entero."""
+    try:
+        reason = f"{args.exc_type.__name__}: {args.exc_value}"
+    except Exception:
+        reason = "excepcion no capturada en un hilo"
+    try:
+        log(f"HILO MUERTO ({getattr(args.thread, 'name', '?')}): {reason} -- reiniciando el buscador")
+    except Exception:
+        pass
+    try:
+        _alert_search_down(reason)
+    except Exception:
+        pass
+    os._exit(1)
+
+
 def main():
     global db
+    threading.excepthook = _thread_excepthook
     if not os.path.isfile(FIREBASE_CREDENTIALS_PATH):
         log("ERROR: no hay credenciales de Firebase, no se puede arrancar")
         return
@@ -253,13 +330,20 @@ def main():
     threading.Thread(target=_health_check_loop, daemon=True).start()
 
     query = db.collection("search_requests").where(filter=FieldFilter("status", "==", "pending"))
-    query.on_snapshot(_on_snapshot)
-    log("escuchando search_requests en tiempo real...")
 
-    # on_snapshot corre en un hilo propio de la librería -- este hilo principal solo se queda
-    # vivo para que el proceso no termine (systemd lo reinicia si de verdad se cae).
+    # El watch se re-crea cada REJUVENATE_HOURS (13 oct 2026): refresca la conexion gRPC para que
+    # los GOAWAY "too_many_pings" no se acumulen hasta matar el hilo del watch (lo que dejo el
+    # buscador ~8h caido en silencio). El nuevo watch recibe en su snapshot inicial las peticiones
+    # "pending" que hubiera, asi que no se pierde ninguna en la renovacion.
     while True:
-        time.sleep(3600)
+        watch = query.on_snapshot(_on_snapshot)
+        log("escuchando search_requests en tiempo real...")
+        time.sleep(REJUVENATE_HOURS * 3600)
+        try:
+            watch.unsubscribe()
+        except Exception:
+            pass
+        log("watch de Firestore renovado (preventivo anti-GOAWAY)")
 
 
 if __name__ == "__main__":
