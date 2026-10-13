@@ -104,19 +104,29 @@ def _fill_matching_search_history(query_text, requested_at, result_count):
 
 
 def _process_request(doc_id, data):
-    query_text = (data.get("query") or "").strip()
-    doc_ref = db.collection("search_requests").document(doc_id)
-    if not query_text:
-        doc_ref.set({"status": "error"}, merge=True)
-        return
-    # 21 sep 2026, aviso real ("por que me ha tardado mucho"): un usuario esperando delante de la
-    # pantalla no debe competir en igualdad con el repaso de fondo de keyword_alert_cleanup.py --
-    # ver mark_live_search_pending()/yield_to_live_search() en keyword_alert_search.py.
-    priority_marker = keyword_alert_search.mark_live_search_pending()
+    # 13 oct 2026: TODO el cuerpo va envuelto -> el fallo de UNA busqueda nunca sube como
+    # excepcion no capturada del hilo (eso dispararia el excepthook, pensado solo para la muerte
+    # del watch). Una busqueda que peta deja su doc en "error" y ya, el listener sigue vivo.
     try:
-        _process_request_inner(doc_id, doc_ref, query_text, data)
-    finally:
-        keyword_alert_search.clear_live_search_pending(priority_marker)
+        query_text = (data.get("query") or "").strip()
+        doc_ref = db.collection("search_requests").document(doc_id)
+        if not query_text:
+            doc_ref.set({"status": "error"}, merge=True)
+            return
+        # 21 sep 2026, aviso real ("por que me ha tardado mucho"): un usuario esperando delante de
+        # la pantalla no debe competir con el repaso de fondo de keyword_alert_cleanup.py --
+        # ver mark_live_search_pending()/yield_to_live_search() en keyword_alert_search.py.
+        priority_marker = keyword_alert_search.mark_live_search_pending()
+        try:
+            _process_request_inner(doc_id, doc_ref, query_text, data)
+        finally:
+            keyword_alert_search.clear_live_search_pending(priority_marker)
+    except Exception as e:
+        log(f"aviso: fallo procesando la busqueda {doc_id!r}: {e}")
+        try:
+            db.collection("search_requests").document(doc_id).set({"status": "error"}, merge=True)
+        except Exception:
+            pass
 
 
 def _process_request_inner(doc_id, doc_ref, query_text, data):
@@ -250,6 +260,8 @@ REJUVENATE_HOURS = 2  # cada cuanto se renueva el watch de Firestore (preventivo
 #   1: remitente (gmail)   2: contraseña de APLICACION de Gmail (16 car.)   3 (opc): destinatario
 EMAIL_ALERT_CREDS_PATH = os.path.expanduser("~/.rebajas_email_alert.txt")
 OWNER_EMAIL = "rebajasdiarias21@gmail.com"
+ALERT_COOLDOWN_MIN = 30  # no repetir el aviso si ya se mando hace menos de esto
+ALERT_STATE_PATH = os.path.expanduser("~/.rebajas_search_last_alert")
 
 
 def _send_alert_email(subject, body):
@@ -276,7 +288,22 @@ def _send_alert_email(subject, body):
 
 
 def _alert_search_down(reason):
-    """Avisa al dueño de que el buscador se cayo (y se reinicia solo). Nunca lanza."""
+    """Avisa al dueño de que el buscador se cayo (y se reinicia solo). Nunca lanza. Con cooldown:
+    si ya se aviso hace < ALERT_COOLDOWN_MIN, NO se repite -> un aviso cuando esta caido, no uno
+    por cada reintento/reinicio."""
+    try:
+        if os.path.isfile(ALERT_STATE_PATH):
+            last = float(open(ALERT_STATE_PATH).read().strip() or "0")
+            if time.time() - last < ALERT_COOLDOWN_MIN * 60:
+                log("aviso de caida omitido (cooldown activo, ya avisado hace poco)")
+                return
+    except Exception:
+        pass
+    try:
+        with open(ALERT_STATE_PATH, "w") as _fh:
+            _fh.write(str(time.time()))
+    except Exception:
+        pass
     subject = "[RebajasDiarias] BUSCADOR CAIDO - reiniciandose"
     body = ("El listener de busquedas ha fallado y se esta reiniciando automaticamente.\n\n"
             f"Motivo: {reason}\n"
