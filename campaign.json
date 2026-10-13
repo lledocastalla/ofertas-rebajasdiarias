@@ -2,17 +2,6 @@
   "campaigns": [
     {
       "active": false,
-      "title": "adidas: MidSeason Sales, hasta 30% dto 🔥",
-      "subtitle": "Descuento real de hasta el 30% en una selección de artículos adidas, aplicado directamente en la web. Del 25 de septiembre al 13 de octubre.",
-      "colorHex": "#FF5A3C",
-      "icon": "fire",
-      "categoryTarget": null,
-      "storeTarget": "adidas",
-      "startDate": "2026-09-25",
-      "endDate": "2026-10-13"
-    },
-    {
-      "active": false,
       "appOnly": true,
       "title": "Nueva tienda: Armani Beauty ✨",
       "subtitle": "Perfumes y maquillaje de Armani rebajados, y además un 15% extra con el código ARMANI15, exclusivo para afiliados.",
