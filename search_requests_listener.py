@@ -264,26 +264,49 @@ ALERT_COOLDOWN_MIN = 30  # no repetir el aviso si ya se mando hace menos de esto
 ALERT_STATE_PATH = os.path.expanduser("~/.rebajas_search_last_alert")
 
 
+# EmailJS: mismas claves que el formulario de Contacto de la app (lib/pages/contact_page.dart).
+# Envia correo al dueño SIN contraseña de Gmail. El User-Agent de navegador es obligatorio
+# (EmailJS/Cloudflare devuelve 403 code 1010 a peticiones no-navegador).
+EMAILJS_SERVICE_ID = "rebajasdiariasemail"
+EMAILJS_TEMPLATE_ID = "template_jr8dfz7"
+EMAILJS_USER_ID = "bAIzFcq-eIz-qB7uK"
+
+
 def _send_alert_email(subject, body):
-    if not os.path.isfile(EMAIL_ALERT_CREDS_PATH):
-        return False
     try:
-        with open(EMAIL_ALERT_CREDS_PATH, encoding="utf-8") as fh:
-            lines = [ln.strip() for ln in fh if ln.strip()]
-        sender, app_pw = lines[0], lines[1]
-        to = lines[2] if len(lines) > 2 else sender
-        msg = EmailMessage()
-        msg["Subject"] = subject
-        msg["From"] = sender
-        msg["To"] = to
-        msg.set_content(body)
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as smtp:
-            smtp.login(sender, app_pw)
-            smtp.send_message(msg)
-        log("aviso por email enviado correctamente")
-        return True
+        import json as _json
+        import urllib.request as _ur
+        payload = {
+            "service_id": EMAILJS_SERVICE_ID,
+            "template_id": EMAILJS_TEMPLATE_ID,
+            "user_id": EMAILJS_USER_ID,
+            "template_params": {
+                "user_name": subject,
+                "user_email": OWNER_EMAIL,
+                "user_message": body,
+                "fecha": time.ctime(),
+                "reply_to": OWNER_EMAIL,
+            },
+        }
+        req = _ur.Request(
+            "https://api.emailjs.com/api/v1.0/email/send",
+            data=_json.dumps(payload).encode(),
+            headers={
+                "Content-Type": "application/json",
+                "origin": "http://localhost",
+                "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                               "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"),
+                "Referer": "http://localhost/",
+            },
+            method="POST",
+        )
+        with _ur.urlopen(req, timeout=20) as r:
+            if r.status == 200:
+                log("aviso por email (EmailJS) enviado correctamente")
+                return True
+        return False
     except Exception as e:
-        log(f"aviso: no se pudo enviar email de alerta: {e}")
+        log(f"aviso: no se pudo enviar email de alerta (EmailJS): {e}")
         return False
 
 
