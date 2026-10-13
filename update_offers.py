@@ -2654,26 +2654,24 @@ def main():
             now_utc = datetime.now(timezone.utc)
             for o in deal_offers:
                 asin = o["id"]
-                # Todas las de la deals page con >=30% entran en Flash. La cuenta atras (flash_end)
-                # se conserva SOLO si la API la da y termina pronto (<=FLASH_MAX_HOURS); si no, la
-                # oferta sale con sello FLASH pero sin contador (no se inventa una hora ni se
-                # muestra "termina en 12 dias").
+                # 13 oct 2026 (pedido del usuario: "una flash SIN tiempo restante no es flash"):
+                # SOLO entra en Flash la que tiene cuenta atras REAL de la API y termina pronto
+                # (<=FLASH_MAX_HOURS). Las demas de la deals page NO van a Flash (siguen como oferta
+                # normal de Amazon si ya estaban en el catalogo; aqui simplemente no se marcan).
                 fe = o.get("flash_end")
-                keep_end = False
-                if fe:
-                    try:
-                        end_dt = datetime.fromisoformat(fe.replace("Z", "+00:00"))
-                        keep_end = now_utc < end_dt <= now_utc + timedelta(hours=FLASH_MAX_HOURS)
-                    except Exception:
-                        keep_end = False
-                if not keep_end:
-                    o.pop("flash_end", None)
-                    o.pop("percent_claimed", None)
+                if not fe:
+                    continue
+                try:
+                    end_dt = datetime.fromisoformat(fe.replace("Z", "+00:00"))
+                except Exception:
+                    continue
+                if not (now_utc < end_dt <= now_utc + timedelta(hours=FLASH_MAX_HOURS)):
+                    continue  # sin cuenta atras viva dentro del margen -> no es flash
                 o["is_flash"] = True
                 o["url"] = f"https://www.amazon.es/dp/{asin}?tag={AFFILIATE_TAG}"
                 existing = merged.get(asin)
                 if existing and existing.get("category"):
-                    o["category"] = existing["category"]  # conservar categoria real si ya la habia
+                    o["category"] = existing["category"]
                 else:
                     o["category"] = _flash_guess_category(o.get("title"))
                 merged[asin] = {**(existing or {}), **o}
