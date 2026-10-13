@@ -2645,7 +2645,11 @@ def main():
                 _o.pop("flash_end", None)
                 _o.pop("percent_claimed", None)
         deal_asins = scrape_amazon_deal_asins()
-        log(f"Deals Amazon: {len(deal_asins)} ASIN en la pagina de ofertas por tiempo limitado.")
+        # Cap a las 150 primeras: son las MEJORES (Amazon las pone arriba) y evita que get_items
+        # (sin throttle, lo usa todo el ciclo) se sature con 300+ ASIN y Amazon corte la mitad por
+        # rate limit -> perderiamos flash buenas. 150 = ~15 llamadas, sin rate limit.
+        deal_asins = deal_asins[:150]
+        log(f"Deals Amazon: {len(deal_asins)} ASIN (top de la pagina de ofertas por tiempo limitado).")
         added = 0
         if deal_asins:
             deal_items, _deal_failed = paapi.get_items(deal_asins)
