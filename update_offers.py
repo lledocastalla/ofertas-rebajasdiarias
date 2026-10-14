@@ -2711,7 +2711,7 @@ def main():
     # persistente halloween_offers.json para que la seccion sobreviva al cron, y se retira sola
     # pasado el 1-nov. La portada crea la categoria sola si hay >=4 ofertas.
     try:
-        _HW_CAT = "🎃 Especial Halloween"
+        _HW_CAT = "Especial Halloween"
         from datetime import date as _date
         _hw_on = _date.today() <= _date(2026, 11, 1)
         _hw_path = os.path.join(REPO_DIR, "halloween_offers.json")
