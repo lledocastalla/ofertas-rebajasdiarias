@@ -2706,6 +2706,43 @@ def main():
     except Exception as e:
         log(f"aviso: fallo trayendo ofertas flash de Amazon ({e}); se sigue sin ellas.")
 
+    # Especial Halloween (14-oct, pedido del usuario: publicar antes de Halloween para que de
+    # tiempo a comprar). Mismo patron que Flash: se re-etiqueta cada ciclo desde el archivo
+    # persistente halloween_offers.json para que la seccion sobreviva al cron, y se retira sola
+    # pasado el 1-nov. La portada crea la categoria sola si hay >=4 ofertas.
+    try:
+        _HW_CAT = "🎃 Especial Halloween"
+        from datetime import date as _date
+        _hw_on = _date.today() <= _date(2026, 11, 1)
+        _hw_path = os.path.join(REPO_DIR, "halloween_offers.json")
+        if _hw_on and os.path.isfile(_hw_path):
+            with open(_hw_path, encoding="utf-8") as _f:
+                _hw = json.load(_f)
+            _hw_list = _hw.get("offers", _hw) if isinstance(_hw, dict) else _hw
+            _n = 0
+            for _o in _hw_list:
+                _asin = _o.get("id")
+                if not _asin:
+                    continue
+                _ex = merged.get(_asin)
+                if _ex:
+                    _ex["category"] = _HW_CAT
+                else:
+                    merged[_asin] = {**_o, "category": _HW_CAT, "is_flash": False,
+                                     "first_seen": now_iso, "last_seen": now_iso}
+                _n += 1
+            log(f"Especial Halloween: {_n} ofertas re-etiquetadas (activo hasta 1-nov).")
+        elif not _hw_on:
+            _r = 0
+            for _o in merged.values():
+                if _o.get("category") == _HW_CAT:
+                    _o["category"] = _flash_guess_category(_o.get("title"))
+                    _r += 1
+            if _r:
+                log(f"Especial Halloween terminado: {_r} ofertas devueltas a su categoria.")
+    except Exception as _e:
+        log(f"aviso: fallo en el bloque Especial Halloween ({_e}); se sigue sin el.")
+
     output = {
         "updated_at": now_iso,
         "affiliate_tag": AFFILIATE_TAG,
