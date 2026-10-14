@@ -417,7 +417,6 @@
       "eyebrow": "👻 Especial Halloween",
       "title": "Hasta −51% en disfraces y terror",
       "image": "https://m.media-amazon.com/images/I/31-MmLc9+7L._SL500_.jpg",
-      "url": "https://www.amazon.es/s?k=halloween&tag=rebajasdiar05-21",
       "cta": "Ver ofertas de Halloween",
       "theme": {
         "bg": [
@@ -435,7 +434,8 @@
       "position": 0,
       "slide_seconds": 15,
       "from": "2026-10-14",
-      "until": "2026-11-01"
+      "until": "2026-11-01",
+      "store": "amazon"
     },
     {
       "title": "Prime Big Deal Days: prepárate 🛒",
