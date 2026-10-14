@@ -414,22 +414,22 @@
   },
   "custom": [
     {
-      "eyebrow": "🎃 Especial Halloween",
+      "eyebrow": "👻 Especial Halloween",
       "title": "Hasta −51% en disfraces y terror",
       "image": "https://m.media-amazon.com/images/I/31-MmLc9+7L._SL500_.jpg",
       "url": "https://www.amazon.es/s?k=halloween&tag=rebajasdiar05-21",
       "cta": "Ver ofertas de Halloween",
       "theme": {
         "bg": [
-          "#0b0406",
-          "#5a0f18"
+          "#050204",
+          "#7a0f1a"
         ],
-        "accent": "#e8771e",
+        "accent": "#ff7a1a",
         "cta": [
-          "#ffffff",
-          "#2a0a10"
+          "#ff7a1a",
+          "#1a0506"
         ],
-        "face": "sans",
+        "face": "serif",
         "stage": "tile"
       },
       "position": 0,
