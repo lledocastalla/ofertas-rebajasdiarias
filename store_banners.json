@@ -4,7 +4,10 @@
   "slide_seconds": 5,
   "text_slide_seconds": 5,
   "min_offers": 4,
-  "sizes": {},
+  "sizes": {
+    "hero_height_narrow": 260,
+    "hero_height_wide": 384
+  },
   "order": [
     "adidas",
     "armani",
