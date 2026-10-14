@@ -438,6 +438,21 @@
       "store": "halloween"
     },
     {
+      "eyebrow": "ALLPOWERS · 12–31 oct",
+      "title": "Prime Big Deal Days: hasta −60%",
+      "store": "allpowers",
+      "logo_store": "allpowers",
+      "image": "https://cdn.shopify.com/s/files/1/0566/0511/4454/files/SOLAX-P100-02.jpg?v=1755067868",
+      "price": 79.0,
+      "old_price": 199.0,
+      "code": "EXTRA10",
+      "code_label": "−10% EXTRA en toda la tienda",
+      "cta": "Ver ofertas ALLPOWERS",
+      "position": 1,
+      "from": "2026-10-12",
+      "until": "2026-10-31"
+    },
+    {
       "title": "Prime Big Deal Days: prepárate 🛒",
       "eyebrow": "Amazon · 6-7 de octubre",
       "subtitle": "48 horas de ofertas exclusivas para socios Prime en más de 35 categorías. No olvides entrar esos días para encontrar los mejores descuentos reales.",
