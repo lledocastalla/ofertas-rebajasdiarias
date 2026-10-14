@@ -2118,7 +2118,7 @@ def refresh_amazon_offers(merged, now_iso, log):
 # de Chrome APARTE para no competir con el ciclo normal.
 AMAZON_DEALS_URL = "https://www.amazon.es/deals"
 AMAZON_DEALS_PROFILE_DIR = f"{HOME}/.rebajas_chrome_profile_deals"
-FLASH_MAX_HOURS = 168         # con cuenta atras y hasta 7 dias (lo que Amazon muestra con timer). 12 dias NO
+FLASH_MAX_HOURS = 336         # hasta 14 dias: captura las ofertas con cuenta atras de Amazon (sales de temporada duran ~1-2 semanas, todas con timer visible)
 FLASH_MIN_DISCOUNT = 30       # productos buenos: solo flash con 30%+ de descuento real
 
 # categoria por palabras del titulo (las deals de Amazon suelen ser electronica/hogar); solo se
@@ -2152,6 +2152,28 @@ def _flash_guess_category(title):
         if any(k in t for k in kws):
             return cat
     return "Tecnología"  # la mayoria de las deals de Amazon son electronica
+
+
+def _get_items_throttled(asins, pause=1.1):
+    """Como paapi.get_items pero con PAUSA entre lotes de 10 -> no satura la API (si se mandan
+    150 de golpe, Amazon corta la mitad por rate limit y perdemos flash). Devuelve lista de items
+    crudos. Solo para el paso de flash; el get_items normal del ciclo no se toca. Nunca lanza."""
+    out = []
+    try:
+        creds = paapi._load_credentials()
+        if not creds:
+            return out
+        token = paapi._get_access_token(creds["client_id"], creds["client_secret"])
+        if not token:
+            return out
+        for i in range(0, len(asins), 10):
+            r = paapi._get_items_once(asins[i:i + 10], creds, token)
+            if r:
+                out.extend(r)
+            time.sleep(pause)
+    except Exception as e:
+        log(f"  aviso: fallo en _get_items_throttled: {e}")
+    return out
 
 
 def scrape_amazon_deal_asins(max_scrolls=60):
@@ -2652,7 +2674,7 @@ def main():
         log(f"Deals Amazon: {len(deal_asins)} ASIN (top de la pagina de ofertas por tiempo limitado).")
         added = 0
         if deal_asins:
-            deal_items, _deal_failed = paapi.get_items(deal_asins)
+            deal_items = _get_items_throttled(deal_asins)
             deal_offers = paapi.offers_from_items(
                 deal_items or [], min_discount_percent=FLASH_MIN_DISCOUNT)
             now_utc = datetime.now(timezone.utc)
