@@ -9,9 +9,10 @@
    "discount_percent": 51,
    "image": "https://m.media-amazon.com/images/I/51WT9fABgEL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H5JYQ6Q8?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H97B3ZDQ",
@@ -22,11 +23,12 @@
    "discount_percent": 47,
    "image": "https://m.media-amazon.com/images/I/51VcRvUEFWL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H97B3ZDQ?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-20T21:59:59Z"
+   "flash_end": "2026-10-20T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FSNYJC9P",
@@ -37,9 +39,10 @@
    "discount_percent": 44,
    "image": "https://m.media-amazon.com/images/I/31-MmLc9+7L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FSNYJC9P?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0D5HT2H82",
@@ -50,9 +53,10 @@
    "discount_percent": 44,
    "image": "https://m.media-amazon.com/images/I/41SkLihC54L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0D5HT2H82?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0725QQDTJ",
@@ -63,9 +67,10 @@
    "discount_percent": 42,
    "image": "https://m.media-amazon.com/images/I/41SLFRSyGjL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0725QQDTJ?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0GWQXWWCH",
@@ -76,11 +81,12 @@
    "discount_percent": 38,
    "image": "https://m.media-amazon.com/images/I/51HGUxfS1FL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0GWQXWWCH?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-26T22:59:59Z"
+   "flash_end": "2026-10-26T22:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0D6YVWJ55",
@@ -91,9 +97,10 @@
    "discount_percent": 38,
    "image": "https://m.media-amazon.com/images/I/61GlJc+G5QL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0D6YVWJ55?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H5VX5TF7",
@@ -104,11 +111,12 @@
    "discount_percent": 36,
    "image": "https://m.media-amazon.com/images/I/51fynwP8wwL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H5VX5TF7?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-22T21:59:59Z"
+   "flash_end": "2026-10-22T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FDWKZWDF",
@@ -119,11 +127,12 @@
    "discount_percent": 35,
    "image": "https://m.media-amazon.com/images/I/512INL+yF0L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FDWKZWDF?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-24T21:59:59Z"
+   "flash_end": "2026-10-24T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0GL34759R",
@@ -134,9 +143,10 @@
    "discount_percent": 35,
    "image": "https://m.media-amazon.com/images/I/518zoNIcLIL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0GL34759R?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0CXV2NS8B",
@@ -147,9 +157,10 @@
    "discount_percent": 32,
    "image": "https://m.media-amazon.com/images/I/41on+3brHaL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0CXV2NS8B?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B08B7ZMNR1",
@@ -160,9 +171,10 @@
    "discount_percent": 30,
    "image": "https://m.media-amazon.com/images/I/41+aEfbqI7L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B08B7ZMNR1?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H4T6RGZ7",
@@ -173,9 +185,10 @@
    "discount_percent": 30,
    "image": "https://m.media-amazon.com/images/I/51lBbuxHkbL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H4T6RGZ7?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0785FJ858",
@@ -186,9 +199,10 @@
    "discount_percent": 29,
    "image": "https://m.media-amazon.com/images/I/31DIOPXzNML._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0785FJ858?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FJR81LD5",
@@ -199,9 +213,10 @@
    "discount_percent": 29,
    "image": "https://m.media-amazon.com/images/I/61vx1i9whrL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FJR81LD5?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0D4YYCXVT",
@@ -212,9 +227,10 @@
    "discount_percent": 29,
    "image": "https://m.media-amazon.com/images/I/41v3gdi08kL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0D4YYCXVT?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0HKGNR5HM",
@@ -225,9 +241,10 @@
    "discount_percent": 29,
    "image": "https://m.media-amazon.com/images/I/41H-J76LMiL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0HKGNR5HM?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FF25WCGV",
@@ -238,11 +255,12 @@
    "discount_percent": 29,
    "image": "https://m.media-amazon.com/images/I/41fQv33LLtL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FF25WCGV?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-16T21:59:59Z"
+   "flash_end": "2026-10-16T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0D7Q3TKQV",
@@ -253,11 +271,12 @@
    "discount_percent": 27,
    "image": "https://m.media-amazon.com/images/I/51UTaBJkFEL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0D7Q3TKQV?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-21T21:59:59Z"
+   "flash_end": "2026-10-21T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0DZM6J23M",
@@ -268,9 +287,10 @@
    "discount_percent": 26,
    "image": "https://m.media-amazon.com/images/I/51ovW0i+7pL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0DZM6J23M?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FT73TM5F",
@@ -281,9 +301,10 @@
    "discount_percent": 26,
    "image": "https://m.media-amazon.com/images/I/41PkEw32u1L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FT73TM5F?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FF25PV9Q",
@@ -294,11 +315,12 @@
    "discount_percent": 26,
    "image": "https://m.media-amazon.com/images/I/41KhOycYJxL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FF25PV9Q?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-16T21:59:59Z"
+   "flash_end": "2026-10-16T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FGJLLBX8",
@@ -309,9 +331,10 @@
    "discount_percent": 25,
    "image": "https://m.media-amazon.com/images/I/51IvcIuijxL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FGJLLBX8?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0BJ7MGPY3",
@@ -322,9 +345,10 @@
    "discount_percent": 25,
    "image": "https://m.media-amazon.com/images/I/51Jvw-zzHxL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0BJ7MGPY3?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0BYDLHT6P",
@@ -335,9 +359,10 @@
    "discount_percent": 25,
    "image": "https://m.media-amazon.com/images/I/41CjEkKorKL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0BYDLHT6P?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0CMSW5W1L",
@@ -348,11 +373,12 @@
    "discount_percent": 23,
    "image": "https://m.media-amazon.com/images/I/51RDGPiHbvL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0CMSW5W1L?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-26T22:59:59Z"
+   "flash_end": "2026-10-26T22:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FGJGXC3F",
@@ -363,9 +389,10 @@
    "discount_percent": 23,
    "image": "https://m.media-amazon.com/images/I/51Xnq2x6i4L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FGJGXC3F?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0DX6WLCBP",
@@ -376,11 +403,12 @@
    "discount_percent": 22,
    "image": "https://m.media-amazon.com/images/I/51xm8gDcgXL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0DX6WLCBP?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-21T21:59:59Z"
+   "flash_end": "2026-10-21T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B00FILAMD6",
@@ -391,9 +419,10 @@
    "discount_percent": 22,
    "image": "https://m.media-amazon.com/images/I/41j4+7wKeOL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B00FILAMD6?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0D7PBTY6X",
@@ -404,11 +433,12 @@
    "discount_percent": 21,
    "image": "https://m.media-amazon.com/images/I/41zG8+HsQyL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0D7PBTY6X?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-16T21:59:59Z"
+   "flash_end": "2026-10-16T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H7J33XGM",
@@ -419,11 +449,12 @@
    "discount_percent": 21,
    "image": "https://m.media-amazon.com/images/I/51lSB4csWHL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H7J33XGM?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-22T21:59:59Z"
+   "flash_end": "2026-10-22T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FB8Z7K48",
@@ -434,9 +465,10 @@
    "discount_percent": 21,
    "image": "https://m.media-amazon.com/images/I/51onl5mY+CL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FB8Z7K48?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H14Q4W8Q",
@@ -447,9 +479,10 @@
    "discount_percent": 21,
    "image": "https://m.media-amazon.com/images/I/41B0fatUVpL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H14Q4W8Q?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H14NCJ1B",
@@ -460,9 +493,10 @@
    "discount_percent": 21,
    "image": "https://m.media-amazon.com/images/I/41fKCTUQa4L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H14NCJ1B?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H2B12D1R",
@@ -473,11 +507,12 @@
    "discount_percent": 21,
    "image": "https://m.media-amazon.com/images/I/51fa0a0jxWL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H2B12D1R?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-22T21:59:59Z"
+   "flash_end": "2026-10-22T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0GYX8MJVB",
@@ -488,11 +523,12 @@
    "discount_percent": 21,
    "image": "https://m.media-amazon.com/images/I/51z75kT1fOL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0GYX8MJVB?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-15T21:59:59Z"
+   "flash_end": "2026-10-15T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H5K255MR",
@@ -503,9 +539,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51UDBRpFZ5L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H5K255MR?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H1GX6LT4",
@@ -516,9 +553,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/31rHELoTZPL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H1GX6LT4?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0CFKZDKFR",
@@ -529,11 +567,12 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51S-mQRgeyL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0CFKZDKFR?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-17T08:00:00Z"
+   "flash_end": "2026-10-17T08:00:00Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0CBMR532D",
@@ -544,9 +583,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51m3HP9nMJL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0CBMR532D?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0C7GGFDQC",
@@ -557,11 +597,12 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/41Y2Id212rL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0C7GGFDQC?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-18T21:59:59Z"
+   "flash_end": "2026-10-18T21:59:59Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H6MGMN59",
@@ -572,9 +613,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51KsMPQBGLL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H6MGMN59?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B09YH64JF5",
@@ -585,9 +627,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51MncNSk+oL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B09YH64JF5?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FLQ6ZCFN",
@@ -598,11 +641,12 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51LhwZwqDnL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FLQ6ZCFN?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-24T08:00:00Z"
+   "flash_end": "2026-10-24T08:00:00Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0B51QX48F",
@@ -613,9 +657,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51W3efw8YzL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0B51QX48F?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0GXPCQ5YZ",
@@ -626,9 +671,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/518Agejr7lL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0GXPCQ5YZ?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FF217CSN",
@@ -639,9 +685,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/5173WqpB+kL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FF217CSN?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0B51W6L76",
@@ -652,9 +699,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51t4+br314L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0B51W6L76?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FJRM4M6M",
@@ -665,11 +713,12 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/513B2yAdIwL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FJRM4M6M?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-27T20:00:00Z"
+   "flash_end": "2026-10-27T20:00:00Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FGPXHTQK",
@@ -680,11 +729,12 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51ID4yWRKnL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FGPXHTQK?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-27T20:00:00Z"
+   "flash_end": "2026-10-27T20:00:00Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0H8WY17YJ",
@@ -695,9 +745,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51RVswP4SDL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0H8WY17YJ?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FF36N1SS",
@@ -708,11 +759,12 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51qZLtpQhAL._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FF36N1SS?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
    "rating_count": null,
    "is_flash": true,
-   "flash_end": "2026-10-27T20:00:00Z"
+   "flash_end": "2026-10-27T20:00:00Z",
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0HFVCLSW8",
@@ -723,9 +775,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/41EAL7kbX7L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0HFVCLSW8?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   },
   {
    "id": "B0FK1Y1L7H",
@@ -736,9 +789,10 @@
    "discount_percent": 20,
    "image": "https://m.media-amazon.com/images/I/51qog32tI6L._SL500_.jpg",
    "url": "https://www.amazon.es/dp/B0FK1Y1L7H?tag=rebajasdiar05-21&linkCode=osi&th=1&psc=1",
-   "store": "amazon",
+   "store": "halloween",
    "rating": null,
-   "rating_count": null
+   "rating_count": null,
+   "store_label": "Especial Halloween"
   }
  ]
 }

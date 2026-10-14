@@ -2727,8 +2727,11 @@ def main():
                 _ex = merged.get(_asin)
                 if _ex:
                     _ex["category"] = _HW_CAT
+                    _ex["store"] = "halloween"
+                    _ex["store_label"] = "Especial Halloween"
                 else:
-                    merged[_asin] = {**_o, "category": _HW_CAT, "is_flash": False,
+                    merged[_asin] = {**_o, "category": _HW_CAT, "store": "halloween",
+                                     "store_label": "Especial Halloween", "is_flash": False,
                                      "first_seen": now_iso, "last_seen": now_iso}
                 _n += 1
             log(f"Especial Halloween: {_n} ofertas re-etiquetadas (activo hasta 1-nov).")
@@ -2737,6 +2740,8 @@ def main():
             for _o in merged.values():
                 if _o.get("category") == _HW_CAT:
                     _o["category"] = _flash_guess_category(_o.get("title"))
+                    _o["store"] = "amazon"
+                    _o["store_label"] = "Amazon"
                     _r += 1
             if _r:
                 log(f"Especial Halloween terminado: {_r} ofertas devueltas a su categoria.")
