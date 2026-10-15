@@ -40,6 +40,7 @@ from check_search_requests import (
     HEALTH_CHECK_INTERVAL_MINUTES,
     HEALTH_CHECK_QUERY,
     _load_availability_state,
+    _save_availability_state,
     _note_availability,
 )
 
@@ -248,8 +249,26 @@ def _health_check_loop():
         # Comprobar primero (y de paso calentar el token OAuth cacheado) al arrancar, antes de
         # dormir: asi la 1a busqueda tras un reinicio ya encuentra el token listo.
         try:
-            items = paapi.search_amazon(HEALTH_CHECK_QUERY, item_count=1)
-            _note_availability(items is not None, _load_availability_state())
+            available = paapi.search_amazon(HEALTH_CHECK_QUERY, item_count=1) is not None
+            if not available:
+                # Confirmar una caida con un unico reintento antes de avisar -> evita falsos
+                # positivos por un blip puntual (o por el token frio justo al arrancar).
+                time.sleep(5)
+                available = paapi.search_amazon(HEALTH_CHECK_QUERY, item_count=1) is not None
+            prev = _load_availability_state().get("available")
+            _save_availability_state(available)
+            # Avisar POR CORREO solo en un cambio real de estado (nunca la 1a vez ni en reinicios
+            # sin cambio). notify_telegram ya no se usa aqui: su token esta muerto y el dueño no
+            # se enteraba de las caidas (14-oct-2026).
+            if prev is not None and prev != available:
+                if available:
+                    _send_alert_email(
+                        "[RebajasDiarias] Buscador RECUPERADO",
+                        "El buscador con Amazon en vivo vuelve a funcionar con normalidad.\n\n"
+                        f"Hora: {time.ctime()}")
+                    log("aviso por correo: buscador recuperado")
+                else:
+                    _alert_search_down("el sondeo periodico detecta la API de Amazon caida")
         except Exception as e:
             log(f"aviso: fallo en el sondeo periódico de disponibilidad: {e}")
         time.sleep(HEALTH_CHECK_INTERVAL_MINUTES * 60)
