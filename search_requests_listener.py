@@ -29,6 +29,21 @@ import time
 from email.message import EmailMessage
 from datetime import timedelta
 
+# --- Forzar IPv4 (14-oct-2026) ----------------------------------------------------------------
+# El IPv6 de esta Raspberry esta roto, pero el sistema lo PREFIERE: el DNS (via Tailscale)
+# devuelve AAAA primero para Google/Firestore/Amazon, el proceso intenta IPv6, a veces se cuelga
+# hasta agotar el tiempo -> Firestore "DEADLINE_EXCEEDED" (el buscador no recibe/escribe
+# busquedas) y timeouts a Amazon, de forma INTERMITENTE. Resolver nativo de gRPC + getaddrinfo
+# limitado a IPv4 hacen que TODO use la via IPv4, que si funciona (probado: 8/8 lecturas de
+# Firestore OK en <0.7s). Debe ir ANTES de importar firebase_admin/grpc.
+os.environ.setdefault("GRPC_DNS_RESOLVER", "native")
+import socket as _socket
+_orig_getaddrinfo = _socket.getaddrinfo
+def _getaddrinfo_ipv4(host, port, family=0, *args, **kwargs):
+    return _orig_getaddrinfo(host, port, _socket.AF_INET, *args, **kwargs)
+_socket.getaddrinfo = _getaddrinfo_ipv4
+# ----------------------------------------------------------------------------------------------
+
 import firebase_admin
 from firebase_admin import credentials, firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
