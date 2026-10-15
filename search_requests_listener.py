@@ -245,12 +245,14 @@ def _health_check_loop():
     cuando NADIE está buscando en ese momento. Corre en un hilo aparte, cada 30 min como
     mucho."""
     while True:
-        time.sleep(HEALTH_CHECK_INTERVAL_MINUTES * 60)
+        # Comprobar primero (y de paso calentar el token OAuth cacheado) al arrancar, antes de
+        # dormir: asi la 1a busqueda tras un reinicio ya encuentra el token listo.
         try:
             items = paapi.search_amazon(HEALTH_CHECK_QUERY, item_count=1)
             _note_availability(items is not None, _load_availability_state())
         except Exception as e:
             log(f"aviso: fallo en el sondeo periódico de disponibilidad: {e}")
+        time.sleep(HEALTH_CHECK_INTERVAL_MINUTES * 60)
 
 
 

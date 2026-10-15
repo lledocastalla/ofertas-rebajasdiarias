@@ -128,33 +128,41 @@ def _get_access_token(client_id: str, client_secret: str):
     if _cached_token and time.time() < _cached_token_expires_at:
         return _cached_token
 
-    try:
-        resp = requests.post(
-            TOKEN_ENDPOINT,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps({
-                "grant_type": "client_credentials",
-                "client_id": client_id,
-                "client_secret": client_secret,
-                "scope": "creatorsapi::default",
-            }),
-            timeout=15,
-        )
-    except requests.RequestException:
-        return None
-
-    if resp.status_code != 200:
-        return None
-    try:
-        data = resp.json()
-        token = data["access_token"]
-        expires_in = data.get("expires_in", 3600)
-    except (ValueError, KeyError):
-        return None
-
-    _cached_token = token
-    _cached_token_expires_at = time.time() + expires_in - 60  # margen de 1 min
-    return token
+    # El endpoint OAuth de Amazon (api.amazon.co.uk/auth/o2/token) tarda de forma intermitente
+    # 8-46s en emitir el token para este client_credentials (medido 14-oct-2026); con el antiguo
+    # timeout=15 se cortaba casi siempre y devolvia None -> el buscador caia "no disponible".
+    # Timeout amplio + reintentos para absorber esa lentitud. El token se cachea ~1h (y se
+    # refresca en segundo plano desde el listener), asi que este grant lento no bloquea al usuario.
+    payload = json.dumps({
+        "grant_type": "client_credentials",
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "scope": "creatorsapi::default",
+    })
+    for _intento in range(3):
+        try:
+            resp = requests.post(
+                TOKEN_ENDPOINT,
+                headers={"Content-Type": "application/json"},
+                data=payload,
+                timeout=70,
+            )
+        except requests.RequestException:
+            time.sleep(2)
+            continue
+        if resp.status_code != 200:
+            time.sleep(2)
+            continue
+        try:
+            data = resp.json()
+            token = data["access_token"]
+            expires_in = data.get("expires_in", 3600)
+        except (ValueError, KeyError):
+            return None
+        _cached_token = token
+        _cached_token_expires_at = time.time() + expires_in - 60  # margen de 1 min
+        return token
+    return None
 
 
 def _search_items_once(keywords: str, item_count: int, min_saving_percent: int, creds, token,
