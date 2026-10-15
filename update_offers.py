@@ -21,6 +21,15 @@ import fcntl
 import io
 import json
 import os
+
+# --- Forzar IPv4 (14-oct-2026): IPv6 de la Pi roto pero preferido -> colgaba Firestore/Amazon
+# intermitentemente. Resolver nativo gRPC + getaddrinfo IPv4. Antes de importar firebase/grpc. ---
+os.environ.setdefault("GRPC_DNS_RESOLVER", "native")
+import socket as _socket
+_orig_gai = _socket.getaddrinfo
+def _gai_ipv4(host, port, family=0, *a, **k):
+    return _orig_gai(host, port, _socket.AF_INET, *a, **k)
+_socket.getaddrinfo = _gai_ipv4
 import random
 import re
 import subprocess
