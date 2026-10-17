@@ -22,6 +22,27 @@ paso corrige sola cualquier desajuste que la cuenta en vivo del cliente pudiera 
 una carrera. No pisa firstAddedAt si el documento ya existía.
 """
 
+import os
+
+# --- Forzar IPv4 (17-oct-2026) ----------------------------------------------------------------
+# Mismo parche que update_offers.py y search_requests_listener.py, que a ESTE script se le había
+# quedado sin poner: el IPv6 de la Pi está roto pero el sistema lo PREFIERE, así que las
+# conexiones a Firestore se cuelgan de forma intermitente -> "504 Stream removed (Deadline
+# Exceeded)" al hacer db.collection("users").stream(), y el repaso de alertas se cae ENTERO antes
+# de revisar ni una. Medido en el log real el 17 oct: **78 pasadas caídas de 621** (~12%).
+#
+# Importarlo vía `from update_offers import ...` NO bastaba: update_offers aplica el parche al
+# importarse, pero aquí eso pasaba DESPUÉS de `import firebase_admin`, y tanto este bloque como
+# el de allí avisan de que debe ir ANTES de importar firebase/grpc (grpc lee GRPC_DNS_RESOLVER
+# al arrancar). Por eso va aquí arriba del todo, duplicado a propósito.
+os.environ.setdefault("GRPC_DNS_RESOLVER", "native")
+import socket as _socket
+_orig_getaddrinfo = _socket.getaddrinfo
+def _getaddrinfo_ipv4(host, port, family=0, *args, **kwargs):
+    return _orig_getaddrinfo(host, port, _socket.AF_INET, *args, **kwargs)
+_socket.getaddrinfo = _getaddrinfo_ipv4
+# ----------------------------------------------------------------------------------------------
+
 import firebase_admin
 from firebase_admin import credentials, firestore
 
