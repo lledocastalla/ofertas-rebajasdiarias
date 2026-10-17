@@ -43,6 +43,7 @@ siguen en 30-80% para el ciclo normal del catálogo.
 """
 
 import fcntl
+import json
 import os
 import re
 import signal
@@ -174,6 +175,129 @@ def _title_matches_keyword(title, keyword):
     if not words:
         return True
     return any(w in title_lower for w in words)
+
+
+# ---------------------------------------------------------------------------------------------
+# Cruce con NUESTRO PROPIO catálogo (17 oct 2026, hallazgo real del usuario: "alguien buscó
+# reebok engine A y no le ha dado resultado y lo ha puesto en alertas... y resulta que en el
+# catálogo de Hombre sí que existe una gran oferta de eso").
+#
+# Hasta hoy refresh_keyword_alert() SOLO miraba Amazon en vivo. Comprobado con los datos reales
+# de ese día: la Creators API devolvió 60 y 51 productos para "Reebok engine a" y NI UNO era un
+# Engine (PUMA, Tommy Hilfiger, Reebok Classic Leather...), mientras offers.json tenía 8 Reebok
+# Engine de verdad en Moda Hombre, la mejor a 70 € desde 140 € (-50%). Amazon devuelve
+# "relacionados" cuando no encuentra el modelo exacto y no avisa de nada (mismo problema que ya
+# motivó _title_matches_keyword() el 14 sep).
+#
+# No es un caso aislado: medido sobre las 36 alertas vivas, 13 no tenían NI UNA oferta que
+# contuviera lo que se pidió -- "Garmin fénix 8", "Samsung a56", "Raspberry pi 4 4gb",
+# "Zapatillas converse talla 39", "Afeitadora phillips"... Lo que la búsqueda en vivo no acierta
+# a traer lo tenemos muchas veces ya scrapeado en casa, así que se cruza aquí y se suma a lo de
+# Amazon en vez de desaprovecharlo.
+#
+# Importante para el borrado: estas ofertas entran en la MISMA lista que las de Amazon, así que
+# `fresh_asins` de refresh_keyword_alert() las incluye y no se borran en la siguiente pasada.
+# Mientras sigan en el catálogo se vuelven a encontrar solas cada hora; cuando caduquen y salgan
+# de offers.json, dejan de aparecer y se limpian como cualquier otra ("si ya no están las
+# ofertas que se eliminen").
+# ---------------------------------------------------------------------------------------------
+MAX_CATALOG_MATCHES = 24  # mismo tope que MAX_PRODUCTS_KEYWORD_ALERT, por el mismo motivo: una
+# palabra genérica ("Ordenador", "Cerveza") puede cruzar con cientos de ofertas del catálogo y no
+# tiene sentido volcarlas todas en la alerta de una persona. Se queda con las de más descuento.
+
+_catalog_cache = {"mtime": None, "offers": None}
+
+_TOKEN_SPLIT = re.compile(r"[^a-z0-9]+")
+# Mismo valor y mismo porqué que _minPrefixMatchLength en OffersService.search() (la app):
+# por debajo de 5 letras el prefijo compartido da falsos positivos ("cámara" encontraba "cama").
+_MIN_PREFIX_MATCH = 5
+
+
+def _normalize_text(text):
+    text = (text or "").lower()
+    for a, b in zip("áéíóúüñ", "aeiouun"):
+        text = text.replace(a, b)
+    return text
+
+
+def _keyword_terms(keyword):
+    """Palabras que de verdad distinguen la búsqueda. A diferencia de _title_matches_keyword()
+    (que se conforma con UNA cualquiera, a propósito, para no descartar de más lo que ya trajo
+    Amazon), aquí se exigen TODAS -- estamos eligiendo qué sacar de un catálogo de 40.000+
+    ofertas, y conformarse con una sola palabra devolvería cualquier Reebok para "reebok engine
+    a", que es justo el ruido del que venimos huyendo.
+
+    Los números sueltos se descartan si queda alguna palabra de verdad, mismo criterio que
+    OffersService.search() en la app (31 ago 2026, "pongo adidas 42 no sale nada"): una talla o
+    un número de modelo casi nunca está literalmente en el título y vaciaría el resultado él
+    solo."""
+    terms = [
+        t for t in _TOKEN_SPLIT.split(_normalize_text(keyword))
+        if len(t) >= 3 and t not in _STOPWORDS_ES
+    ]
+    sin_numeros = [t for t in terms if not t.isdigit()]
+    return sin_numeros or terms
+
+
+def _term_matches_token(term, token):
+    """Igual que _termMatchesToken() en la app: admite que una sea prefijo de la otra (con un
+    mínimo de letras compartidas) para que "zapatillas" encuentre "Zapatilla" sin necesitar un
+    diccionario de plurales."""
+    if term == token:
+        return True
+    if len(term) >= _MIN_PREFIX_MATCH and token.startswith(term):
+        return True
+    if len(token) >= _MIN_PREFIX_MATCH and term.startswith(token):
+        return True
+    return False
+
+
+def _load_catalog_offers():
+    """offers.json del ciclo normal, cacheado por mtime -- keyword_alert_cleanup.py repasa
+    decenas de palabras seguidas dentro de un mismo proceso y no tiene sentido releer y parsear
+    ~29MB para cada una. Lista vacía ante cualquier problema: esto es un extra sobre la búsqueda
+    en vivo, nunca debe tumbar una alerta."""
+    try:
+        mtime = os.path.getmtime(uo.OFFERS_PATH)
+    except OSError:
+        return []
+    if _catalog_cache["mtime"] != mtime:
+        try:
+            with open(uo.OFFERS_PATH, encoding="utf-8") as f:
+                _catalog_cache["offers"] = json.load(f).get("offers") or []
+            _catalog_cache["mtime"] = mtime
+        except Exception as e:
+            log(f"aviso: no se pudo leer el catálogo para cruzarlo: {e}")
+            return []
+    return _catalog_cache["offers"]
+
+
+def _catalog_matches(keyword):
+    """Ofertas de nuestro catálogo cuyo título/categoría contienen TODAS las palabras
+    distintivas de `keyword`. Las de más descuento primero, con tope MAX_CATALOG_MATCHES."""
+    terms = _keyword_terms(keyword)
+    if not terms:
+        return []
+    matches = []
+    for offer in _load_catalog_offers():
+        blob = _normalize_text(f"{offer.get('title', '')} {offer.get('category', '')}")
+        tokens = [t for t in _TOKEN_SPLIT.split(blob) if t]
+        if all(any(_term_matches_token(term, tok) for tok in tokens) for term in terms):
+            matches.append(offer)
+    matches.sort(key=lambda o: o.get("discount_percent") or 0, reverse=True)
+    return matches[:MAX_CATALOG_MATCHES]
+
+
+def _merge_catalog_matches(keyword, live_offers):
+    """Suma a lo que trajo Amazon lo que ya teníamos en casa, sin duplicar por ASIN."""
+    ya_estan = {o.get("id") for o in live_offers}
+    extra = [o for o in _catalog_matches(keyword) if o.get("id") not in ya_estan]
+    if extra:
+        log(f"'{keyword}': +{len(extra)} oferta(s) de nuestro propio catálogo que la búsqueda "
+            f"en vivo no trajo (la mejor: {extra[0]['title'][:60]!r}, "
+            f"-{extra[0].get('discount_percent')}%)")
+    # Primero las nuestras: son coincidencia exacta comprobada, no "relacionados" de Amazon.
+    return extra + live_offers
 
 
 def _pause_main_cycle():
@@ -505,6 +629,9 @@ def refresh_keyword_alert(db, uid, keyword, notify_new=True, first_search=False)
     offers = _scrape_keyword_live(keyword)
     if offers is None:
         return None
+    # 17 oct 2026: lo que Amazon no acierta a traer muchas veces ya lo tenemos scrapeado -- ver
+    # el bloque de _catalog_matches() arriba para el caso real que lo motivó.
+    offers = _merge_catalog_matches(keyword, offers)
 
     coll = db.collection("keyword_alert_offers")
     existing = list(
