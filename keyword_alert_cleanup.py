@@ -96,7 +96,18 @@ def main():
     unavailable = 0
     active_counts = {}
     active_display = {}
-    for doc in db.collection("users").stream():
+    # list(...) a propósito, NO iterar el stream directamente (17 oct 2026, causa real de que
+    # esta pasada se cayera entera el 12% de las veces -- 78 de 621 en el log). .stream() de
+    # Firestore es PEREZOSO: va pidiendo lotes conforme se itera. Como dentro del bucle se hace
+    # el trabajo lento de verdad (una búsqueda en vivo en Amazon por palabra, ~15-20s cada una,
+    # 10+ minutos en total), el cursor del stream caducaba a media vuelta -> "504 Stream removed
+    # (Deadline Exceeded)". Y encima la librería no sabe reintentar ahí: el except acaba en
+    # `AttributeError: '_UnaryStreamMultiCallable' object has no attribute '_retry'`
+    # (google-cloud-firestore, query.py:282), así que un fallo pasajero mataba el proceso entero
+    # y ninguna alerta posterior se revisaba. Materializando la lista primero, la lectura dura
+    # menos de un segundo y se cierra; después ya puede tardar lo que haga falta.
+    usuarios = list(db.collection("users").stream())
+    for doc in usuarios:
         data = doc.to_dict() or {}
         keywords = [k.strip() for k in data.get("keywordAlerts") or [] if k.strip()]
         for kw in keywords:
