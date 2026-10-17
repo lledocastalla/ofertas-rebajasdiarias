@@ -296,8 +296,13 @@ def _merge_catalog_matches(keyword, live_offers):
         log(f"'{keyword}': +{len(extra)} oferta(s) de nuestro propio catálogo que la búsqueda "
             f"en vivo no trajo (la mejor: {extra[0]['title'][:60]!r}, "
             f"-{extra[0].get('discount_percent')}%)")
-    # Primero las nuestras: son coincidencia exacta comprobada, no "relacionados" de Amazon.
-    return extra + live_offers
+    # Las nuestras AL FINAL de la lista, aunque sean las más relevantes -- no es un descuido:
+    # refresh_keyword_alert() recorre esta lista en orden y escribe `updatedAt` conforme avanza,
+    # y la app ordena por ese campo descendente (keyword_alert_offers_service.dart:38). Lo que
+    # se escribe el último es lo que sale ARRIBA del todo, que es donde tienen que estar las
+    # coincidencias exactas comprobadas contra nuestro catálogo (comprobado en vivo: con ellas
+    # delante salían en los puestos 9-12, debajo de los "relacionados" de Amazon).
+    return live_offers + extra
 
 
 def _pause_main_cycle():
