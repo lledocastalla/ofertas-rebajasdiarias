@@ -59,10 +59,30 @@ def main():
         firebase_admin.initialize_app(cred)
     db = firestore.client()
 
+    # ESCRIBIR SOLO LO QUE HA CAMBIADO (18 oct 2026) -------------------------------------
+    # Antes se reescribían los 64 usuarios ENTEROS en cada pasada, cambiara algo o no: como
+    # siempre se ponía updatedAt con la hora del momento, para Firestore todo era un dato
+    # nuevo. Con el cron cada 10 minutos eso son 64 x 6 x 24 = 9.216 escrituras al día, casi
+    # la mitad del tope diario del plan gratuito (20.000) gastada en copiar datos idénticos.
+    # Y al agotarse la cuota se caía TODO lo que necesita base de datos: favoritos, alertas,
+    # comunidad y el buscador en vivo (se veía en los logs: miles de "429 Quota exceeded").
+    #
+    # Ahora se lee primero el directorio y solo se escribe el usuario cuyo nombre, correo o
+    # foto hayan cambiado de verdad. Un día normal eso son cero escrituras. La lectura es la
+    # MISMA que ya hacía falta abajo para la limpieza, así que no se lee dos veces.
+    #
+    # updatedAt deja de refrescarse en cada pasada, a propósito: no lo usa nadie (comprobado
+    # en la app y en la web, solo se lee la lista para el selector de admin). Si algún día
+    # hiciera falta "cuándo se vio por última vez", habría que guardarlo en otro sitio que no
+    # cueste una escritura por usuario y pasada.
+    existing_docs = list(db.collection("users_directory").stream())
+    existing = {d.id: (d.to_dict() or {}) for d in existing_docs}
+
     seen_uids = set()
     batch = db.batch()
     batch_count = 0
     synced = 0
+    sin_cambios = 0
     skipped_anonymous = 0
 
     for user in auth.list_users().iterate_all():
@@ -72,16 +92,17 @@ def main():
             skipped_anonymous += 1
             continue
         seen_uids.add(user.uid)
+        datos = {
+            "displayName": user.display_name or "",
+            "email": user.email or "",
+            "photoURL": user.photo_url or "",
+        }
+        anterior = existing.get(user.uid)
+        if anterior is not None and all(anterior.get(k) == v for k, v in datos.items()):
+            sin_cambios += 1
+            continue
         doc_ref = db.collection("users_directory").document(user.uid)
-        batch.set(
-            doc_ref,
-            {
-                "displayName": user.display_name or "",
-                "email": user.email or "",
-                "photoURL": user.photo_url or "",
-                "updatedAt": firestore.SERVER_TIMESTAMP,
-            },
-        )
+        batch.set(doc_ref, {**datos, "updatedAt": firestore.SERVER_TIMESTAMP}, merge=True)
         batch_count += 1
         synced += 1
         if batch_count >= 400:  # tope de 500 escrituras por batch de Firestore, con margen
@@ -96,7 +117,7 @@ def main():
     # se considere anónima (nunca se añadió a seen_uids arriba) -- así una sincronización vieja
     # de antes de este cambio también se limpia sola, sin paso manual aparte.
     removed = 0
-    existing_docs = list(db.collection("users_directory").stream())
+    # existing_docs ya se leyó arriba -- no se vuelve a leer (ahorra 64 lecturas por pasada).
     del_batch = db.batch()
     del_count = 0
     for doc in existing_docs:
@@ -111,8 +132,8 @@ def main():
     if del_count > 0:
         del_batch.commit()
 
-    log(f"{synced} usuario(s) sincronizado(s), {skipped_anonymous} anónimo(s) omitido(s), "
-        f"{removed} entrada(s) vieja(s) borrada(s)")
+    log(f"{synced} usuario(s) escrito(s), {sin_cambios} sin cambios, "
+        f"{skipped_anonymous} anónimo(s) omitido(s), {removed} entrada(s) vieja(s) borrada(s)")
 
 
 if __name__ == "__main__":
