@@ -58,6 +58,8 @@ INSTAGRAM_CREDS = HOME / ".rebajas_instagram_credentials.json"
 # El cron va cada 3 horas entre las 08:00 y las 23:00, así que 10 h cubre la noche sin falsos
 # positivos (último ciclo a las 22:00 → siguiente a las 08:00).
 HORAS_SIN_CATALOGO = 10
+# Un log sin tocar en más horas que esto ya no habla del presente: se ignora.
+HORAS_LOG_VIGENTE = 12
 
 
 def _get(url, params=None, timeout=25):
@@ -71,10 +73,13 @@ def _get(url, params=None, timeout=25):
 # Cada una devuelve (nombre, ok, detalle). `ok` None = no aplica / no configurado a propósito.
 
 def mirar_telegram():
+    # Descartado a propósito el 20 oct ("no interesa mucho, no tenía movimiento"). Si no está
+    # el fichero del token, NO es una avería: es una decisión. Marcarlo en rojo cada día sería
+    # el peor fallo posible en un vigilante -- un aviso que salta siempre se acaba ignorando,
+    # y entonces el día que salte de verdad tampoco se mira. Si algún día aparece el fichero,
+    # se vuelve a comprobar solo.
     if not TELEGRAM_TOKEN_PATH.exists():
-        return ("Telegram", False,
-                f"falta {TELEGRAM_TOKEN_PATH}. Sácalo de BotFather (/mybots → tu bot → API "
-                f"Token) y escríbelo ahí con chmod 600.")
+        return ("Telegram", None, "descartado a propósito (sin token, no se usa)")
     tok = TELEGRAM_TOKEN_PATH.read_text().strip()
     if not tok:
         return ("Telegram", False, f"{TELEGRAM_TOKEN_PATH} está vacío")
@@ -146,6 +151,15 @@ def mirar_logs_con_errores():
     mismo todo lo que escribe son fallos."""
     malos = []
     for log in sorted(HOME.glob("*.log")):
+        # Si nadie ha escrito en él en las últimas horas, lo que ponga es historia, no el
+        # estado actual. Pasa por ejemplo con new_user_watcher.log: desde que el script no
+        # imprime nada cuando no hay usuarios nuevos, su cola se quedó congelada con los
+        # errores viejos de la cuota y habría salido en rojo para siempre.
+        try:
+            if (time.time() - log.stat().st_mtime) > HORAS_LOG_VIGENTE * 3600:
+                continue
+        except Exception:
+            continue
         try:
             cola = subprocess.run(["tail", "-40", str(log)], capture_output=True, text=True,
                                   timeout=20).stdout.splitlines()
