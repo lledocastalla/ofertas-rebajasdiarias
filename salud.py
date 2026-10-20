@@ -20,9 +20,14 @@ Esto no arregla nada por sí solo: comprueba y avisa. A propósito NO intenta re
 tocar credenciales — si algo se rompe hay que mirarlo, no que un script lo parchee a ciegas y
 siga escondiendo el problema, que es justo como llegamos aquí.
 
-Dónde avisa, por orden:
-  1. Telegram privado al usuario, si el token está (es el canal bueno: lo lees en el móvil).
-  2. `~/salud.txt`, siempre. Es lo que hay que mirar al empezar una sesión.
+Dónde avisa:
+  1. **Push al móvil del admin, por la propia app** (topic `user_<uid>`, igual que hace
+     new_user_watcher.py). Es el canal bueno y no necesita ninguna credencial nueva: Firebase
+     ya está configurado en la Pi para todo lo demás. Se eligió este y no Telegram porque el
+     usuario dijo el 20 oct que Telegram "no interesa mucho, no tenía movimiento" — y un aviso
+     que llega a un canal que nadie mira es lo mismo que no avisar.
+  2. Telegram privado, solo si el token llegara a estar puesto. Hoy no lo está.
+  3. `~/salud.txt`, siempre.
 Y devuelve código de salida 1 si algo está roto, para que se note desde el cron.
 
 Uso:
@@ -46,6 +51,8 @@ REPO_OFERTAS = HOME / "ofertas-rebajasdiarias"
 TELEGRAM_TOKEN_PATH = HOME / ".rebajas_telegram_bot_token"
 TELEGRAM_CHAT_ID = "1338347086"          # privado del usuario, igual que en update_offers.py
 FACEBOOK_CREDS = HOME / ".rebajas_facebook_credentials.json"
+# Mismo UID que usan new_user_watcher.py y check_community_reports.py para el push de admin.
+ADMIN_UIDS = ["Ji0kzNTKwbO1tKpLBVLroCZf5HJ3"]  # lledocastalla@gmail.com
 INSTAGRAM_CREDS = HOME / ".rebajas_instagram_credentials.json"
 # Si el catálogo lleva más de esto sin tocarse, es que el scraping ha dejado de funcionar.
 # El cron va cada 3 horas entre las 08:00 y las 23:00, así que 10 h cubre la noche sin falsos
@@ -157,6 +164,27 @@ def mirar_logs_con_errores():
     return ("Logs", True, "ninguno escupiendo errores en cadena")
 
 
+def avisar_por_push(titulo, cuerpo):
+    """Push a la app del admin. Nunca debe tumbar el script si falla."""
+    try:
+        sys.path.insert(0, str(REPO_OFERTAS))
+        from update_offers import FIREBASE_CREDENTIALS_PATH
+        import firebase_admin
+        from firebase_admin import credentials, messaging
+        try:
+            firebase_admin.get_app()
+        except ValueError:
+            firebase_admin.initialize_app(credentials.Certificate(FIREBASE_CREDENTIALS_PATH))
+        for uid in ADMIN_UIDS:
+            messaging.send(messaging.Message(
+                notification=messaging.Notification(title=titulo, body=cuerpo),
+                topic=f"user_{uid}"))
+        return True
+    except Exception as e:
+        print(f"aviso: no se pudo mandar el push: {e}")
+        return False
+
+
 def avisar_por_telegram(texto):
     if not TELEGRAM_TOKEN_PATH.exists():
         return False
@@ -190,6 +218,12 @@ def main():
     print(texto)
 
     if rotos or "--siempre" in sys.argv:
+        # El push lleva solo el titular: en una notificación del móvil no cabe el informe, y
+        # si no cabe no se lee. El detalle está en ~/salud.txt y en el aviso de Telegram.
+        nombres = ", ".join(r[0] for r in rotos) or "nada"
+        avisar_por_push("⚠️ RebajasDiarias: algo se ha caído",
+                        f"{nombres}. Mira ~/salud.txt en la Pi." if rotos
+                        else "Prueba del vigilante: todo correcto.")
         avisar_por_telegram(texto)
     return 1 if rotos else 0
 
