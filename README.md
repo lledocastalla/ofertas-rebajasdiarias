@@ -66,6 +66,114 @@ solo las filas aproximadas (versión vieja, `search_stats.lastResultCount`) ten�
 ofertas; las exactas (versión nueva) salían sin él. La web lo lee desde el commit `28df9e2` de
 `rebajasdiarias-web` (hace falta `netlify deploy --prod`).
 
+## Instagram automático (20 oct 2026)
+
+`instagram_bot.py` publica una oferta al día y responde a los comentarios. Hermano de
+`facebook_bot.py`: misma Graph API de Meta, mismo patrón de credenciales fuera del repo.
+
+**Al 20 oct está escrito y probado con `--dry-run`, pero NO corre por cron**: faltan las
+credenciales de Meta, que no se pueden sacar por código (hay que iniciar sesión y aceptar
+permisos a mano). Pasos en `~/Desktop/INSTAGRAM_PUESTA_EN_MARCHA.md` del Mac.
+
+```bash
+python3 instagram_bot.py                    # publica la oferta del día
+python3 instagram_bot.py --dry-run          # enseña qué publicaría y por qué, sin publicar
+python3 instagram_bot.py --responder        # responde los comentarios nuevos
+```
+
+### Cómo se publica (son DOS llamadas, no una como en Facebook)
+
+1. `POST /{ig_user_id}/media` con `image_url` + `caption` → devuelve un `creation_id`
+2. `POST /{ig_user_id}/media_publish` con ese `creation_id` → publica de verdad
+
+La imagen **no se sube como fichero**: Instagram la descarga de una URL pública. Por eso el
+script deja el JPG en `rebajasdiarias-web/ig/` y despliega la web ANTES de llamar a la API. Si
+la imagen no es accesible desde fuera, Meta devuelve error y no publica.
+
+### Qué publica: cruce con lo que busca la gente
+
+Lo decide `instagram_tendencias.py` (vive en el repo `rebajasdiarias-web`, en `scripts/`, para
+que el Mac y la Pi usen el mismo criterio). Cruza el catálogo con dos señales:
+
+1. **`search_stats` de Firestore** — lo que escriben nuestros propios usuarios en el buscador.
+   No es un ranking genérico de internet. Volumen bajo (el 20 oct el término de cabeza tenía 18
+   búsquedas), así que entra como **empuje, no como filtro**: si nada encaja, se publica igual
+   lo mejor del día.
+2. **La temporada del año** (Halloween, Black Friday, Navidad, rebajas, verano, vuelta al cole).
+   Esto no sale de los datos propios: la gente busca disfraces antes de que nosotros tengamos
+   disfraces en catálogo.
+
+**Dos cosas que hubo que corregir midiendo, no leyendo** — las dos hacían que el cruce
+existiera pero no cambiara absolutamente nada:
+
+- Los filtros de credibilidad se aplicaban **antes** del cruce. Dejaban 124 ofertas de 1.114, y
+  de las 364 que casaban con una búsqueda real no sobrevivía **ninguna**. Ahora van después, y
+  el listón de descuento baja del 40% al 25% cuando la oferta casa con lo que la gente busca
+  (los de calidad —≥50 valoraciones, ≥15 €— no se tocan nunca).
+- El ahorro entraba en euros. El portátil del día ahorraba 370 € y una cafetera buscada ahorra
+  30: doce veces menos, que ningún multiplicador razonable remonta. Ahora entra en
+  **logaritmo**, con lo que esa distancia es 1,7 veces. Además es lo cierto: entre ahorrar 300 €
+  y 400 € la publicación no es más interesante, entre 5 € y 50 € sí.
+
+Resultado el 20 oct: la elegida pasó de un portátil genérico a unas adidas de hombre, que es el
+término más buscado. Hay además un castigo por repetir tema tres días seguidos, porque el
+término más buscado ganaría siempre y se notaría que detrás hay un robot.
+
+Lo que **no** se hace, a propósito: "tendencias de Instagram" (audios virales, retos, hashtags
+del momento). No hay forma de consultarlas por API, así que sería una lista inventada que
+envejecería en dos semanas sin que nadie se diera cuenta.
+
+### La imagen
+
+`instagram_imagen.py` (también en `rebajasdiarias-web/scripts/`) compone una tarjeta cuadrada
+de 1080×1080: foto del producto pedida en `_AC_UL1000_` (las del catálogo vienen en
+`_AC_UL320_` y pixelan al ampliarlas), chapa roja con el descuento, precio nuevo grande y el
+anterior tachado. Publicar la foto de Amazon tal cual no sirve: en el muro no se distingue de
+nada y no dice ni precio ni descuento.
+
+La maquetación se reparte **de abajo arriba** —primero título y precios anclados sobre la
+marca, y la foto centrada en lo que sobra—. Antes el título arrancaba a una altura fija y con
+productos apaisados quedaba un hueco blanco de 250 px.
+
+En la Pi hizo falta `~/venv/bin/pip install Pillow` y un respaldo de tipografía a DejaVu:
+Avenir Next no existe en Linux y sin el respaldo componía con la fuente por defecto de PIL, que
+es diminuta y deja la imagen inservible.
+
+El pie de foto insiste en que **en la app puedes buscar lo que tú quieras** (petición del
+usuario): una oferta suelta solo le sirve a quien justo quería eso, el buscador le sirve a
+cualquiera y es la razón para instalar la app en vez de seguir la cuenta y ya está. Van cuatro
+frases que rotan según el ASIN, porque repetir la misma palabra por palabra hace que se deje de
+leer a los tres posts. No lleva enlace: Instagram no los permite en el pie.
+
+### Comentarios: lo que se puede y lo que no
+
+**La API de Instagram solo permite comentar y responder en tus PROPIAS publicaciones.** No
+existe ningún endpoint para comentar en posts de otras cuentas; eso solo se consigue simulando
+un navegador, va contra los términos de Meta y acaba con la cuenta restringida. No se hace.
+
+`--responder` lee los comentarios de las 10 últimas publicaciones y contesta **solo lo que
+puede contestar con la verdad**: dónde está el enlace, que los precios cambian durante el día,
+agradecer un elogio. Cualquier queja (`estafa`, `inflado`, `no funciona`…), duda rara o cosa
+que no entienda la deja en `~/instagram_para_contestar.txt` para que la conteste una persona.
+Un bot contestando una queja con una frase hecha hace más daño que no responder. Las frases
+rotan por el mismo motivo que las del pie.
+
+### Credenciales y ficheros de estado
+
+Todos fuera del repo, en `$HOME`:
+
+| Fichero | Para qué |
+|---|---|
+| `~/.rebajas_instagram_credentials.json` | `ig_user_id` + `access_token`. Permisos 600. **Nunca en git.** |
+| `~/.rebajas_instagram_publicadas.json` | ASINs ya publicados, para no repetir producto |
+| `~/.rebajas_instagram_temas.json` | Términos de los últimos días, para no repetir tema |
+| `~/.rebajas_instagram_comentarios.json` | Comentarios ya respondidos |
+| `~/instagram_para_contestar.txt` | Los que tiene que mirar una persona |
+
+Permisos que necesita el token: `instagram_basic`, `instagram_content_publish` y
+`instagram_manage_comments`. **Caduca a los 60 días** (misma pega que el bot de Facebook):
+cuando empiece a fallar con error de token, hay que regenerarlo.
+
 ## Esquema de `offers.json`
 
 ```json
