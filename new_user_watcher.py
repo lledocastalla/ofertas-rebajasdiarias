@@ -25,6 +25,9 @@ from update_offers import FIREBASE_CREDENTIALS_PATH, notify_telegram
 
 HOME = os.path.expanduser("~")
 STATE_PATH = f"{HOME}/new_user_watcher_seen.json"
+# Copia local que deja sync_users_directory.py en cada pasada (cada 10 min). Se lee de aquí
+# en vez de Firestore -- ver el comentario de abajo en main().
+INSTANTANEA_PATH = f"{HOME}/users_directory_local.json"
 MAX_PER_CYCLE = 20  # de sobra para uso normal
 
 # UIDs de los admins con sesión real conocida -- mismo criterio/lista que
@@ -93,21 +96,47 @@ def _get_firestore_db():
         return None
 
 
-def main():
-    db = _get_firestore_db()
-    if db is None:
-        return
+class _UsuarioLocal:
+    """Imita lo justo de un DocumentSnapshot de Firestore (.id y .to_dict()) para que el
+    bucle de abajo siga igual que cuando los datos venían de Firestore."""
 
+    def __init__(self, uid, datos):
+        self.id = uid
+        self._datos = datos
+
+    def to_dict(self):
+        return self._datos
+
+
+def main():
+    # NO SE LEE FIRESTORE (20 oct 2026) ---------------------------------------------------
+    # Antes esto hacía un .stream() del directorio entero en cada pasada. Con el cron cada 5
+    # minutos son 288 x 65 usuarios = 18.720 lecturas al día, más de un tercio del tope del
+    # plan gratuito (50.000), gastadas en releer lo mismo para preguntar "¿hay alguien
+    # nuevo?". Y cuando la cuota se agota se cae TODO lo que necesita base de datos -- la
+    # app incluida, no solo los crons. El 20 oct ya estaba pasando: tres crons devolviendo
+    # "429 Quota exceeded" cada mañana hasta que la cuota se reiniciaba.
+    #
+    # sync_users_directory.py ya lee el directorio cada 10 minutos para lo suyo, así que
+    # ahora deja una copia local y aquí se lee de ahí. Coste en Firestore: cero.
+    #
+    # Lo que se pierde: hasta 10 minutos de retraso en avisar de un usuario nuevo. Para un
+    # aviso de "se ha registrado alguien" no cambia nada.
     seen = _load_seen_uids()
     first_run = len(seen) == 0
 
     try:
-        users = list(db.collection("users_directory").stream())
+        with open(INSTANTANEA_PATH, encoding="utf-8") as f:
+            directorio = json.load(f)
+    except FileNotFoundError:
+        # Todavía no ha corrido sync_users_directory desde el cambio. En 10 minutos estará.
+        return
     except Exception as e:
-        log(f"aviso: no se pudo consultar users_directory: {e}")
+        log(f"aviso: no se pudo leer la copia local del directorio: {e}")
         return
 
-    all_uids = {u.id for u in users}
+    users = [_UsuarioLocal(uid, datos) for uid, datos in directorio.items()]
+    all_uids = set(directorio)
 
     if first_run:
         # Sembrar sin avisar -- ver docstring de arriba.
