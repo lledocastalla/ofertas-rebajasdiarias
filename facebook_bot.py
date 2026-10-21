@@ -112,10 +112,13 @@ def pick_offer(offers, posted):
 def build_caption(o):
     price = f"{o['price']:.2f}".replace(".", ",")
     original = f"{o['original_price']:.2f}".replace(".", ",")
+    # El enlace va EN LA PRIMERA LÍNEA (21 oct 2026, lo pidió el usuario). Facebook corta el
+    # texto con un "Ver más" y lo que queda debajo lo lee mucha menos gente; estaba en la
+    # tercera línea, que ya es tarde. Aquí el enlace sí es pulsable, al revés que en Instagram.
     return (
+        f"👉 {o['url']}\n\n"
         f"{o['title'][:100]} — {price}€ (antes {original}€, -{o['discount_percent']}%) "
         f"(enlace de afiliado)\n\n"
-        f"{o['url']}\n\n"
         f"{DISCLOSURE}\n\n"
         f"{WEBSITE_PLUG}"
     )

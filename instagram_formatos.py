@@ -32,6 +32,7 @@ Uso:
     python3 instagram_formatos.py --reel [--dry-run]       # escrito, pero Meta lo rechaza
     python3 instagram_formatos.py --historia [--dry-run]
     python3 instagram_formatos.py --carrusel [--dry-run]
+    python3 instagram_formatos.py --video     # genera el vídeo y lo deja accesible, sin publicar
 """
 
 import json
@@ -258,7 +259,8 @@ def portada_carrusel(cuantas):
 
 def pie_carrusel(ofertas):
     import instagram_imagen as ii
-    l = [f"Los {len(ofertas)} mejores chollos de la semana 🔥 Desliza para verlos todos.\n"]
+    l = ["👉 Enlace en la biografía · rebajasdiarias.es/ig\n",
+         f"Los {len(ofertas)} mejores chollos de la semana 🔥 Desliza para verlos todos.\n"]
     for o in ofertas:
         l.append(f"• {(o.get('title') or '')[:55]} — {ii.precio_txt(o.get('price'))} "
                  f"(antes {ii.precio_txt(o.get('original_price'))}, -{o.get('discount_percent')}%)")
@@ -266,7 +268,6 @@ def pie_carrusel(ofertas):
              "modelo, tu talla— y te salen los chollos que hay de eso ahora mismo.")
     l.append("\nComprobamos el precio que tenía antes: si el descuento está sobre un precio "
              "inflado, no lo publicamos.")
-    l.append("\n👉 Enlace en la biografía")
     l.append("\n#chollos #ofertas #descuentos #amazon #ahorro #rebajas #chollazo #ofertasamazon")
     return "\n".join(l)
 
@@ -407,7 +408,10 @@ def esperar_contenedor(cid, tok, intentos=30):
 
 
 def pie_reel(ofertas):
-    lineas = [f"🔥 {len(ofertas)} chollos de hoy con descuento real\n"]
+    # Enlace en la primera línea: Instagram corta el pie a las ~125 letras y lo de abajo no
+    # se lee. Lo pidió el usuario el 21 oct y tiene razón.
+    lineas = ["👉 Enlace en la biografía · rebajasdiarias.es/ig\n",
+              f"🔥 {len(ofertas)} chollos de hoy con descuento real\n"]
     for o in ofertas:
         import instagram_imagen as ii
         lineas.append(f"• {(o.get('title') or '')[:52]} — {ii.precio_txt(o.get('price'))} "
@@ -416,14 +420,14 @@ def pie_reel(ofertas):
                   "modelo, tu talla— y te salen los chollos que hay de eso ahora mismo.")
     lineas.append("\nComprobamos el precio que tenía antes: si el descuento está sobre un "
                   "precio inflado, no lo publicamos.")
-    lineas.append("\n👉 Enlace en la biografía")
     lineas.append("\n#chollos #ofertas #descuentos #amazon #ahorro #rebajas #chollazo #ofertasamazon")
     return "\n".join(lineas)
 
 
 def main():
     seco = "--dry-run" in sys.argv
-    es_reel = "--reel" in sys.argv
+    es_video = "--video" in sys.argv
+    es_reel = "--reel" in sys.argv or es_video
     es_carrusel = "--carrusel" in sys.argv
     if not es_reel and not es_carrusel and "--historia" not in sys.argv:
         print(__doc__)
@@ -462,6 +466,18 @@ def main():
         img.save(fichero, "JPEG", quality=92, optimize=True)
         pie = None
         log(f"imagen de historia lista: {fichero.name}")
+
+    if es_video:
+        # Solo generar y dejarlo accesible. Para TikTok (21 oct 2026): Instagram rechaza
+        # publicar vídeo por API, y la API de TikTok sin auditar tampoco publica sola. Pero
+        # el vídeo SÍ se genera bien, así que se deja en una dirección fija y el usuario lo
+        # sube desde el móvil en medio minuto. De paso gana lo que ninguna API puede darle:
+        # añadir un audio de moda, que en TikTok es la mitad del alcance.
+        if not desplegar():
+            return 1
+        log(f"listo para descargar: {BASE_PUBLICA}/{fichero.name}")
+        print("\n--- TEXTO PARA TIKTOK ---\n" + pie + "\n")
+        return 0
 
     if seco:
         log("en seco, no se publica.")
