@@ -21,9 +21,17 @@ CÓMO SE PUBLICA UN REEL (es distinto de una foto): el contenedor tarda en proce
 hay que preguntar por su estado hasta que diga FINISHED antes de publicarlo. Si se publica
 antes, Meta devuelve error.
 
+EL CARRUSEL ES EL SUSTITUTO DEL VÍDEO (21 oct 2026). El usuario pidió "algún vídeo a la
+semana en el muro" y no se puede: Meta responde "El tipo de contenido multimedia VÍDEO no es
+compatible" (subcode 2207067) porque ya no existen los vídeos de muro -- todo vídeo tiene que
+ser un reel, y los reels fallan al publicar. Un carrusel cubre la misma intención: una
+publicación semanal más rica, que ocupa más tiempo de pantalla porque hay que deslizar, y que
+en una cuenta de ofertas funciona bien porque deja ver cinco chollos de un tirón.
+
 Uso:
-    python3 instagram_formatos.py --reel [--dry-run]
+    python3 instagram_formatos.py --reel [--dry-run]       # escrito, pero Meta lo rechaza
     python3 instagram_formatos.py --historia [--dry-run]
+    python3 instagram_formatos.py --carrusel [--dry-run]
 """
 
 import json
@@ -46,6 +54,7 @@ GRAPH = "https://graph.facebook.com/v21.0"
 
 ANCHO, ALTO = 1080, 1920      # vertical, el formato de reels e historias
 CUANTAS_REEL = 5              # ofertas por reel
+CUANTAS_CARRUSEL = 6          # 1 portada + 5 ofertas; Instagram admite hasta 10
 SEGUNDOS_POR_OFERTA = 3       # 5 x 3 = 15 s, que es la duración que mejor se termina de ver
 
 sys.path.insert(0, str(REPO_WEB / "scripts"))
@@ -199,6 +208,122 @@ def componer_vertical(oferta, pie_extra=None):
     return lienzo
 
 
+def portada_carrusel(cuantas):
+    """La primera imagen decide si alguien desliza o pasa de largo, así que no es una oferta:
+    es un titular que dice qué va a encontrar y cuántas cosas hay."""
+    from PIL import Image, ImageDraw
+    import instagram_imagen as ii
+
+    LADO = 1080
+    FONDO, BLANCO, GRIS, ROJO = (17, 24, 36), (255, 255, 255), (150, 160, 175), (214, 45, 45)
+    lienzo = Image.new("RGB", (LADO, LADO), FONDO)
+    d = ImageDraw.Draw(lienzo)
+    # El tamaño se ajusta hasta que quepa. Con un tamaño fijo "MEJORES CHOLLOS" se salía por
+    # los dos lados: DejaVu (la fuente de la Pi) es bastante más ancha que Avenir (la del
+    # Mac), así que lo que cuadra al probar en el Mac se desborda en producción.
+    MARGEN = 70
+    for txt, tam, y, color in ((f"LOS {cuantas}", 150, 210, BLANCO),
+                               ("MEJORES CHOLLOS", 104, 380, BLANCO),
+                               ("DE LA SEMANA", 104, 500, ROJO)):
+        f = _fuente(tam)
+        while tam > 40 and d.textlength(txt, font=f) > LADO - 2 * MARGEN:
+            tam -= 4
+            f = _fuente(tam)
+        d.text(((LADO - d.textlength(txt, font=f)) / 2, y), txt, font=f, fill=color)
+    for txt, y in (("Descuentos comprobados contra el precio anterior.", 700),
+                   ("Si está inflado, no entra.", 752)):
+        tam = 40
+        f = _fuente(tam, negrita=False)
+        while tam > 24 and d.textlength(txt, font=f) > LADO - 2 * MARGEN:
+            tam -= 2
+            f = _fuente(tam, negrita=False)
+        d.text(((LADO - d.textlength(txt, font=f)) / 2, y), txt, font=f, fill=GRIS)
+    f = _fuente(44)
+    d.text(((LADO - d.textlength("Desliza →", font=f)) / 2, 860), "Desliza →", font=f,
+           fill=BLANCO)
+    try:
+        logo = Image.open(ii.LOGO).convert("RGBA")
+        c = logo.getbbox()
+        if c:
+            logo = logo.crop(c)
+        logo = logo.resize((int(logo.width * 70 / logo.height), 70), Image.LANCZOS)
+        lienzo.paste(logo, ((LADO - logo.width) // 2, LADO - 150), logo)
+    except Exception:
+        pass
+    fc = _fuente(32, negrita=False)
+    d.text(((LADO - d.textlength("rebajasdiarias.es", font=fc)) / 2, LADO - 62),
+           "rebajasdiarias.es", font=fc, fill=GRIS)
+    return lienzo
+
+
+def pie_carrusel(ofertas):
+    import instagram_imagen as ii
+    l = [f"Los {len(ofertas)} mejores chollos de la semana 🔥 Desliza para verlos todos.\n"]
+    for o in ofertas:
+        l.append(f"• {(o.get('title') or '')[:55]} — {ii.precio_txt(o.get('price'))} "
+                 f"(antes {ii.precio_txt(o.get('original_price'))}, -{o.get('discount_percent')}%)")
+    l.append("\n🔎 ¿Buscabas otra cosa? En la app escribes lo que quieras —una marca, un "
+             "modelo, tu talla— y te salen los chollos que hay de eso ahora mismo.")
+    l.append("\nComprobamos el precio que tenía antes: si el descuento está sobre un precio "
+             "inflado, no lo publicamos.")
+    l.append("\n👉 Enlace en la biografía")
+    l.append("\n#chollos #ofertas #descuentos #amazon #ahorro #rebajas #chollazo #ofertasamazon")
+    return "\n".join(l)
+
+
+def publicar_carrusel(ofertas, tok, ig, seco):
+    """Son TRES pasos: una llamada por imagen con is_carousel_item, otra para el contenedor
+    padre con la lista de hijos, y la publicación. Todas las imágenes deben tener la misma
+    proporción, por eso se usa la tarjeta cuadrada de siempre."""
+    import instagram_imagen as ii
+
+    CARPETA_IG.mkdir(exist_ok=True)
+    hoy = date.today().isoformat()
+    ficheros = []
+    portada = portada_carrusel(len(ofertas))
+    f0 = CARPETA_IG / f"carrusel-{hoy}-00.jpg"
+    portada.save(f0, "JPEG", quality=92, optimize=True)
+    ficheros.append(f0)
+    for i, o in enumerate(ofertas, 1):
+        img = ii.componer(o)
+        if img is None:
+            log(f"  sin imagen: {(o.get('title') or '')[:40]}")
+            continue
+        f = CARPETA_IG / f"carrusel-{hoy}-{i:02d}.jpg"
+        img.save(f, "JPEG", quality=92, optimize=True)
+        ficheros.append(f)
+    if len(ficheros) < 3:
+        log("no hay imágenes suficientes para un carrusel")
+        return 1
+    log(f"{len(ficheros)} imágenes (portada + {len(ficheros)-1} ofertas)")
+
+    pie = pie_carrusel(ofertas)
+    if seco:
+        log("en seco, no se publica. Pie de foto:")
+        print("\n" + pie + "\n")
+        return 0
+
+    if not desplegar():
+        return 1
+    try:
+        hijos = []
+        for f in ficheros:
+            r = _post(f"{GRAPH}/{ig}/media", {
+                "image_url": f"{BASE_PUBLICA}/{f.name}",
+                "is_carousel_item": "true", "access_token": tok})
+            hijos.append(r["id"])
+        padre = _post(f"{GRAPH}/{ig}/media", {
+            "media_type": "CAROUSEL", "children": ",".join(hijos),
+            "caption": pie, "access_token": tok})
+        pub = _post(f"{GRAPH}/{ig}/media_publish",
+                    {"creation_id": padre["id"], "access_token": tok})
+    except Exception as e:
+        log(f"ERROR publicando el carrusel: {e}")
+        return 1
+    log(f"publicado: {pub}")
+    return 0
+
+
 def montar_reel(ofertas, destino):
     """Fotogramas + ffmpeg. Lleva un zoom lento: un pase de imágenes quietas parece lo que es,
     y Instagram reparte peor lo que no tiene movimiento. Y una pista de silencio porque
@@ -299,11 +424,12 @@ def pie_reel(ofertas):
 def main():
     seco = "--dry-run" in sys.argv
     es_reel = "--reel" in sys.argv
-    if not es_reel and "--historia" not in sys.argv:
+    es_carrusel = "--carrusel" in sys.argv
+    if not es_reel and not es_carrusel and "--historia" not in sys.argv:
         print(__doc__)
         return 1
 
-    cuantas = CUANTAS_REEL if es_reel else 1
+    cuantas = CUANTAS_CARRUSEL if es_carrusel else (CUANTAS_REEL if es_reel else 1)
     ofertas = elegir(cuantas)
     if not ofertas:
         log("no hay ofertas que cumplan los criterios hoy")
@@ -311,6 +437,14 @@ def main():
     for o in ofertas:
         log(f"  {o.get('category')}: {(o.get('title') or '')[:46]} "
             f"-{o.get('discount_percent')}%")
+
+    if es_carrusel:
+        if not CREDENCIALES.exists() and not seco:
+            log(f"Falta {CREDENCIALES}")
+            return 1
+        creds = json.loads(CREDENCIALES.read_text()) if CREDENCIALES.exists() else {}
+        return publicar_carrusel(ofertas, creds.get("access_token"),
+                                 creds.get("ig_user_id"), seco)
 
     CARPETA_IG.mkdir(exist_ok=True)
     hoy = date.today().isoformat()
