@@ -56,7 +56,12 @@ GRAPH = "https://graph.facebook.com/v21.0"
 ANCHO, ALTO = 1080, 1920      # vertical, el formato de reels e historias
 CUANTAS_REEL = 5              # ofertas por reel
 CUANTAS_CARRUSEL = 6          # 1 portada + 5 ofertas; Instagram admite hasta 10
-SEGUNDOS_POR_OFERTA = 3       # 5 x 3 = 15 s, que es la duración que mejor se termina de ver
+# Ritmo pensado para TikTok, no para Instagram (21 oct 2026). TikTok decide en el primer
+# segundo si te sigue enseñando, así que el vídeo abre con un rótulo gancho y va más rápido:
+# 2,4 s por oferta en vez de 3, y nada de empezar directamente con un producto.
+SEGUNDOS_GANCHO = 1.6
+SEGUNDOS_POR_OFERTA = 2.4
+SEGUNDOS_CIERRE = 1.8
 
 sys.path.insert(0, str(REPO_WEB / "scripts"))
 
@@ -325,6 +330,31 @@ def publicar_carrusel(ofertas, tok, ig, seco):
     return 0
 
 
+def _rotulo(lineas, sub=None):
+    """Una tarjeta de solo texto, para el gancho del principio y el cierre del final."""
+    from PIL import Image, ImageDraw
+    FONDO, BLANCO, ROJO, GRIS = (17, 24, 36), (255, 255, 255), (214, 45, 45), (150, 160, 175)
+    img = Image.new("RGB", (ANCHO, ALTO), FONDO)
+    d = ImageDraw.Draw(img)
+    y = (ALTO - len(lineas) * 190) // 2 - 60
+    for txt, color in lineas:
+        tam = 150
+        f = _fuente(tam)
+        while tam > 50 and d.textlength(txt, font=f) > ANCHO - 120:
+            tam -= 6
+            f = _fuente(tam)
+        d.text(((ANCHO - d.textlength(txt, font=f)) / 2, y), txt, font=f, fill=color)
+        y += int(tam * 1.25)
+    if sub:
+        tam = 54
+        f = _fuente(tam, negrita=False)
+        while tam > 30 and d.textlength(sub, font=f) > ANCHO - 140:
+            tam -= 3
+            f = _fuente(tam, negrita=False)
+        d.text(((ANCHO - d.textlength(sub, font=f)) / 2, y + 60), sub, font=f, fill=GRIS)
+    return img
+
+
 def montar_reel(ofertas, destino):
     """Fotogramas + ffmpeg. Lleva un zoom lento: un pase de imágenes quietas parece lo que es,
     y Instagram reparte peor lo que no tiene movimiento. Y una pista de silencio porque
@@ -333,28 +363,43 @@ def montar_reel(ofertas, destino):
     subprocess.run(["rm", "-rf", str(tmp)], check=False)
     tmp.mkdir(parents=True, exist_ok=True)
 
-    for i, o in enumerate(ofertas):
+    BLANCO, ROJO = (255, 255, 255), (214, 45, 45)
+    # El gancho va el primero y es solo texto: TikTok decide en el primer segundo, y abrir
+    # con la foto de un producto se lee como anuncio y se pasa de largo.
+    _rotulo([(f"{len(ofertas)} CHOLLOS", BLANCO), ("DE HOY", ROJO)],
+            "con el precio de antes a la vista").save(tmp / "00_gancho.jpg", "JPEG", quality=92)
+    duraciones = [SEGUNDOS_GANCHO]
+    for i, o in enumerate(ofertas, 1):
         img = componer_vertical(o)
         if img is None:
             log(f"  sin imagen descargable: {o.get('title','')[:40]}")
             continue
         img.save(tmp / f"{i:02d}.jpg", "JPEG", quality=92)
+        duraciones.append(SEGUNDOS_POR_OFERTA)
+    # Y el cierre dice qué hacer. Sin esto el vídeo se acaba y no pasa nada.
+    _rotulo([("BUSCA", BLANCO), ("LO TUYO", ROJO)],
+            "en la app · enlace en la bio").save(tmp / "99_cierre.jpg", "JPEG", quality=92)
+    duraciones.append(SEGUNDOS_CIERRE)
+
     marcos = sorted(tmp.glob("*.jpg"))
-    if len(marcos) < 2:
-        log("no hay suficientes imágenes para un reel")
+    if len(marcos) < 4:
+        log("no hay suficientes imágenes para el vídeo")
         return False
 
     lista = tmp / "lista.txt"
-    lista.write_text("".join(f"file '{m}'\nduration {SEGUNDOS_POR_OFERTA}\n" for m in marcos)
+    lista.write_text("".join(f"file '{m}'\nduration {d}\n"
+                             for m, d in zip(marcos, duraciones))
                      + f"file '{marcos[-1]}'\n", encoding="utf-8")
-    total = len(marcos) * SEGUNDOS_POR_OFERTA
+    total = round(sum(duraciones), 2)
     r = subprocess.run([
         "ffmpeg", "-y", "-loglevel", "error",
         "-f", "concat", "-safe", "0", "-i", str(lista),
         "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
         # zoompan da el zoom lento; fps 30 porque a 25 Instagram recomprime y se nota.
-        "-vf", (f"scale={ANCHO*2}:-2,zoompan=z='min(zoom+0.0008,1.12)':"
-                f"d={SEGUNDOS_POR_OFERTA*30}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
+        # Zoom algo más vivo que antes (0.0014 frente a 0.0008): en TikTok el movimiento
+        # lento se lee como imagen fija y la gente desliza.
+        "-vf", (f"scale={ANCHO*2}:-2,zoompan=z='min(zoom+0.0014,1.15)':"
+                f"d={int(SEGUNDOS_POR_OFERTA*30)}:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
                 f"s={ANCHO}x{ALTO}:fps=30,format=yuv420p"),
         # Ajustes pegados a lo que pide Meta para reels. El primer intento (crf 23, aac 96k,
         # GOP por defecto) daba "Fatal, subcode 2207085" al publicar AUNQUE el contenedor
