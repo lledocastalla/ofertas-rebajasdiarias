@@ -174,6 +174,61 @@ Permisos que necesita el token: `instagram_basic`, `instagram_content_publish` y
 `instagram_manage_comments`. **Caduca a los 60 días** (misma pega que el bot de Facebook):
 cuando empiece a fallar con error de token, hay que regenerarlo.
 
+## TikTok (21 oct 2026) — en curso, bloqueado por la revisión de TikTok
+
+El usuario tiene canal propio con **200 seguidores** y decidió priorizarlo. El vídeo diario
+ya se genera; lo que no se puede todavía es publicarlo solo.
+
+### Lo que hay montado
+
+`instagram_formatos.py --video` genera a las **08:15** un vídeo vertical pensado para TikTok
+y lo deja en una dirección fija:
+
+```
+https://rebajasdiarias.es/ig/reel-AAAA-MM-DD.mp4
+```
+
+15,4 s, 1080×1920, h264+aac. **Está hecho para TikTok, no para Instagram**: abre con un rótulo
+gancho de 1,6 s ("5 CHOLLOS DE HOY"), va a 2,4 s por oferta con zoom vivo y cierra con "BUSCA
+LO TUYO · enlace en la bio". Antes empezaba con la foto de un producto y avanzaba despacio: en
+TikTok eso se lee como anuncio y se desliza antes del segundo. **No devolverlo al estilo
+Instagram** — allí el vídeo no se puede publicar de ninguna manera (ver más abajo).
+
+Hoy se sube **a mano**, y de paso se le añade un audio de moda, que es casi la mitad del
+alcance en TikTok y que ninguna API puede poner.
+
+### Cuenta de desarrollador, creada el 21 oct
+
+TikTok ya **no deja entrar con la cuenta normal de TikTok**: exige una cuenta aparte de
+*Enterprise developer*, y dentro de ella una organización antes de poder crear nada.
+
+| | |
+|---|---|
+| Organización | **Rebajas Diarias** — `7699205258425173010` (el nombre no se puede cambiar) |
+| App | **RebajasDiariasBot** — `7699151106762524690`, tipo *Other*, en borrador |
+| Productos añadidos | Login Kit + API de publicación de contenido (el segundo exige el primero) |
+| Ámbitos añadidos | `user.info.basic`, `user.info.profile` |
+| Credenciales | Client key y secret, en el panel de la app |
+
+### Lo que falta y por qué está parado
+
+**Los ámbitos de publicación (`video.publish` / `video.upload`) NO aparecen en la lista.** Solo
+se ofrecen los tres de lectura. Es decir: **hasta que TikTok revise y apruebe la app no se
+puede publicar nada por API**, ni siquiera a borradores.
+
+Para enviarla a revisión hay que completar la ficha: icono de 1024×1024, descripción, URLs de
+términos y privacidad, y un **vídeo de demostración** que enseñe la app funcionando.
+
+No se ha montado el código de publicación a propósito, y esta vez se decidió antes y no
+después: con los reels de Instagram se escribió la integración entera y al final Meta no dejó
+publicar. Aquí se espera a tener el permiso delante.
+
+### Qué NO hacer
+
+Hay librerías que suben a TikTok simulando el navegador con las cookies de la sesión. Va
+contra sus términos y la cuenta acaba restringida o cerrada — ya pasó algo parecido con Meta
+el 20 oct. Con 200 seguidores conseguidos a pulso, no compensa.
+
 ## Esquema de `offers.json`
 
 ```json
