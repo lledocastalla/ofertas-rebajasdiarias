@@ -53,7 +53,7 @@ import subprocess
 import sys
 import urllib.parse
 import urllib.request
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 HOME = Path.home()
@@ -156,18 +156,27 @@ def elegir_oferta():
     return oferta, motivo
 
 
-def generar(oferta):
+def generar(oferta, motivo=""):
     """Compone la imagen con el mismo módulo que usa todo lo demás, para que no haya dos
     estilos distintos conviviendo."""
     import instagram_imagen as ii
+    import instagram_angulos as ia
 
-    img = ii.componer(oferta)
+    # El ángulo decide de QUÉ va esta publicación ("te ahorras 52 €", "lo más buscado"...).
+    # Sin esto las 6 del día tienen la misma forma y el seguidor las reconoce y pasa de largo.
+    # La semilla es la hora, para que dos publicaciones del mismo día no caigan en el mismo.
+    _, rotulo, linea = ia.elegir_angulo(
+        oferta,
+        viene_de_busqueda="buscado" in (motivo or ""),
+        semilla=datetime.now().strftime("%H"))
+
+    img = ii.componer(oferta, rotulo=rotulo or None)
     if img is None:
         return None, None
     CARPETA_IG.mkdir(exist_ok=True)
     nombre = f"{date.today().isoformat()}-{oferta['id']}.jpg"
     img.save(CARPETA_IG / nombre, "JPEG", quality=90, optimize=True)
-    return nombre, ii.pie_de_foto(oferta)
+    return nombre, ii.pie_de_foto(oferta, primera_linea=linea or None)
 
 
 def regenerar_landing():
@@ -208,7 +217,7 @@ def publicar(seco):
         log("no hay ninguna oferta nueva que cumpla los criterios hoy")
         return 0
 
-    nombre, pie = generar(oferta)
+    nombre, pie = generar(oferta, motivo)
     if not nombre:
         log(f"no se pudo componer la imagen de {oferta['id']}")
         return 1
@@ -252,7 +261,10 @@ def publicar(seco):
         log(f"ERROR publicando: {e}")
         return 1
 
-    _recordar(ESTADO_TEMAS, it_tema(motivo), tope=20)
+    # Se apunta "tema|categoría": desde que se publica 6 veces al día, la variedad hay que
+    # cuidarla también por categoría (seis ofertas de Moda Hombre el mismo día cansan igual
+    # que seis adidas, aunque ninguna repita término de búsqueda).
+    _recordar(ESTADO_TEMAS, f"{it_tema(motivo)}|{oferta.get('category') or ''}", tope=40)
     log(f"publicado: {pub}")
     return 0
 
