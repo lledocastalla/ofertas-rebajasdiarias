@@ -38,9 +38,13 @@ sync_users_directory.log). Ahora versionado para que esto no vuelva a pasar.
 Uso: cron cada hora, ver crontab en RASPI_REBAJASDIARIAS.md.
 """
 
+import json
 import os
 
 from update_offers import FIREBASE_CREDENTIALS_PATH
+
+# Copia local del directorio de usuarios, para que new_user_watcher.py no lea Firestore.
+INSTANTANEA_PATH = os.path.expanduser("~/users_directory_local.json")
 
 
 def log(msg):
@@ -79,6 +83,14 @@ def main():
     existing = {d.id: (d.to_dict() or {}) for d in existing_docs}
 
     seen_uids = set()
+    # Copia local del directorio para que new_user_watcher.py NO tenga que leer Firestore
+    # (20 oct 2026). Ese cron corría cada 5 minutos y hacía un .stream() del directorio
+    # entero solo para mirar si había algún UID nuevo: 288 pasadas x 65 usuarios = 18.720
+    # lecturas al día, más de un tercio del tope diario del plan gratuito, gastadas en releer
+    # lo mismo. Y al agotarse la cuota se cae TODO lo que necesita base de datos, incluida la
+    # app (en los logs del 20 oct: "429 Quota exceeded" en tres crons a la vez).
+    # Aquí la lectura ya está hecha de todas formas, así que la copia sale gratis.
+    instantanea = {}
     batch = db.batch()
     batch_count = 0
     synced = 0
@@ -97,6 +109,7 @@ def main():
             "email": user.email or "",
             "photoURL": user.photo_url or "",
         }
+        instantanea[user.uid] = {"displayName": datos["displayName"], "email": datos["email"]}
         anterior = existing.get(user.uid)
         if anterior is not None and all(anterior.get(k) == v for k, v in datos.items()):
             sin_cambios += 1
@@ -131,6 +144,16 @@ def main():
                 del_count = 0
     if del_count > 0:
         del_batch.commit()
+
+    # Se escribe al final y de golpe: si algo peta antes, se queda la copia anterior, que es
+    # vieja pero coherente -- mejor que media copia.
+    try:
+        tmp = f"{INSTANTANEA_PATH}.tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(instantanea, f)
+        os.replace(tmp, INSTANTANEA_PATH)
+    except Exception as e:
+        log(f"aviso: no se pudo guardar la copia local del directorio: {e}")
 
     log(f"{synced} usuario(s) escrito(s), {sin_cambios} sin cambios, "
         f"{skipped_anonymous} anónimo(s) omitido(s), {removed} entrada(s) vieja(s) borrada(s)")
