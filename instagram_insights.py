@@ -30,8 +30,6 @@ from pathlib import Path
 
 CREDENCIALES = Path.home() / ".rebajas_instagram_credentials.json"
 GRAPH = "https://graph.facebook.com/v21.0"
-# El orden es el de la tabla. reach primero porque es el que manda en el algoritmo.
-METRICAS = ["reach", "saved", "profile_visits", "likes", "comments", "shares"]
 
 
 def get(path, params):
@@ -44,6 +42,31 @@ def get(path, params):
             return {"_err": json.loads(e.read().decode()).get("error", {}).get("message", "?")}
         except Exception:
             return {"_err": str(e)}
+
+
+# Métricas por publicación. Medido el 21 oct: todas existen, pero NO todas valen para todos
+# los formatos -- pedir profile_visits sobre un carrusel o un vídeo antiguo tumba la consulta
+# entera con "does not support ... for this media product type". Así que se piden las básicas
+# (válidas en todo) y aparte las extra, que si fallan se dejan fuera sin perder el resto.
+METRICAS = ["reach", "saved", "likes", "comments", "shares", "views", "total_interactions"]
+METRICAS_EXTRA = ["profile_visits", "follows"]
+
+
+def insights_de(media_id, tok):
+    """Devuelve (datos, error_de_permiso). Distingue los dos fallos a propósito:
+    - falta de permiso -> hay que arreglarlo, se avisa y se para;
+    - métrica no soportada en ese formato -> se sigue con las que sí valen.
+    Confundirlos lleva a tablas de ceros que se leen como 'no lo ve nadie'."""
+    datos = {}
+    for grupo in (METRICAS, METRICAS_EXTRA):
+        r = get(f"{media_id}/insights", {"metric": ",".join(grupo), "access_token": tok})
+        if r.get("_err"):
+            if "permission" in r["_err"].lower():
+                return datos, r["_err"]
+            continue  # formato que no admite esas métricas: no es un fallo que arreglar
+        for d in r.get("data", []):
+            datos[d["name"]] = (d.get("values") or [{}])[0].get("value", 0)
+    return datos, None
 
 
 def main():
@@ -72,36 +95,31 @@ def main():
         # Los insights de una publicación solo existen a partir de cierta antigüedad y no todas
         # las métricas están en todos los formatos; si falta una, se deja a cero en vez de
         # romper la tabla entera.
-        ins = get(f"{m['id']}/insights", {"metric": ",".join(METRICAS), "access_token": tok})
-        if ins.get("_err"):
-            # Antes esto devolvía ceros en silencio y la tabla salía entera a 0, que se lee
-            # como "nadie lo ve" cuando en realidad es "no tenemos permiso para mirarlo".
-            # Un error disfrazado de dato es peor que no tener el dato.
-            print(f"ERROR leyendo insights: {ins['_err']}", file=sys.stderr)
-            if "permission" in ins["_err"].lower():
-                print("Falta el permiso instagram_manage_insights en el token. Hay que "
-                      "añadirlo a la app y regenerar el token.", file=sys.stderr)
+        datos, sin_permiso = insights_de(m["id"], tok)
+        if sin_permiso:
+            print(f"ERROR: {sin_permiso}\nFalta instagram_manage_insights en el token: "
+                  f"añadirlo a la app y regenerarlo con renovar_fb.py.", file=sys.stderr)
             return 1
-        datos = {d["name"]: (d.get("values") or [{}])[0].get("value", 0)
-                 for d in ins.get("data", [])}
         titulo = (m.get("caption") or "").split("\n")[0][:42]
         filas.append({"fecha": (m.get("timestamp") or "")[:10], "titulo": titulo,
-                      "enlace": m.get("permalink"), **{k: datos.get(k, 0) for k in METRICAS}})
+                      "enlace": m.get("permalink"),
+                      **{k: datos.get(k, 0) for k in METRICAS + METRICAS_EXTRA}})
 
-    cab = f"{'fecha':<11}{'alcance':>8}{'guard.':>7}{'perfil':>7}{'likes':>6}{'coment':>7}  título"
+    cab = (f"{'fecha':<11}{'vistas':>7}{'alcance':>8}{'guard.':>7}{'likes':>6}"
+           f"{'coment':>7}  título")
     print(cab)
     print("-" * len(cab))
-    for f in sorted(filas, key=lambda x: -x["reach"]):
-        print(f"{f['fecha']:<11}{f['reach']:>8}{f['saved']:>7}{f['profile_visits']:>7}"
+    for f in sorted(filas, key=lambda x: -(x["views"] or x["reach"])):
+        print(f"{f['fecha']:<11}{f['views']:>7}{f['reach']:>8}{f['saved']:>7}"
               f"{f['likes']:>6}{f['comments']:>7}  {f['titulo']}")
 
-    vistas = [f for f in filas if f["reach"]]
+    vistas = [f for f in filas if f["views"] or f["reach"]]
     if vistas:
         n = len(vistas)
         print(f"\nMedia de {n} publicación(es) con datos: "
+              f"vistas {sum(f['views'] for f in vistas)//n}, "
               f"alcance {sum(f['reach'] for f in vistas)//n}, "
-              f"guardados {sum(f['saved'] for f in vistas)/n:.1f}, "
-              f"visitas al perfil {sum(f['profile_visits'] for f in vistas)/n:.1f}")
+              f"guardados {sum(f['saved'] for f in vistas)/n:.1f}")
         print("\nGuardados es la señal que más importa aquí: guardar una oferta significa "
               "'me interesa de verdad', y a Instagram le pesa más que un me gusta.")
     else:

@@ -43,7 +43,6 @@ CRED_IG = HOME / ".rebajas_instagram_credentials.json"
 CRED_FB = HOME / ".rebajas_facebook_credentials.json"
 LOG_BOT = HOME / "instagram_bot.log"
 GRAPH = "https://graph.facebook.com/v21.0"
-METRICAS = ["reach", "saved", "profile_visits", "likes", "comments", "shares"]
 CUANTAS = 60
 
 
@@ -61,6 +60,31 @@ def get(path, params):
             return {"_err": json.loads(e.read().decode()).get("error", {}).get("message", "?")}
         except Exception:
             return {"_err": str(e)}
+
+
+# Métricas por publicación. Medido el 21 oct: todas existen, pero NO todas valen para todos
+# los formatos -- pedir profile_visits sobre un carrusel o un vídeo antiguo tumba la consulta
+# entera con "does not support ... for this media product type". Así que se piden las básicas
+# (válidas en todo) y aparte las extra, que si fallan se dejan fuera sin perder el resto.
+METRICAS = ["reach", "saved", "likes", "comments", "shares", "views", "total_interactions"]
+METRICAS_EXTRA = ["profile_visits", "follows"]
+
+
+def insights_de(media_id, tok):
+    """Devuelve (datos, error_de_permiso). Distingue los dos fallos a propósito:
+    - falta de permiso -> hay que arreglarlo, se avisa y se para;
+    - métrica no soportada en ese formato -> se sigue con las que sí valen.
+    Confundirlos lleva a tablas de ceros que se leen como 'no lo ve nadie'."""
+    datos = {}
+    for grupo in (METRICAS, METRICAS_EXTRA):
+        r = get(f"{media_id}/insights", {"metric": ",".join(grupo), "access_token": tok})
+        if r.get("_err"):
+            if "permission" in r["_err"].lower():
+                return datos, r["_err"]
+            continue  # formato que no admite esas métricas: no es un fallo que arreglar
+        for d in r.get("data", []):
+            datos[d["name"]] = (d.get("values") or [{}])[0].get("value", 0)
+    return datos, None
 
 
 def motivos_del_log():
@@ -107,14 +131,11 @@ def instagram():
         fila = {"id": m.get("id"), "fecha": m.get("timestamp"), "enlace": m.get("permalink"),
                 "tipo": m.get("media_type"),
                 "titulo": (m.get("caption") or "").split("\n")[0][:90]}
-        ins = get(f"{m['id']}/insights", {"metric": ",".join(METRICAS), "access_token": tok})
-        if ins.get("_err"):
-            # Se apunta una vez y se sigue: el agente tiene que poder distinguir "nadie lo ve"
-            # de "no podemos mirarlo", y para eso necesita el motivo, no una fila de ceros.
-            fallo = fallo or ins["_err"]
-        else:
-            for d in ins.get("data", []):
-                fila[d["name"]] = (d.get("values") or [{}])[0].get("value", 0)
+        # El agente tiene que poder distinguir "nadie lo ve" de "no podemos mirarlo", así que
+        # un fallo de permiso se declara en el fichero en vez de exportarse como ceros.
+        datos, sin_permiso = insights_de(m["id"], tok)
+        fallo = fallo or sin_permiso
+        fila.update(datos)
         publicaciones.append(fila)
 
     return {"perfil": {k: v for k, v in perfil.items() if k != "id"},
