@@ -40,11 +40,42 @@ Uso: cron cada hora, ver crontab en RASPI_REBAJASDIARIAS.md.
 
 import json
 import os
+import time
 
 from update_offers import FIREBASE_CREDENTIALS_PATH
 
 # Copia local del directorio de usuarios, para que new_user_watcher.py no lea Firestore.
 INSTANTANEA_PATH = os.path.expanduser("~/users_directory_local.json")
+ESTADO_PATH = os.path.expanduser("~/sync_users_directory_lectura.json")
+LECTURA_COMPLETA_CADA = 3600  # segundos
+
+
+def _leer_estado():
+    try:
+        with open(ESTADO_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _guardar_estado(d):
+    try:
+        with open(ESTADO_PATH, "w", encoding="utf-8") as f:
+            json.dump(d, f)
+    except Exception:
+        pass
+
+
+def _leer_instantanea():
+    """La copia local de la última pasada. Si no existe (primera vez tras el cambio), se
+    devuelve vacío y entonces todos los usuarios parecen nuevos: se reescribirían los 65 una
+    vez. Es una escritura de más, puntual, y a cambio nunca se deja de escribir algo que sí
+    había cambiado."""
+    try:
+        with open(INSTANTANEA_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
 
 
 def log(msg):
@@ -79,8 +110,34 @@ def main():
     # en la app y en la web, solo se lee la lista para el selector de admin). Si algún día
     # hiciera falta "cuándo se vio por última vez", habría que guardarlo en otro sitio que no
     # cueste una escritura por usuario y pasada.
-    existing_docs = list(db.collection("users_directory").stream())
-    existing = {d.id: (d.to_dict() or {}) for d in existing_docs}
+    # LEER FIRESTORE SOLO UNA VEZ POR HORA (22 oct 2026) ---------------------------------
+    # Este cron va cada 10 min y leía el directorio entero en CADA pasada: 65 usuarios x 144
+    # pasadas = ~9.400 lecturas al día, el mayor consumidor de la Pi. Con el tope de 50.000
+    # del plan gratuito eso deja poco margen, y cuando la cuota se agota no se cae solo la
+    # Pi: se cae la app de los usuarios (favoritos, alertas, comunidad dejan de responder).
+    #
+    # Pero el directorio casi nunca cambia, así que releerlo cada 10 minutos no aporta nada.
+    # Ahora se compara contra la copia local y solo se lee Firestore de verdad una vez por
+    # hora. Eso baja de ~9.400 a ~1.600 lecturas al día sin tocar la frecuencia del cron,
+    # que la pidió el usuario expresamente el 21 sep.
+    #
+    # La lectura horaria no es opcional: es la que detecta cambios hechos fuera de aquí y la
+    # que permite limpiar usuarios borrados. Si solo nos fiáramos de la copia local, un
+    # desajuste se quedaría para siempre. Con la pasada horaria se corrige solo.
+    ahora = time.time()
+    estado = _leer_estado()
+    toca_leer = (ahora - estado.get("ultima_lectura", 0)) >= LECTURA_COMPLETA_CADA
+    existing_docs = None
+    if toca_leer:
+        existing_docs = list(db.collection("users_directory").stream())
+        existing = {d.id: (d.to_dict() or {}) for d in existing_docs}
+        estado["ultima_lectura"] = ahora
+        _guardar_estado(estado)
+    else:
+        # Copia local: lo que se escribió la última vez. Solo lleva displayName y email, así
+        # que photoURL no se puede comparar y se omite del cotejo en las pasadas rápidas; si
+        # cambia una foto, la pasada horaria lo pilla.
+        existing = _leer_instantanea()
 
     seen_uids = set()
     # Copia local del directorio para que new_user_watcher.py NO tenga que leer Firestore
@@ -111,7 +168,8 @@ def main():
         }
         instantanea[user.uid] = {"displayName": datos["displayName"], "email": datos["email"]}
         anterior = existing.get(user.uid)
-        if anterior is not None and all(anterior.get(k) == v for k, v in datos.items()):
+        campos = datos if toca_leer else {k: datos[k] for k in ("displayName", "email")}
+        if anterior is not None and all(anterior.get(k) == v for k, v in campos.items()):
             sin_cambios += 1
             continue
         doc_ref = db.collection("users_directory").document(user.uid)
@@ -130,8 +188,14 @@ def main():
     # se considere anónima (nunca se añadió a seen_uids arriba) -- así una sincronización vieja
     # de antes de este cambio también se limpia sola, sin paso manual aparte.
     removed = 0
-    # existing_docs ya se leyó arriba -- no se vuelve a leer (ahorra 64 lecturas por pasada).
-    del_batch = db.batch()
+    # Solo en la pasada completa: borrar requiere saber qué hay de verdad en Firestore, y la
+    # copia local no sirve para eso. En las pasadas rápidas se salta y ya se limpiará dentro
+    # de la hora -- un usuario borrado que siga una hora de más en el directorio no molesta
+    # a nadie, y es mucho mejor que arriesgarse a borrar por un desajuste de la copia.
+    # existing_docs ya se leyó arriba -- no se vuelve a leer.
+    del_batch = db.batch() if existing_docs is not None else None
+    if existing_docs is None:
+        existing_docs = []
     del_count = 0
     for doc in existing_docs:
         if doc.id not in seen_uids:
@@ -142,7 +206,7 @@ def main():
                 del_batch.commit()
                 del_batch = db.batch()
                 del_count = 0
-    if del_count > 0:
+    if del_count > 0 and del_batch is not None:
         del_batch.commit()
 
     # Se escribe al final y de golpe: si algo peta antes, se queda la copia anterior, que es
@@ -155,6 +219,10 @@ def main():
     except Exception as e:
         log(f"aviso: no se pudo guardar la copia local del directorio: {e}")
 
+    # Que se vea en el log en qué modo fue cada pasada: sin esto, al depurar un consumo
+    # raro de cuota no hay forma de saber cuántas pasadas leyeron Firestore de verdad.
+    log("lectura COMPLETA de Firestore" if toca_leer
+        else "pasada rápida (copia local, 0 lecturas de Firestore)")
     log(f"{synced} usuario(s) escrito(s), {sin_cambios} sin cambios, "
         f"{skipped_anonymous} anónimo(s) omitido(s), {removed} entrada(s) vieja(s) borrada(s)")
 
