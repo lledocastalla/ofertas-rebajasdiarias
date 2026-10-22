@@ -229,6 +229,55 @@ Hay librerías que suben a TikTok simulando el navegador con las cookies de la s
 contra sus términos y la cuenta acaba restringida o cerrada — ya pasó algo parecido con Meta
 el 20 oct. Con 200 seguidores conseguidos a pulso, no compensa.
 
+## Cuota de Firestore: el límite que puede tirar la app (20-22 oct 2026)
+
+**Lee esto antes de añadir cualquier cron que consulte Firestore.**
+
+El plan gratuito (Spark) da **50.000 lecturas y 20.000 escrituras al día**. Cuando se agotan,
+Google deja de responder hasta el reinicio — y **no se cae solo la Pi: se cae la app**. Los
+usuarios se quedan sin favoritos, sin alertas y sin comunidad. Es el fallo más caro que puede
+tener este proyecto, porque lo sufre gente que ya te descargó.
+
+### El patrón que lo provoca
+
+Siempre el mismo: **un cron frecuente que lee una colección entera**. Multiplica por las
+pasadas del día y se dispara sin que se note, porque cada pasada por separado parece barata.
+
+| Qué pasaba | Lecturas/día | Arreglado |
+|---|---|---|
+| `new_user_watcher` leía el directorio cada 5 min | ~18.700 | 20 oct — lee la copia local |
+| `sync_users_directory` lo leía cada 10 min | ~9.400 | 22 oct — lee Firestore 1 vez/hora |
+
+**Unas 26.500 lecturas al día recortadas**, más de la mitad del tope. Tras esto los procesos
+de la Pi consumen del orden de 4.000 al día.
+
+### Cómo se arreglaron, para repetir el patrón
+
+`sync_users_directory.py` escribe `~/users_directory_local.json` en cada pasada. Los demás
+procesos comparan **contra esa copia** en vez de contra Firestore, y solo se lee la base de
+datos de verdad una vez por hora (`~/sync_users_directory_lectura.json` guarda cuándo fue la
+última).
+
+Dos cosas deliberadas, para no cambiar seguridad por ahorro:
+
+- **La lectura horaria no se quita.** Es la única que detecta cambios hechos fuera de la Pi y
+  la única que permite limpiar usuarios borrados. Fiarse solo de la copia dejaría cualquier
+  desajuste ahí para siempre.
+- **En pasada rápida no se borra nada.** Un usuario borrado que siga una hora de más en el
+  directorio no molesta; borrar a alguien por un desajuste de la copia sí sería grave.
+
+El log de `sync_users_directory` dice en qué modo fue cada pasada ("lectura COMPLETA" o
+"pasada rápida"). Sin eso no hay forma de depurar un consumo raro.
+
+### Si vuelve a agotarse
+
+Con los procesos de la Pi en ~4.000 lecturas, **el consumidor ya no es la Pi**: lo más
+probable es la propia app. Eso no se puede medir desde aquí — hay que mirar el panel de uso
+de la **consola de Firebase**, que da el desglose real.
+
+Lo detecta `salud.py` (cron 09:30): los logs de los crons que tocan Firestore se llenan de
+`429 Quota exceeded` y el vigilante manda un aviso al móvil del admin.
+
 ## Esquema de `offers.json`
 
 ```json
