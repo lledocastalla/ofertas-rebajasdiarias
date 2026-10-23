@@ -62,6 +62,20 @@ PREFERRED_CATEGORIES = {"Moda Hombre", "Moda Mujer", "Tecnología", "Deporte"}
 MIN_DISCOUNT = 45
 
 STATE_FILE = Path(__file__).resolve().parent / "facebook_bot_posted.json"
+# Memoria por TÍTULO además de por id (22 oct 2026). El 36% del catálogo de Amazon son
+# variantes del mismo producto con ASIN distinto, así que recordar el id no evita que salga
+# lo mismo otra vez con otra referencia.
+STATE_TITULOS = Path(__file__).resolve().parent / "facebook_bot_posted_titulos.json"
+MAX_RECORDADOS = 200
+# Solo Amazon (22 oct 2026, petición expresa del usuario: "son productos de awin cuando
+# quiero solo productos de amazon"). Hasta ahora no se filtraba por tienda en absoluto, y
+# como el catálogo tiene 40.450 ofertas de las que solo 1.121 son de Amazon, en la práctica
+# casi todo lo que salía era de Awin: de las últimas 200 publicaciones, 85 eran de
+# deporteoutlet y solo 5 de Amazon. Además el texto legal que se añade dice "Como afiliados
+# de Amazon...", que era falso en todas ésas.
+# Hay margen de sobra: 355 ofertas de Amazon con -45% o más, 304 productos distintos, o sea
+# unos 25 días sin repetir a 12 publicaciones diarias.
+SOLO_AMAZON = True
 DISCLOSURE = (
     "Como afiliados de Amazon, ganamos con las compras que cumplen los "
     "requisitos aplicables, sin coste adicional para vosotros."
@@ -75,47 +89,128 @@ def load_offers():
     return data["offers"]
 
 
+def _leer_lista(ruta):
+    """Lee una memoria EN ORDEN. Devolver una lista y no un conjunto es el arreglo del 22 oct
+    2026 y es importante: `save_posted_id()` hacía `list(posted)[-200:]` sobre un **set**, y
+    el orden de iteración de un conjunto de cadenas es arbitrario porque Python aleatoriza el
+    hash de las cadenas en cada proceso. Es decir, al llegar al tope no se descartaba el más
+    viejo: se descartaba **uno al azar**, y lo descartado volvía a ser publicable. Esa es la
+    causa de que Facebook repitiera productos "todo el rato"."""
+    if not ruta.exists():
+        return []
+    try:
+        datos = json.loads(ruta.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    return [d for d in datos if isinstance(d, str)] if isinstance(datos, list) else []
+
+
+def _guardar_lista(ruta, valores):
+    ruta.write_text(json.dumps(valores[-MAX_RECORDADOS:], ensure_ascii=False),
+                    encoding="utf-8")
+
+
+def clave_titulo(titulo):
+    """Misma función que usa el bot de Instagram, para que los dos entiendan lo mismo por
+    "el mismo producto". Se importa en vez de copiarse: dos copias acabarían divergiendo."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from instagram_bot import clave_titulo as ct
+    return ct(titulo)
+
+
 def load_posted_ids():
-    if STATE_FILE.exists():
-        return set(json.loads(STATE_FILE.read_text(encoding="utf-8")))
-    return set()
+    return _leer_lista(STATE_FILE)
 
 
-def save_posted_id(offer_id, posted):
-    posted.add(offer_id)
-    # Solo guardamos los últimos 200 para que el fichero no crezca sin límite
-    trimmed = list(posted)[-200:]
-    STATE_FILE.write_text(json.dumps(trimmed, ensure_ascii=False), encoding="utf-8")
+def save_posted_id(offer, posted, titulos):
+    posted.append(offer["id"])
+    _guardar_lista(STATE_FILE, posted)
+    titulos.append(clave_titulo(offer.get("title")))
+    _guardar_lista(STATE_TITULOS, titulos)
 
 
-def pick_offer(offers, posted):
+def pick_offer(offers, posted, titulos=None):
+    ya = set(posted)
+    ya_tit = set(titulos or [])
     base = [
         o
         for o in offers
         if o.get("discount_percent", 0) >= MIN_DISCOUNT
         and o.get("image")
-        and o["id"] not in posted
+        and o["id"] not in ya
+        and clave_titulo(o.get("title")) not in ya_tit
+        and (not SOLO_AMAZON or (o.get("store") or "amazon") == "amazon")
     ]
     # Primero intenta solo en las categorías preferidas (moda, deporte,
     # tecnología); si algún día no hay suficientes, cae al filtro antiguo
     # (todo menos Alimentación/Mascotas) para no dejar de publicar.
+    # Filtro de calidad, el MISMO que usa Instagram (23 oct 2026). Hacía falta por algo que
+    # salió al medir: al pasar a ordenar por ahorro en euros, los diez primeros eran
+    # portátiles sin marca con CERO valoraciones que decían ahorrar 1.296 € y 689 €. O sea,
+    # ordenar por ahorro premia justo las fichas con el "antes" más inflado, que son
+    # exactamente las que esta marca existe para NO publicar.
+    #
+    # Con el filtro puesto, los diez primeros pasan a ser Diesel, DKNY, Reebok, Tommy
+    # Hilfiger y Calvin Klein. Antes Facebook no miraba las valoraciones para nada.
+    sys.path.insert(0, str(Path.home() / "rebajasdiarias-web" / "scripts"))
+    try:
+        import instagram_tendencias as it
+        base = [o for o in base if it.candidata(o)]
+    except Exception as e:
+        # Si el módulo no está, se sigue sin filtro: mejor publicar algo flojo que no
+        # publicar. Pero se dice en voz alta, que un filtro que desaparece en silencio es
+        # peor que no tenerlo.
+        print(f"AVISO: sin filtro de calidad ({e})")
+
     candidates = [o for o in base if o["category"] in PREFERRED_CATEGORIES]
     if not candidates:
         candidates = [o for o in base if o["category"] not in BORING_CATEGORIES]
     if not candidates:
         return None
-    candidates.sort(key=lambda o: -o["discount_percent"])
-    top = candidates[: min(5, len(candidates))]
-    return random.choice(top)
+    # Se ordena por AHORRO EN EUROS, no por porcentaje (23 oct 2026). El usuario pidió
+    # publicar bolsos buenos y al medirlo salió que no llegaban nunca: ordenando por
+    # porcentaje, el décimo candidato ya iba a -71%, y los bolsos caían en las posiciones 61,
+    # 75 y 185. No es cosa de bolsos: con este orden, NADA caro puede salir jamás, porque un
+    # cacharro de 15 € a -77% siempre gana a un bolso de 99 € a -45%.
+    #
+    # Y el porcentaje miente sobre lo que de verdad te llevas: ese -77% ahorra 11 €, el -45%
+    # ahorra 81 €. Se usa el logaritmo del ahorro, el mismo criterio que ya usaba
+    # instagram_tendencias.py, para que lo caro entre sin que un solo producto de 500 €
+    # monopolice la cuenta. Empate deshecho por porcentaje.
+    import math
+    candidates.sort(key=lambda o: (-math.log1p(max(0.0, (o.get("original_price") or 0)
+                                                   - (o.get("price") or 0))),
+                                   -o["discount_percent"]))
+    # Se revalidan 10 contra Amazon en una sola llamada y se sortea entre los que siguen a su
+    # precio (22 oct 2026, "si ya no está ese precio se quite"). Antes se sorteaba entre los 5
+    # de mayor descuento sin comprobar nada, y los descuentos más altos son justo los que más
+    # se caen, así que era donde más probable era anunciar un precio que ya no existía.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import precios
+    # 20 y no 10: la ventana de sorteo de abajo es de 12, así que revalidar solo 10 la dejaría
+    # coja. Son dos lotes de API en vez de uno, que al lado de las ~7.200 llamadas diarias del
+    # ciclo normal no es nada.
+    vigentes = precios.filtrar_vigentes(candidates[:20], limite=20)
+    if vigentes is None:
+        return None
+    if not vigentes:
+        print("Ninguna de las 10 mejores sigue a su precio; no se publica.")
+        return None
+    # Se sortea entre 12 y no entre 5 (23 oct 2026): con 12 publicaciones al día, una ventana
+    # de 5 hace que la página parezca repetirse aunque técnicamente no repita producto.
+    return random.choice(vigentes[: min(12, len(vigentes))])
 
 
 def build_caption(o):
     price = f"{o['price']:.2f}".replace(".", ",")
     original = f"{o['original_price']:.2f}".replace(".", ",")
+    # El enlace va EN LA PRIMERA LÍNEA (21 oct 2026, lo pidió el usuario). Facebook corta el
+    # texto con un "Ver más" y lo que queda debajo lo lee mucha menos gente; estaba en la
+    # tercera línea, que ya es tarde. Aquí el enlace sí es pulsable, al revés que en Instagram.
     return (
+        f"👉 {o['url']}\n\n"
         f"{o['title'][:100]} — {price}€ (antes {original}€, -{o['discount_percent']}%) "
         f"(enlace de afiliado)\n\n"
-        f"{o['url']}\n\n"
         f"{DISCLOSURE}\n\n"
         f"{WEBSITE_PLUG}"
     )
@@ -146,7 +241,8 @@ def main():
 
     offers = load_offers()
     posted = load_posted_ids()
-    offer = pick_offer(offers, posted)
+    titulos = _leer_lista(STATE_TITULOS)
+    offer = pick_offer(offers, posted, titulos)
     if offer is None:
         print("No hay ofertas nuevas que publicar hoy (todas repetidas o filtradas).")
         return
@@ -157,7 +253,7 @@ def main():
     post_id = result.get("post_id") or result.get("id")
     print(f"Publicado: https://www.facebook.com/{post_id} ({offer['title'][:60]})")
 
-    save_posted_id(offer["id"], posted)
+    save_posted_id(offer, posted, titulos)
 
 
 if __name__ == "__main__":

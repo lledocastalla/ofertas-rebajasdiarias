@@ -449,7 +449,16 @@ KEYWORDS_BY_CATEGORY = {
     'Moda Mujer': [
         "zapatillas de mujer", "polos de mujer", "converse de mujer",
         "Lee de mujer", "Lois de mujer", "bikini de mujer", "bañador de mujer",
-        "camisetas de mujer", "bolso bimba y lola mujer",
+        "camisetas de mujer",
+        # Bolsos (23 oct 2026, el usuario: "los bolsos buenos interesan ponerlos en instagram
+        # y facebook"). Antes solo había dos búsquedas que pudieran traerlos ("Tous" y
+        # "bolso bimba y lola mujer") y, como de cada categoría se sortean 1-2 palabras por
+        # ciclo, salían casi nunca: el catálogo tenía 9 bolsos de Amazon en total y solo 2
+        # publicables. No sirve de nada priorizarlos en redes si no hay de dónde elegir, así
+        # que lo que hay que ampliar es la fuente, no el ranking.
+        "bolso de mujer", "bolso bandolera mujer", "bolso shopper mujer",
+        "bolso bimba y lola mujer", "bolso Tous", "bolso Guess", "bolso Michael Kors",
+        "bolso Desigual", "bolso Tommy Hilfiger", "mochila de mujer",
         "Tous", "Nike de mujer", "Adidas de mujer", "Tommy Hilfiger de mujer",
         "New balance de mujer", "Desigual de mujer", "Calvin klein de mujer",
         "Roxy de mujer", "Geox de mujer", "Women´secret de mujer",
@@ -2096,8 +2105,36 @@ def refresh_amazon_offers(merged, now_iso, log):
     raw_items, failed_asins = result
     fresh_by_asin = {o["id"]: o for o in paapi.offers_from_items(raw_items)}
     updated = removed = 0
+    # CADUCIDAD DE LO NO COMPROBADO (20 oct 2026) ------------------------------------------
+    # Medido con una muestra de 120 ofertas vivas: el 90% tenia el precio exacto, pero habia
+    # casos como unas gafas Moschino anunciadas a 24,38 € que en Amazon costaban 97,47 €.
+    # Cuatro veces el precio. Quien pulsa eso no es que no compre: es que no vuelve, y lo unico
+    # que vendemos es que se nos pueda creer.
+    #
+    # La causa no es que actualicemos mal -- cuando la API contesta, el precio nuevo manda. Es
+    # que cada ciclo ~700 ASIN se quedan SIN COMPROBAR por fallos de red (el log lo dice: "708
+    # sin comprobar"), y hasta ahora esos se quedaban con su precio viejo para siempre. Un
+    # producto que falle la revalidacion muchas veces seguidas puede llevar semanas mintiendo.
+    #
+    # Ahora se les apunta desde cuando no se comprueban y, pasados DIAS_SIN_COMPROBAR, se
+    # retiran. Mejor una oferta de menos que una oferta falsa.
+    DIAS_SIN_COMPROBAR = 3
+    caducadas_sin_comprobar = 0
     for asin in amazon_ids:
         if asin in failed_asins:
+            o = merged.get(asin)
+            if o is not None:
+                desde = o.get("unchecked_since")
+                if not desde:
+                    o["unchecked_since"] = now_iso
+                else:
+                    try:
+                        dias = (datetime.fromisoformat(now_iso) - datetime.fromisoformat(desde)).days
+                    except Exception:
+                        dias = 0
+                    if dias >= DIAS_SIN_COMPROBAR:
+                        del merged[asin]
+                        caducadas_sin_comprobar += 1
             continue  # lote con fallo de red/API -- se deja como estaba, no es "ya no existe"
         fresh = fresh_by_asin.get(asin)
         if fresh is None:
@@ -2108,6 +2145,7 @@ def refresh_amazon_offers(merged, now_iso, log):
             removed += 1
             continue
         o = merged[asin]
+        o.pop("unchecked_since", None)   # comprobada de verdad: se le quita la cuenta atras
         if o.get("price") != fresh["price"] or o.get("discount_percent") != fresh["discount_percent"]:
             o["price"] = fresh["price"]
             o["original_price"] = fresh["original_price"]
@@ -2116,7 +2154,8 @@ def refresh_amazon_offers(merged, now_iso, log):
         o["last_seen"] = now_iso  # confirmado de verdad ahora mismo, aunque no lo tocara ninguna keyword
     log(f"[amazon-refresh] {len(amazon_ids)} ASIN de Amazon revalidados con GetItems "
         f"({len(failed_asins)} sin comprobar por fallo de red/API): {updated} con precio "
-        f"actualizado, {removed} retiradas (descatalogadas, sin stock o ya sin 30-80% real).")
+        f"actualizado, {removed} retiradas (descatalogadas, sin stock o ya sin 30-80% real), "
+        f"{caducadas_sin_comprobar} retiradas por llevar {DIAS_SIN_COMPROBAR}+ dias sin poder comprobarse.")
 
 
 
@@ -2728,7 +2767,25 @@ def main():
             with open(_hw_path, encoding="utf-8") as _f:
                 _hw = json.load(_f)
             _hw_list = _hw.get("offers", _hw) if isinstance(_hw, dict) else _hw
-            _n = 0
+            # 20 oct 2026, aviso del usuario: "lo de halloween se han quedado con esas
+            # ofertas ya caducadas y no hace scrapping". Tenia razon y la culpa era de la
+            # rama else de aqui abajo: si el producto NO aparecia en merged -- o sea, si el
+            # ciclo no lo habia encontrado vivo porque caduco, se quedo sin stock o perdio el
+            # descuento -- se volvia a meter IGUALMENTE desde el fichero congelado, y encima
+            # con last_seen = ahora. Dos consecuencias:
+            #   1. Se publicaban ofertas muertas como si estuvieran vivas.
+            #   2. La limpieza de "no vistas en 2 dias" no las retiraba nunca, porque cada
+            #      ciclo se les falsificaba la fecha.
+            # Comprobado con la API el 20 oct sobre las 54: 3 ya no existian y 9 de las vivas
+            # habian perdido el descuento por completo. 12 de 54 eran mentira.
+            #
+            # Ahora: las que el ciclo ya ha visto vivas se re-etiquetan igual que antes; las
+            # que no, se revalidan UNA a una contra la API y solo entran si siguen teniendo
+            # descuento real. Si la API no contesta (fallo de red) se conserva lo que hubiera
+            # con SU fecha original, nunca falsificada, para que la limpieza normal pueda
+            # retirarla si de verdad ha muerto.
+            _n = _revalidadas = _descartadas = 0
+            _pendientes = []
             for _o in _hw_list:
                 _asin = _o.get("id")
                 if not _asin:
@@ -2738,12 +2795,46 @@ def main():
                     _ex["category"] = _HW_CAT
                     _ex["store"] = "halloween"
                     _ex["store_label"] = "Especial Halloween"
+                    _n += 1
                 else:
-                    merged[_asin] = {**_o, "category": _HW_CAT, "store": "halloween",
-                                     "store_label": "Especial Halloween", "is_flash": False,
-                                     "first_seen": now_iso, "last_seen": now_iso}
-                _n += 1
-            log(f"Especial Halloween: {_n} ofertas re-etiquetadas (activo hasta 1-nov).")
+                    _pendientes.append(_o)
+
+            if _pendientes:
+                import amazon_paapi as _paapi
+                _res = _paapi.get_items([_o["id"] for _o in _pendientes])
+                _frescos, _fallidos = ({}, set())
+                if _res:
+                    _items, _fallidos = _res
+                    for _it in _items:
+                        for _l in (_it.get("offersV2", {}).get("listings") or []):
+                            _pr = (_l.get("price") or {}).get("money", {}).get("amount")
+                            _sb = (_l.get("price") or {}).get("savingBasis", {}).get("money", {}).get("amount")
+                            if _pr is not None and _sb and _sb > _pr:
+                                _frescos[_it.get("asin")] = (round(float(_pr), 2), round(float(_sb), 2))
+                            break
+                for _o in _pendientes:
+                    _asin = _o["id"]
+                    if _asin in _frescos:
+                        _pr, _sb = _frescos[_asin]
+                        merged[_asin] = {**_o, "category": _HW_CAT, "store": "halloween",
+                                         "store_label": "Especial Halloween", "is_flash": False,
+                                         "price": _pr, "original_price": _sb,
+                                         "discount_percent": round((1 - _pr / _sb) * 100),
+                                         "first_seen": _o.get("first_seen") or now_iso,
+                                         "last_seen": now_iso}
+                        _n += 1
+                        _revalidadas += 1
+                    elif _asin in _fallidos:
+                        # Sin comprobar por un fallo de red: se mantiene tal cual estaba, con
+                        # SU last_seen de siempre. Si de verdad murio, la limpieza la quitara.
+                        merged[_asin] = {**_o, "category": _HW_CAT, "store": "halloween",
+                                         "store_label": "Especial Halloween", "is_flash": False}
+                        _n += 1
+                    else:
+                        _descartadas += 1
+            log(f"Especial Halloween: {_n} ofertas publicadas "
+                f"({_revalidadas} revalidadas contra la API, {_descartadas} descartadas por "
+                f"haber caducado o perdido el descuento). Activo hasta 1-nov.")
         elif not _hw_on:
             _r = 0
             for _o in merged.values():

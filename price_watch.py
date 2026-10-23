@@ -17,11 +17,20 @@ pase lo que pase con el descuento. En unas semanas tendremos la serie completa d
 entonces sí se puede decir, con datos: "este producto costó X todos los días de noviembre y el
 día de Black Friday lo anuncian rebajado desde Y".
 
-Tamaño: ~300 productos x 1 registro/día x ~40 bytes = unos 12 KB al mes. Se podan los registros
-de más de PODA_DIAS. No crece.
+AMPLIADO el 22 oct 2026. La primera versión congelaba una foto de los 300 productos más
+valorados del catálogo. Eso tenía dos fallos: (1) en offers.json solo hay ~1.086 productos de
+Amazon a la vez, así que "300" no era una decisión sino casi todo lo que había con
+valoraciones, y (2) el catálogo ROTA -- cada día entran y salen productos según su descuento --
+así que una foto fija desperdicia todo lo que pasa por delante. Ahora la lista es ACUMULATIVA:
+cada ejecución añade los ASIN de Amazon nuevos que vea y no quita ninguno.
 
-Coste de API: lotes de 10 ASIN, o sea ~30 llamadas al día. Para comparar, el ciclo normal de
-update_offers.py hace ~1.200 revalidaciones seis veces al día, así que esto es ruido.
+Tamaño: cada registro son ~25 bytes. Con MAXIMO productos y PODA_DIAS de ventana el techo son
+unos pocos MB, y en la práctica mucho menos porque un producto que sale del catálogo deja de
+registrar. Si algún día molesta, lo que hay que bajar es PODA_DIAS, no el número de productos.
+
+Coste de API: lotes de 10 ASIN. Con ~1.100 productos son ~110 llamadas al día. Para comparar,
+el ciclo normal de update_offers.py hace ~1.200 revalidaciones seis veces al día (~7.200), así
+que esto sigue siendo ruido.
 
 Uso:
     python3 price_watch.py              # registra el precio de hoy
@@ -32,14 +41,19 @@ Uso:
 import json
 import os
 import sys
+import time
 from datetime import date, datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 LISTA_PATH = os.path.expanduser("~/price_watch_lista.json")
 HIST_PATH = os.path.expanduser("~/price_watch_historico.json")
-PODA_DIAS = 400
-OBJETIVO = 300
+# 6 meses: cubre de sobra cualquier afirmación estacional (Black Friday, rebajas de enero,
+# Prime Day) y mantiene el fichero en un tamaño que la Pi lee y escribe sin esfuerzo. Eran 400
+# días, que no servían para nada y multiplicaban el fichero.
+PODA_DIAS = 180
+# Techo de seguridad para que la lista acumulativa no pueda desbocarse nunca.
+MAXIMO = 3000
 
 
 def log(msg):
@@ -54,36 +68,59 @@ def _cargar(path, por_defecto):
         return por_defecto
 
 
-def crear_lista():
-    """Elige los productos a vigilar: los más valorados del catálogo actual, que son los que la
-    gente de verdad compra y los que tendrán oferta en Black Friday. La lista se congela a
-    propósito -- si cambiara cada día no habría serie que comparar."""
+def ampliar_lista():
+    """Añade a la lista de vigilancia los productos de Amazon del catálogo que aún no estaban,
+    SIN tocar ni reordenar los que ya había.
+
+    La regla de oro: de aquí nunca se borra nada. Si un producto sale del catálogo seguirá en la
+    lista; simplemente la API dejará de devolver precio para él y su serie se quedará como
+    estaba. Quitarlo rompería el único activo que tiene este script, que es el historial.
+
+    Dos filtros que se han quitado a propósito el 22 oct 2026:
+    - **Número de valoraciones.** Para comprobar si un "antes" anunciado es real da exactamente
+      igual que el producto sea popular, y filtrar por eso sesgaba la muestra hacia los más
+      vendidos, que son justo los que menos necesitan trucos de precio.
+    - **El tope de 300.** Era arbitrario y además nos dejaba fuera la mitad del Amazon que hay
+      en el catálogo.
+    """
     import update_offers  # noqa: F401  (aplica el parche IPv4 al importarse)
     catalogo = _cargar(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "offers.json"), {})
-    amazon = [o for o in catalogo.get("offers", [])
-              if (o.get("store") or "amazon") == "amazon" and (o.get("rating_count") or 0) > 0]
-    amazon.sort(key=lambda o: -(o.get("rating_count") or 0))
-    vistos, lista = set(), []
-    for o in amazon:
-        if o["id"] in vistos:
+    lista = _cargar(LISTA_PATH, [])
+    if not isinstance(lista, list):
+        lista = []
+    vistos = {x.get("asin") for x in lista}
+
+    nuevos = 0
+    for o in catalogo.get("offers", []):
+        if (o.get("store") or "amazon") != "amazon":
             continue
-        vistos.add(o["id"])
-        lista.append({"asin": o["id"], "titulo": o.get("title", "")[:90],
-                      "categoria": o.get("category", "")})
-        if len(lista) >= OBJETIVO:
+        asin = o.get("id")
+        if not asin or asin in vistos:
+            continue
+        if len(lista) >= MAXIMO:
+            log(f"alcanzado el techo de {MAXIMO} productos; no se añaden más")
             break
-    with open(LISTA_PATH, "w", encoding="utf-8") as f:
-        json.dump(lista, f, ensure_ascii=False, indent=1)
-    log(f"lista creada con {len(lista)} productos en {LISTA_PATH}")
+        vistos.add(asin)
+        lista.append({"asin": asin, "titulo": (o.get("title") or "")[:90],
+                      "categoria": o.get("category", ""),
+                      "desde": date.today().isoformat()})
+        nuevos += 1
+
+    if nuevos:
+        with open(LISTA_PATH, "w", encoding="utf-8") as f:
+            json.dump(lista, f, ensure_ascii=False, indent=1)
+        log(f"+{nuevos} productos nuevos a vigilar, {len(lista)} en total")
+    else:
+        log(f"sin productos nuevos; {len(lista)} en vigilancia")
     return lista
 
 
 def registrar():
     import amazon_paapi as paapi
-    lista = _cargar(LISTA_PATH, None)
-    if not lista:
-        lista = crear_lista()
+    # La lista se amplía ANTES de registrar, así un producto que acaba de entrar en el catálogo
+    # empieza su serie hoy mismo en vez de esperar al día siguiente.
+    lista = ampliar_lista()
     asins = [x["asin"] for x in lista]
 
     res = paapi.get_items(asins)
@@ -91,6 +128,27 @@ def registrar():
         log("la API de Amazon no está disponible ahora mismo; no se registra nada")
         return 1
     items, fallidos = res
+
+    # Reintentos. Al ampliar la lista a ~1.100 productos (22 oct 2026) son ~115 llamadas
+    # seguidas y la API empezó a devolver 429 a más de la mitad: 633 de 1.143 quedaron sin
+    # comprobar en la primera ejecución. Un hueco en la serie es justo lo que este script no
+    # se puede permitir, así que los lotes caídos se repiten con una pausa creciente.
+    # Se espera ANTES de reintentar, no después, porque el 429 ya se ha producido.
+    for espera in (30, 60, 120):
+        if not fallidos:
+            break
+        log(f"{len(fallidos)} sin comprobar; reintento en {espera}s")
+        time.sleep(espera)
+        res2 = paapi.get_items(sorted(fallidos))
+        if res2 is None:
+            break
+        items2, fallidos2 = res2
+        items.extend(items2)
+        if len(fallidos2) >= len(fallidos):
+            # No mejora: la API está limitando de verdad, insistir solo empeora las cosas.
+            fallidos = fallidos2
+            break
+        fallidos = fallidos2
 
     hoy = date.today().isoformat()
     hist = _cargar(HIST_PATH, {})
@@ -122,7 +180,24 @@ def registrar():
     kb = os.path.getsize(HIST_PATH) / 1024
     log(f"{nuevos} precios registrados ({len(fallidos)} sin comprobar), "
         f"{len(hist)} productos en el histórico, {kb:.0f} KB")
+    # Un día con la mitad de la lista sin comprobar no es un fallo que deba pasar callado:
+    # las series quedan con huecos y eso se nota semanas después, cuando ya no hay arreglo.
+    if asins and len(fallidos) > len(asins) * 0.2:
+        log(f"AVISO: {100*len(fallidos)//len(asins)}% de la lista sin comprobar hoy")
     return 0
+
+
+def _precio(reg):
+    """El precio pagado de un registro. Acepta [precio, referencia] y también un número suelto,
+    por si algún día se compacta el formato."""
+    return float(reg[0] if isinstance(reg, (list, tuple)) else reg)
+
+
+def _referencia(reg):
+    """El "antes" que anunciaba Amazon ese día, o None si no anunciaba ninguno."""
+    if isinstance(reg, (list, tuple)) and len(reg) > 1 and reg[1] is not None:
+        return float(reg[1])
+    return None
 
 
 def informe():
@@ -141,8 +216,8 @@ def informe():
         if len(serie) < 14:       # mínimo dos semanas de observación continua
             continue
         fechas = sorted(serie)
-        precios = [serie[d][0] for d in fechas]
-        hoy_p, hoy_ref = serie[fechas[-1]]
+        precios = [_precio(serie[d]) for d in fechas]
+        hoy_p, hoy_ref = _precio(serie[fechas[-1]]), _referencia(serie[fechas[-1]])
         if not hoy_ref or hoy_ref <= hoy_p:
             continue
         analizados += 1
@@ -171,7 +246,7 @@ def informe():
 
 if __name__ == "__main__":
     if "--init" in sys.argv:
-        crear_lista()
+        ampliar_lista()
     elif "--informe" in sys.argv:
         sys.exit(informe())
     else:

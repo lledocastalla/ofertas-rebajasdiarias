@@ -1,1 +1,13 @@
 facebook_bot_posted.json
+# Copias de seguridad de los parches y cache de Python (23 oct 2026)
+__pycache__/
+*.pyc
+*.bak
+*.bak-*
+*.bak_*
+*.bakdup-*
+*.bakvig-*
+*.bakcal-*
+*.bakorden-*
+*.bakbolsos-*
+*.bak2-*
