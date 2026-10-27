@@ -1,625 +1,663 @@
 {
-  "_comment": "Banners de tienda del carrusel de la portada (web y app -- app SOLO desde la version que ya incluya HeroSizes, ver README.md 'Proxima compilacion'). Editar aqui para cambiar el orden (order), ocultar tiendas (hidden), colores (themes), tamanos (sizes) o anadir banners propios (custom) -- sin compilar la app ni desplegar la web. Los banners de tienda salen solos del catalogo real (producto mas rebajado, precio, codigo) para cada tienda con min_offers+ ofertas. Custom: title, image y (store o url) obligatorios; store abre esa tienda, url abre un enlace; opcionales subtitle, eyebrow, cta, code, code_label, logo_store, price, old_price, theme (como en themes), from/until (AAAA-MM-DD), position (0 = justo tras la diapositiva de stats), slide_seconds (duracion propia, si no cae al slide_seconds global). enabled:false apaga todos los banners. sizes (app, 28 sep 2026): objeto opcional con hero_height_wide/narrow, brand_art_wide/narrow, stats_art_wide/narrow, grid_aspect_ratio, grid_max_cross_axis_extent, amazon_min_spinner_seconds (tiempo minimo que se ve el aviso sigue buscando del buscador en vivo, 0 por defecto) -- todos opcionales, caen a los valores de siempre si no se tocan (ver HeroSizes en store_banners_service.dart). Pensado sobre todo para poder corregir en caliente un overflow real (tipo iPhone Pro Max) o ajustar tiempos sin esperar a una compilacion.",
-  "enabled": true,
-  "slide_seconds": 5,
-  "text_slide_seconds": 5,
-  "min_offers": 4,
-  "sizes": {},
-  "order": [
-    "adidas",
-    "armani",
-    "ysl",
-    "amazon",
-    "mediamarkt",
-    "toysrus",
-    "bosch",
-    "hpstore",
-    "huawei",
-    "footlocker",
-    "leroymerlin",
-    "leroymerlin_outlet",
-    "desigual",
-    "bershka",
-    "quiksilver",
-    "acer",
-    "allpowers",
-    "aeg",
-    "electrolux",
-    "balay",
-    "roxy",
-    "dcshoes",
-    "rowenta",
-    "tefal",
-    "foreo",
-    "perfumeriacomas",
-    "stylevana",
-    "kiwoko",
-    "tiendanimal",
-    "deporteoutlet",
-    "zapatosobi",
-    "4elementos"
-  ],
-  "hidden": [
-    "leroymerlin_outlet"
-  ],
-  "themes": {
-    "amazon": {
-      "bg": [
-        "#131921",
-        "#232f3e"
-      ],
-      "accent": "#ff9900",
-      "cta": [
-        "#ff9900",
-        "#131921"
-      ]
-    },
-    "adidas": {
-      "bg": [
-        "#000000",
-        "#1c1c1c"
-      ],
-      "accent": "#ffffff",
-      "cta": [
-        "#ffffff",
-        "#000000"
-      ]
-    },
-    "footlocker": {
-      "bg": [
-        "#111111",
-        "#2b2b2b"
-      ],
-      "accent": "#ff3b4e",
-      "cta": [
-        "#ffffff",
-        "#111111"
-      ]
-    },
-    "quiksilver": {
-      "bg": [
-        "#0a2a43",
-        "#0f4c75"
-      ],
-      "accent": "#f2c230",
-      "cta": [
-        "#f2c230",
-        "#0a2a43"
-      ],
-      "chipDark": true
-    },
-    "roxy": {
-      "bg": [
-        "#1e2a5a",
-        "#3a2466"
-      ],
-      "accent": "#ff7aa8",
-      "cta": [
-        "#ff7aa8",
-        "#1e2a5a"
-      ],
-      "face": "round",
-      "chipDark": true
-    },
-    "dcshoes": {
-      "bg": [
-        "#111111",
-        "#333333"
-      ],
-      "accent": "#ffffff",
-      "cta": [
-        "#ffffff",
-        "#111111"
-      ]
-    },
-    "desigual": {
-      "bg": [
-        "#1a1a1a",
-        "#3a1414"
-      ],
-      "accent": "#ff5a3c",
-      "cta": [
-        "#ff5a3c",
-        "#ffffff"
-      ],
-      "face": "round"
-    },
-    "bershka": {
-      "bg": [
-        "#111111",
-        "#2a2a2a"
-      ],
-      "accent": "#ffffff",
-      "cta": [
-        "#ffffff",
-        "#111111"
-      ]
-    },
-    "4elementos": {
-      "bg": [
-        "#1d3b2a",
-        "#2f6b47"
-      ],
-      "accent": "#f4d35e",
-      "cta": [
-        "#f4d35e",
-        "#1d3b2a"
-      ]
-    },
-    "zapatosobi": {
-      "bg": [
-        "#22313f",
-        "#34495e"
-      ],
-      "accent": "#e9b44c",
-      "cta": [
-        "#e9b44c",
-        "#22313f"
-      ]
-    },
-    "deporteoutlet": {
-      "bg": [
-        "#0d3b66",
-        "#145c9e"
-      ],
-      "accent": "#ff8a5b",
-      "cta": [
-        "#f95738",
-        "#ffffff"
-      ]
-    },
-    "leroymerlin": {
-      "bg": [
-        "#1f5a1f",
-        "#3f8a1f"
-      ],
-      "accent": "#c8f07a",
-      "cta": [
-        "#ffffff",
-        "#1f5a1f"
-      ]
-    },
-    "leroymerlin_outlet": {
-      "bg": [
-        "#1f5a1f",
-        "#3f8a1f"
-      ],
-      "accent": "#ffb545",
-      "cta": [
-        "#ffb545",
-        "#1f5a1f"
-      ]
-    },
-    "aeg": {
-      "bg": [
-        "#1a1a1a",
-        "#2e2e2e"
-      ],
-      "accent": "#ff4a5e",
-      "cta": [
-        "#ffffff",
-        "#1a1a1a"
-      ]
-    },
-    "electrolux": {
-      "bg": [
-        "#041e42",
-        "#0a3a7a"
-      ],
-      "accent": "#9ec5ff",
-      "cta": [
-        "#ffffff",
-        "#041e42"
-      ]
-    },
-    "balay": {
-      "bg": [
-        "#0b2a4a",
-        "#16436f"
-      ],
-      "accent": "#b9d4ef",
-      "cta": [
-        "#ffffff",
-        "#0b2a4a"
-      ]
-    },
-    "bosch": {
-      "bg": [
-        "#0a2540",
-        "#005691"
-      ],
-      "accent": "#ff5363",
-      "cta": [
-        "#ffffff",
-        "#0a2540"
-      ]
-    },
-    "rowenta": {
-      "bg": [
-        "#0d2c54",
-        "#1b4a82"
-      ],
-      "accent": "#9ad0ec",
-      "cta": [
-        "#ffffff",
-        "#0d2c54"
-      ]
-    },
-    "tefal": {
-      "bg": [
-        "#9e0b22",
-        "#c8102e"
-      ],
-      "accent": "#ffffff",
-      "cta": [
-        "#ffffff",
-        "#9e0b22"
-      ]
-    },
-    "hpstore": {
-      "bg": [
-        "#004f7c",
-        "#0096d6"
-      ],
-      "accent": "#ffffff",
-      "cta": [
-        "#ffffff",
-        "#004f7c"
-      ]
-    },
-    "huawei": {
-      "bg": [
-        "#111111",
-        "#3a0a12"
-      ],
-      "accent": "#ff4d63",
-      "cta": [
-        "#ffffff",
-        "#111111"
-      ]
-    },
-    "acer": {
-      "bg": [
-        "#10240f",
-        "#1f4a1c"
-      ],
-      "accent": "#9ed42a",
-      "cta": [
-        "#9ed42a",
-        "#10240f"
-      ]
-    },
-    "mediamarkt": {
-      "bg": [
-        "#a80000",
-        "#df0000"
-      ],
-      "accent": "#ffffff",
-      "cta": [
-        "#ffffff",
-        "#a80000"
-      ],
-      "face": "round"
-    },
-    "tiendanimal": {
-      "bg": [
-        "#00574f",
-        "#00897b"
-      ],
-      "accent": "#ffd166",
-      "cta": [
-        "#ffd166",
-        "#00574f"
-      ],
-      "face": "round"
-    },
-    "allpowers": {
-      "bg": [
-        "#15171b",
-        "#2c3036"
-      ],
-      "accent": "#ff5a3d",
-      "cta": [
-        "#ff5a3d",
-        "#ffffff"
-      ]
-    },
-    "toysrus": {
-      "bg": [
-        "#0a3a8c",
-        "#1d5fd0"
-      ],
-      "accent": "#ffd100",
-      "cta": [
-        "#ffd100",
-        "#0a3a8c"
-      ],
-      "face": "round"
-    },
-    "kiwoko": {
-      "bg": [
-        "#c41f25",
-        "#e0383e"
-      ],
-      "accent": "#ffffff",
-      "cta": [
-        "#ffffff",
-        "#c41f25"
-      ],
-      "face": "round"
-    },
-    "armani": {
-      "bg": [
-        "#141518",
-        "#2c2e33"
-      ],
-      "accent": "#d8c6a4",
-      "cta": [
-        "#f1ece3",
-        "#141518"
-      ],
-      "face": "serif",
-      "stage": "disc"
-    },
-    "ysl": {
-      "bg": [
-        "#050505",
-        "#1b1408"
-      ],
-      "accent": "#c9a45c",
-      "cta": [
-        "#c9a45c",
-        "#050505"
-      ],
-      "face": "serif",
-      "stage": "disc"
-    },
-    "perfumeriacomas": {
-      "bg": [
-        "#3a1d2e",
-        "#6b2d4a"
-      ],
-      "accent": "#f3c7d8",
-      "cta": [
-        "#f3c7d8",
-        "#3a1d2e"
-      ],
-      "face": "serif",
-      "stage": "disc"
-    },
-    "stylevana": {
-      "bg": [
-        "#7a1f5c",
-        "#c2185b"
-      ],
-      "accent": "#ffe0ef",
-      "cta": [
-        "#ffffff",
-        "#7a1f5c"
-      ],
-      "face": "round"
-    },
-    "foreo": {
-      "bg": [
-        "#5e3a8c",
-        "#8b5fbf"
-      ],
-      "accent": "#ffe3f4",
-      "cta": [
-        "#ffffff",
-        "#5e3a8c"
-      ],
-      "face": "round"
-    }
+ "_comment": "Banners de tienda del carrusel de la portada (web y app -- app SOLO desde la version que ya incluya HeroSizes, ver README.md 'Proxima compilacion'). Editar aqui para cambiar el orden (order), ocultar tiendas (hidden), colores (themes), tamanos (sizes) o anadir banners propios (custom) -- sin compilar la app ni desplegar la web. Los banners de tienda salen solos del catalogo real (producto mas rebajado, precio, codigo) para cada tienda con min_offers+ ofertas. Custom: title, image y (store o url) obligatorios; store abre esa tienda, url abre un enlace; opcionales subtitle, eyebrow, cta, code, code_label, logo_store, price, old_price, theme (como en themes), from/until (AAAA-MM-DD), position (0 = justo tras la diapositiva de stats), slide_seconds (duracion propia, si no cae al slide_seconds global). enabled:false apaga todos los banners. sizes (app, 28 sep 2026): objeto opcional con hero_height_wide/narrow, brand_art_wide/narrow, stats_art_wide/narrow, grid_aspect_ratio, grid_max_cross_axis_extent, amazon_min_spinner_seconds (tiempo minimo que se ve el aviso sigue buscando del buscador en vivo, 0 por defecto) -- todos opcionales, caen a los valores de siempre si no se tocan (ver HeroSizes en store_banners_service.dart). Pensado sobre todo para poder corregir en caliente un overflow real (tipo iPhone Pro Max) o ajustar tiempos sin esperar a una compilacion.",
+ "enabled": true,
+ "slide_seconds": 5,
+ "text_slide_seconds": 5,
+ "min_offers": 4,
+ "sizes": {},
+ "order": [
+  "adidas",
+  "armani",
+  "ysl",
+  "amazon",
+  "lg_outlet",
+  "lg",
+  "mediamarkt",
+  "toysrus",
+  "bosch",
+  "hpstore",
+  "huawei",
+  "footlocker",
+  "leroymerlin",
+  "leroymerlin_outlet",
+  "desigual",
+  "bershka",
+  "quiksilver",
+  "acer",
+  "allpowers",
+  "aeg",
+  "electrolux",
+  "balay",
+  "roxy",
+  "dcshoes",
+  "rowenta",
+  "tefal",
+  "foreo",
+  "perfumeriacomas",
+  "stylevana",
+  "kiwoko",
+  "tiendanimal",
+  "deporteoutlet",
+  "zapatosobi",
+  "4elementos"
+ ],
+ "hidden": [
+  "leroymerlin_outlet"
+ ],
+ "themes": {
+  "amazon": {
+   "bg": [
+    "#131921",
+    "#232f3e"
+   ],
+   "accent": "#ff9900",
+   "cta": [
+    "#ff9900",
+    "#131921"
+   ]
   },
-  "custom": [
-    {
-      "eyebrow": "👻 Especial Halloween",
-      "title": "Hasta −51% en disfraces y terror",
-      "image": "https://m.media-amazon.com/images/I/31-MmLc9+7L._SL500_.jpg",
-      "cta": "Ver ofertas de Halloween",
-      "theme": {
-        "bg": [
-          "#050204",
-          "#7a0f1a"
-        ],
-        "accent": "#ff7a1a",
-        "cta": [
-          "#ff7a1a",
-          "#1a0506"
-        ],
-        "face": "serif",
-        "stage": "tile"
-      },
-      "position": 0,
-      "slide_seconds": 15,
-      "from": "2026-10-14",
-      "until": "2026-11-01",
-      "store": "halloween"
-    },
-    {
-      "eyebrow": "ALLPOWERS · 12–31 oct",
-      "title": "Prime Big Deal Days: hasta −60%",
-      "store": "allpowers",
-      "logo_store": "allpowers",
-      "image": "https://cdn.shopify.com/s/files/1/0566/0511/4454/files/SOLAX-P100-02.jpg?v=1755067868",
-      "price": 79.0,
-      "old_price": 199.0,
-      "code": "EXTRA10",
-      "code_label": "−10% EXTRA en toda la tienda",
-      "cta": "Ver ofertas ALLPOWERS",
-      "position": 1,
-      "from": "2026-10-12",
-      "until": "2026-10-31"
-    },
-    {
-      "eyebrow": "Foot Locker · It's giving",
-      "title": "Hasta −75% en zapatillas y botas",
-      "subtitle": "Capas, zapatillas y botas a prueba de intemperie. El invierno, a tu manera.",
-      "store": "footlocker",
-      "logo_store": "footlocker",
-      "image": "https://images.footlocker.com/is/image/FLEU/314218171404?wid=620&hei=620&fmt=png-alpha",
-      "price": 45.0,
-      "old_price": 139.99,
-      "cta": "Ver ofertas Foot Locker",
-      "position": 2,
-      "from": "2026-10-15",
-      "until": "2026-11-01"
-    },
-    {
-      "title": "Prime Big Deal Days: prepárate 🛒",
-      "eyebrow": "Amazon · 6-7 de octubre",
-      "subtitle": "48 horas de ofertas exclusivas para socios Prime en más de 35 categorías. No olvides entrar esos días para encontrar los mejores descuentos reales.",
-      "store": "amazon",
-      "logo_store": "amazon",
-      "cta": "Ir a Amazon",
-      "image": "https://m.media-amazon.com/images/I/61sPhOjursL._AC_UL320_.jpg",
-      "price": 79.89,
-      "old_price": 399.45,
-      "slide_seconds": 10,
-      "until": "2026-10-07",
-      "position": 0
-    },
-    {
-      "title": "Prime Big Deal Days: prepárate 🛒",
-      "eyebrow": "Amazon · 6-7 de octubre",
-      "subtitle": "48 horas de ofertas exclusivas para socios Prime en más de 35 categorías. No olvides entrar esos días para encontrar los mejores descuentos reales.",
-      "store": "amazon",
-      "logo_store": "amazon",
-      "cta": "Ir a Amazon",
-      "image": "https://m.media-amazon.com/images/I/61sPhOjursL._AC_UL320_.jpg",
-      "price": 79.89,
-      "old_price": 399.45,
-      "slide_seconds": 10,
-      "until": "2026-10-07",
-      "position": 10
-    },
-    {
-      "title": "Nueva tienda: Leroy Merlin Outlet 🏷️",
-      "eyebrow": "Leroy Merlin · hasta -65%",
-      "subtitle": "Liquidación real de bricolaje, baño, suelos y jardín -- selección verificada directamente del programa de afiliados de Leroy Merlin, con hasta un 65% de descuento.",
-      "store": "leroymerlin_outlet",
-      "logo_store": "leroymerlin",
-      "cta": "Ir a la tienda",
-      "image": "https://media.adeo.com/media/3930960/media.jpg",
-      "price": 99.99,
-      "old_price": 289.0,
-      "from": "2026-09-28",
-      "position": 2
-    },
-    {
-      "title": "Nueva tienda: Armani Beauty ✨",
-      "subtitle": "Perfumes y maquillaje de Armani rebajados, y además un 15% extra con el código ARMANI15, exclusivo para afiliados.",
-      "store": "armani",
-      "logo_store": "armani",
-      "cta": "Ir a la tienda",
-      "code": "ARMANI15",
-      "code_label": "15% extra, exclusivo afiliados",
-      "image": "https://www.armanibeauty.es/dw/image/v2/AAQP_PRD/on/demandware.static/-/Sites-gac-master-catalog/default/dw53f041a9/products/2025/ww-01050-arm/3614274752106/50ml_3614274752106-power_of_you-main-v2.jpg?sw=1024&sh=1024&sm=fit&bgcolor=FFFFFF",
-      "price": 78.75,
-      "old_price": 105.0,
-      "from": "2026-09-23"
-    },
-    {
-      "title": "10% dto extra con el código SAVE10 🔥",
-      "eyebrow": "Acer · código SAVE10",
-      "subtitle": "Añade el código SAVE10 en el carrito y llévate un 10% extra sobre el precio ya rebajado, en toda la tienda de Acer. Del 2 al 6 de octubre.",
-      "store": "acer",
-      "logo_store": "acer",
-      "cta": "Ir a la tienda",
-      "code": "SAVE10",
-      "code_label": "10% extra en toda la tienda",
-      "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
-      "price": 719.99,
-      "old_price": 1049.99,
-      "from": "2026-10-02",
-      "until": "2026-10-06"
-    },
-    {
-      "title": "Descuento misterioso: código MYSTERY 🎁",
-      "eyebrow": "Acer · cupón sorpresa",
-      "subtitle": "Introduce el código MYSTERY en el carrito y descubre un descuento sorpresa en toda la tienda de Acer. Del 9 al 13 de octubre.",
-      "store": "acer",
-      "logo_store": "acer",
-      "cta": "Ir a la tienda",
-      "code": "MYSTERY",
-      "code_label": "Descuento sorpresa en el carrito",
-      "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
-      "price": 799.99,
-      "old_price": 1049.99,
-      "from": "2026-10-09",
-      "until": "2026-10-13"
-    },
-    {
-      "title": "10% dto en tarjetas gráficas y almacenamiento",
-      "eyebrow": "Acer · código GPU10",
-      "subtitle": "Un 10% extra con el código GPU10 en tarjetas gráficas y almacenamiento, como la Predator BiFrost RX9070 16G OC. Del 13 al 16 de octubre.",
-      "store": "acer",
-      "logo_store": "acer",
-      "cta": "Ir a la tienda",
-      "code": "GPU10",
-      "code_label": "10% extra en gráficas y almacenamiento",
-      "image": "https://static2-ecemea.acer.com/media/catalog/product/p/r/predator-biforst-radeon-rx-9070-oc-pb-rx9070-soc-black-01-custom_dp.z4gww.p01.png",
-      "price": 656.99,
-      "old_price": 729.99,
-      "from": "2026-10-13",
-      "until": "2026-10-16"
-    },
-    {
-      "title": "Microsoft 365 gratis al comprar un PC 🎁",
-      "eyebrow": "Acer · regalo automático",
-      "subtitle": "Microsoft 365 Personal incluido sin coste al comprar cualquier PC Acer, descuento aplicado automáticamente en el carrito. Del 16 al 20 de octubre.",
-      "store": "acer",
-      "logo_store": "acer",
-      "cta": "Ir a la tienda",
-      "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
-      "from": "2026-10-16",
-      "until": "2026-10-20"
-    },
-    {
-      "title": "5% extra con el código WEEKEND5",
-      "eyebrow": "Acer · código WEEKEND5",
-      "subtitle": "Un 5% de descuento extra con el código WEEKEND5 sobre los precios ya rebajados de la tienda de Acer. Del 23 al 27 de octubre.",
-      "store": "acer",
-      "logo_store": "acer",
-      "cta": "Ir a la tienda",
-      "code": "WEEKEND5",
-      "code_label": "5% extra sobre precios rebajados",
-      "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
-      "price": 759.99,
-      "old_price": 1049.99,
-      "from": "2026-10-23",
-      "until": "2026-10-27"
-    },
-    {
-      "title": "10% dto en tarjetas gráficas y almacenamiento",
-      "eyebrow": "Acer · código GPU10",
-      "subtitle": "Un 10% extra con el código GPU10 en tarjetas gráficas y almacenamiento, como la Predator BiFrost RX9070 16G OC. Del 27 al 30 de octubre.",
-      "store": "acer",
-      "logo_store": "acer",
-      "cta": "Ir a la tienda",
-      "code": "GPU10",
-      "code_label": "10% extra en gráficas y almacenamiento",
-      "image": "https://static2-ecemea.acer.com/media/catalog/product/p/r/predator-biforst-radeon-rx-9070-oc-pb-rx9070-soc-black-01-custom_dp.z4gww.p01.png",
-      "price": 656.99,
-      "old_price": 729.99,
-      "from": "2026-10-27",
-      "until": "2026-10-30"
-    },
-    {
-      "title": "Descuento misterioso: código MYSTERY 🎁",
-      "eyebrow": "Acer · cupón sorpresa",
-      "subtitle": "Introduce el código MYSTERY en el carrito y descubre un descuento sorpresa en toda la tienda de Acer. Del 30 de octubre al 3 de noviembre.",
-      "store": "acer",
-      "logo_store": "acer",
-      "cta": "Ir a la tienda",
-      "code": "MYSTERY",
-      "code_label": "Descuento sorpresa en el carrito",
-      "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
-      "price": 799.99,
-      "old_price": 1049.99,
-      "from": "2026-10-30",
-      "until": "2026-11-03"
-    }
-  ]
+  "adidas": {
+   "bg": [
+    "#000000",
+    "#1c1c1c"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#000000"
+   ]
+  },
+  "footlocker": {
+   "bg": [
+    "#111111",
+    "#2b2b2b"
+   ],
+   "accent": "#ff3b4e",
+   "cta": [
+    "#ffffff",
+    "#111111"
+   ]
+  },
+  "quiksilver": {
+   "bg": [
+    "#0a2a43",
+    "#0f4c75"
+   ],
+   "accent": "#f2c230",
+   "cta": [
+    "#f2c230",
+    "#0a2a43"
+   ],
+   "chipDark": true
+  },
+  "roxy": {
+   "bg": [
+    "#1e2a5a",
+    "#3a2466"
+   ],
+   "accent": "#ff7aa8",
+   "cta": [
+    "#ff7aa8",
+    "#1e2a5a"
+   ],
+   "face": "round",
+   "chipDark": true
+  },
+  "dcshoes": {
+   "bg": [
+    "#111111",
+    "#333333"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#111111"
+   ]
+  },
+  "desigual": {
+   "bg": [
+    "#1a1a1a",
+    "#3a1414"
+   ],
+   "accent": "#ff5a3c",
+   "cta": [
+    "#ff5a3c",
+    "#ffffff"
+   ],
+   "face": "round"
+  },
+  "bershka": {
+   "bg": [
+    "#111111",
+    "#2a2a2a"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#111111"
+   ]
+  },
+  "4elementos": {
+   "bg": [
+    "#1d3b2a",
+    "#2f6b47"
+   ],
+   "accent": "#f4d35e",
+   "cta": [
+    "#f4d35e",
+    "#1d3b2a"
+   ]
+  },
+  "zapatosobi": {
+   "bg": [
+    "#22313f",
+    "#34495e"
+   ],
+   "accent": "#e9b44c",
+   "cta": [
+    "#e9b44c",
+    "#22313f"
+   ]
+  },
+  "deporteoutlet": {
+   "bg": [
+    "#0d3b66",
+    "#145c9e"
+   ],
+   "accent": "#ff8a5b",
+   "cta": [
+    "#f95738",
+    "#ffffff"
+   ]
+  },
+  "leroymerlin": {
+   "bg": [
+    "#1f5a1f",
+    "#3f8a1f"
+   ],
+   "accent": "#c8f07a",
+   "cta": [
+    "#ffffff",
+    "#1f5a1f"
+   ]
+  },
+  "leroymerlin_outlet": {
+   "bg": [
+    "#1f5a1f",
+    "#3f8a1f"
+   ],
+   "accent": "#ffb545",
+   "cta": [
+    "#ffb545",
+    "#1f5a1f"
+   ]
+  },
+  "aeg": {
+   "bg": [
+    "#1a1a1a",
+    "#2e2e2e"
+   ],
+   "accent": "#ff4a5e",
+   "cta": [
+    "#ffffff",
+    "#1a1a1a"
+   ]
+  },
+  "electrolux": {
+   "bg": [
+    "#041e42",
+    "#0a3a7a"
+   ],
+   "accent": "#9ec5ff",
+   "cta": [
+    "#ffffff",
+    "#041e42"
+   ]
+  },
+  "balay": {
+   "bg": [
+    "#0b2a4a",
+    "#16436f"
+   ],
+   "accent": "#b9d4ef",
+   "cta": [
+    "#ffffff",
+    "#0b2a4a"
+   ]
+  },
+  "bosch": {
+   "bg": [
+    "#0a2540",
+    "#005691"
+   ],
+   "accent": "#ff5363",
+   "cta": [
+    "#ffffff",
+    "#0a2540"
+   ]
+  },
+  "rowenta": {
+   "bg": [
+    "#0d2c54",
+    "#1b4a82"
+   ],
+   "accent": "#9ad0ec",
+   "cta": [
+    "#ffffff",
+    "#0d2c54"
+   ]
+  },
+  "tefal": {
+   "bg": [
+    "#9e0b22",
+    "#c8102e"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#9e0b22"
+   ]
+  },
+  "hpstore": {
+   "bg": [
+    "#004f7c",
+    "#0096d6"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#004f7c"
+   ]
+  },
+  "huawei": {
+   "bg": [
+    "#111111",
+    "#3a0a12"
+   ],
+   "accent": "#ff4d63",
+   "cta": [
+    "#ffffff",
+    "#111111"
+   ]
+  },
+  "acer": {
+   "bg": [
+    "#10240f",
+    "#1f4a1c"
+   ],
+   "accent": "#9ed42a",
+   "cta": [
+    "#9ed42a",
+    "#10240f"
+   ]
+  },
+  "mediamarkt": {
+   "bg": [
+    "#a80000",
+    "#df0000"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#a80000"
+   ],
+   "face": "round"
+  },
+  "tiendanimal": {
+   "bg": [
+    "#00574f",
+    "#00897b"
+   ],
+   "accent": "#ffd166",
+   "cta": [
+    "#ffd166",
+    "#00574f"
+   ],
+   "face": "round"
+  },
+  "allpowers": {
+   "bg": [
+    "#15171b",
+    "#2c3036"
+   ],
+   "accent": "#ff5a3d",
+   "cta": [
+    "#ff5a3d",
+    "#ffffff"
+   ]
+  },
+  "toysrus": {
+   "bg": [
+    "#0a3a8c",
+    "#1d5fd0"
+   ],
+   "accent": "#ffd100",
+   "cta": [
+    "#ffd100",
+    "#0a3a8c"
+   ],
+   "face": "round"
+  },
+  "kiwoko": {
+   "bg": [
+    "#c41f25",
+    "#e0383e"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#c41f25"
+   ],
+   "face": "round"
+  },
+  "armani": {
+   "bg": [
+    "#141518",
+    "#2c2e33"
+   ],
+   "accent": "#d8c6a4",
+   "cta": [
+    "#f1ece3",
+    "#141518"
+   ],
+   "face": "serif",
+   "stage": "disc"
+  },
+  "ysl": {
+   "bg": [
+    "#050505",
+    "#1b1408"
+   ],
+   "accent": "#c9a45c",
+   "cta": [
+    "#c9a45c",
+    "#050505"
+   ],
+   "face": "serif",
+   "stage": "disc"
+  },
+  "perfumeriacomas": {
+   "bg": [
+    "#3a1d2e",
+    "#6b2d4a"
+   ],
+   "accent": "#f3c7d8",
+   "cta": [
+    "#f3c7d8",
+    "#3a1d2e"
+   ],
+   "face": "serif",
+   "stage": "disc"
+  },
+  "stylevana": {
+   "bg": [
+    "#7a1f5c",
+    "#c2185b"
+   ],
+   "accent": "#ffe0ef",
+   "cta": [
+    "#ffffff",
+    "#7a1f5c"
+   ],
+   "face": "round"
+  },
+  "foreo": {
+   "bg": [
+    "#5e3a8c",
+    "#8b5fbf"
+   ],
+   "accent": "#ffe3f4",
+   "cta": [
+    "#ffffff",
+    "#5e3a8c"
+   ],
+   "face": "round"
+  },
+  "lg": {
+   "bg": [
+    "#7a0027",
+    "#a50034"
+   ],
+   "accent": "#ffffff",
+   "cta": [
+    "#ffffff",
+    "#a50034"
+   ]
+  },
+  "lg_outlet": {
+   "bg": [
+    "#3d0014",
+    "#7a0027"
+   ],
+   "accent": "#ffc24d",
+   "cta": [
+    "#ffc24d",
+    "#3d0014"
+   ]
+  }
+ },
+ "custom": [
+  {
+   "eyebrow": "👻 Especial Halloween",
+   "title": "Hasta −51% en disfraces y terror",
+   "image": "https://m.media-amazon.com/images/I/31-MmLc9+7L._SL500_.jpg",
+   "cta": "Ver ofertas de Halloween",
+   "theme": {
+    "bg": [
+     "#050204",
+     "#7a0f1a"
+    ],
+    "accent": "#ff7a1a",
+    "cta": [
+     "#ff7a1a",
+     "#1a0506"
+    ],
+    "face": "serif",
+    "stage": "tile"
+   },
+   "position": 0,
+   "slide_seconds": 15,
+   "from": "2026-10-14",
+   "until": "2026-11-01",
+   "store": "halloween"
+  },
+  {
+   "eyebrow": "ALLPOWERS · 12–31 oct",
+   "title": "Prime Big Deal Days: hasta −60%",
+   "store": "allpowers",
+   "logo_store": "allpowers",
+   "image": "https://cdn.shopify.com/s/files/1/0566/0511/4454/files/SOLAX-P100-02.jpg?v=1755067868",
+   "price": 79.0,
+   "old_price": 199.0,
+   "code": "EXTRA10",
+   "code_label": "−10% EXTRA en toda la tienda",
+   "cta": "Ver ofertas ALLPOWERS",
+   "position": 1,
+   "from": "2026-10-12",
+   "until": "2026-10-31"
+  },
+  {
+   "eyebrow": "Foot Locker · It's giving",
+   "title": "Hasta −75% en zapatillas y botas",
+   "subtitle": "Capas, zapatillas y botas a prueba de intemperie. El invierno, a tu manera.",
+   "store": "footlocker",
+   "logo_store": "footlocker",
+   "image": "https://images.footlocker.com/is/image/FLEU/314218171404?wid=620&hei=620&fmt=png-alpha",
+   "price": 45.0,
+   "old_price": 139.99,
+   "cta": "Ver ofertas Foot Locker",
+   "position": 2,
+   "from": "2026-10-15",
+   "until": "2026-11-01"
+  },
+  {
+   "title": "Prime Big Deal Days: prepárate 🛒",
+   "eyebrow": "Amazon · 6-7 de octubre",
+   "subtitle": "48 horas de ofertas exclusivas para socios Prime en más de 35 categorías. No olvides entrar esos días para encontrar los mejores descuentos reales.",
+   "store": "amazon",
+   "logo_store": "amazon",
+   "cta": "Ir a Amazon",
+   "image": "https://m.media-amazon.com/images/I/61sPhOjursL._AC_UL320_.jpg",
+   "price": 79.89,
+   "old_price": 399.45,
+   "slide_seconds": 10,
+   "until": "2026-10-07",
+   "position": 0
+  },
+  {
+   "title": "Prime Big Deal Days: prepárate 🛒",
+   "eyebrow": "Amazon · 6-7 de octubre",
+   "subtitle": "48 horas de ofertas exclusivas para socios Prime en más de 35 categorías. No olvides entrar esos días para encontrar los mejores descuentos reales.",
+   "store": "amazon",
+   "logo_store": "amazon",
+   "cta": "Ir a Amazon",
+   "image": "https://m.media-amazon.com/images/I/61sPhOjursL._AC_UL320_.jpg",
+   "price": 79.89,
+   "old_price": 399.45,
+   "slide_seconds": 10,
+   "until": "2026-10-07",
+   "position": 10
+  },
+  {
+   "title": "Nueva tienda: Leroy Merlin Outlet 🏷️",
+   "eyebrow": "Leroy Merlin · hasta -65%",
+   "subtitle": "Liquidación real de bricolaje, baño, suelos y jardín -- selección verificada directamente del programa de afiliados de Leroy Merlin, con hasta un 65% de descuento.",
+   "store": "leroymerlin_outlet",
+   "logo_store": "leroymerlin",
+   "cta": "Ir a la tienda",
+   "image": "https://media.adeo.com/media/3930960/media.jpg",
+   "price": 99.99,
+   "old_price": 289.0,
+   "from": "2026-09-28",
+   "position": 2
+  },
+  {
+   "title": "Nueva tienda: Armani Beauty ✨",
+   "subtitle": "Perfumes y maquillaje de Armani rebajados, y además un 15% extra con el código ARMANI15, exclusivo para afiliados.",
+   "store": "armani",
+   "logo_store": "armani",
+   "cta": "Ir a la tienda",
+   "code": "ARMANI15",
+   "code_label": "15% extra, exclusivo afiliados",
+   "image": "https://www.armanibeauty.es/dw/image/v2/AAQP_PRD/on/demandware.static/-/Sites-gac-master-catalog/default/dw53f041a9/products/2025/ww-01050-arm/3614274752106/50ml_3614274752106-power_of_you-main-v2.jpg?sw=1024&sh=1024&sm=fit&bgcolor=FFFFFF",
+   "price": 78.75,
+   "old_price": 105.0,
+   "from": "2026-09-23"
+  },
+  {
+   "title": "10% dto extra con el código SAVE10 🔥",
+   "eyebrow": "Acer · código SAVE10",
+   "subtitle": "Añade el código SAVE10 en el carrito y llévate un 10% extra sobre el precio ya rebajado, en toda la tienda de Acer. Del 2 al 6 de octubre.",
+   "store": "acer",
+   "logo_store": "acer",
+   "cta": "Ir a la tienda",
+   "code": "SAVE10",
+   "code_label": "10% extra en toda la tienda",
+   "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
+   "price": 719.99,
+   "old_price": 1049.99,
+   "from": "2026-10-02",
+   "until": "2026-10-06"
+  },
+  {
+   "title": "Descuento misterioso: código MYSTERY 🎁",
+   "eyebrow": "Acer · cupón sorpresa",
+   "subtitle": "Introduce el código MYSTERY en el carrito y descubre un descuento sorpresa en toda la tienda de Acer. Del 9 al 13 de octubre.",
+   "store": "acer",
+   "logo_store": "acer",
+   "cta": "Ir a la tienda",
+   "code": "MYSTERY",
+   "code_label": "Descuento sorpresa en el carrito",
+   "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
+   "price": 799.99,
+   "old_price": 1049.99,
+   "from": "2026-10-09",
+   "until": "2026-10-13"
+  },
+  {
+   "title": "10% dto en tarjetas gráficas y almacenamiento",
+   "eyebrow": "Acer · código GPU10",
+   "subtitle": "Un 10% extra con el código GPU10 en tarjetas gráficas y almacenamiento, como la Predator BiFrost RX9070 16G OC. Del 13 al 16 de octubre.",
+   "store": "acer",
+   "logo_store": "acer",
+   "cta": "Ir a la tienda",
+   "code": "GPU10",
+   "code_label": "10% extra en gráficas y almacenamiento",
+   "image": "https://static2-ecemea.acer.com/media/catalog/product/p/r/predator-biforst-radeon-rx-9070-oc-pb-rx9070-soc-black-01-custom_dp.z4gww.p01.png",
+   "price": 656.99,
+   "old_price": 729.99,
+   "from": "2026-10-13",
+   "until": "2026-10-16"
+  },
+  {
+   "title": "Microsoft 365 gratis al comprar un PC 🎁",
+   "eyebrow": "Acer · regalo automático",
+   "subtitle": "Microsoft 365 Personal incluido sin coste al comprar cualquier PC Acer, descuento aplicado automáticamente en el carrito. Del 16 al 20 de octubre.",
+   "store": "acer",
+   "logo_store": "acer",
+   "cta": "Ir a la tienda",
+   "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
+   "from": "2026-10-16",
+   "until": "2026-10-20"
+  },
+  {
+   "title": "5% extra con el código WEEKEND5",
+   "eyebrow": "Acer · código WEEKEND5",
+   "subtitle": "Un 5% de descuento extra con el código WEEKEND5 sobre los precios ya rebajados de la tienda de Acer. Del 23 al 27 de octubre.",
+   "store": "acer",
+   "logo_store": "acer",
+   "cta": "Ir a la tienda",
+   "code": "WEEKEND5",
+   "code_label": "5% extra sobre precios rebajados",
+   "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
+   "price": 759.99,
+   "old_price": 1049.99,
+   "from": "2026-10-23",
+   "until": "2026-10-27"
+  },
+  {
+   "title": "10% dto en tarjetas gráficas y almacenamiento",
+   "eyebrow": "Acer · código GPU10",
+   "subtitle": "Un 10% extra con el código GPU10 en tarjetas gráficas y almacenamiento, como la Predator BiFrost RX9070 16G OC. Del 27 al 30 de octubre.",
+   "store": "acer",
+   "logo_store": "acer",
+   "cta": "Ir a la tienda",
+   "code": "GPU10",
+   "code_label": "10% extra en gráficas y almacenamiento",
+   "image": "https://static2-ecemea.acer.com/media/catalog/product/p/r/predator-biforst-radeon-rx-9070-oc-pb-rx9070-soc-black-01-custom_dp.z4gww.p01.png",
+   "price": 656.99,
+   "old_price": 729.99,
+   "from": "2026-10-27",
+   "until": "2026-10-30"
+  },
+  {
+   "title": "Descuento misterioso: código MYSTERY 🎁",
+   "eyebrow": "Acer · cupón sorpresa",
+   "subtitle": "Introduce el código MYSTERY en el carrito y descubre un descuento sorpresa en toda la tienda de Acer. Del 30 de octubre al 3 de noviembre.",
+   "store": "acer",
+   "logo_store": "acer",
+   "cta": "Ir a la tienda",
+   "code": "MYSTERY",
+   "code_label": "Descuento sorpresa en el carrito",
+   "image": "https://static2-ecemea.acer.com/media/catalog/product/a/c/acer-aspire-go-15-ag15-72p-non-fingerprint-non-backlit-wp-start-screen-pure-silver-01_18.jpg",
+   "price": 799.99,
+   "old_price": 1049.99,
+   "from": "2026-10-30",
+   "until": "2026-11-03"
+  },
+  {
+   "title": "Nueva tienda: LG Outlet 📺",
+   "eyebrow": "LG · hasta -68%",
+   "subtitle": "Televisores OLED y QNED, electrodomésticos y barras de sonido de la tienda oficial de LG. Son unidades de exposición o devolución, revisadas por LG y con su garantía: pocas de cada cosa y a precio de outlet.",
+   "store": "lg_outlet",
+   "logo_store": "lg",
+   "cta": "Ver el outlet",
+   "image": "https://www.lg.com/content/dam/channel/wcms/es/productos/he/2025/tv/qned/qned-82/86qned82a6b/lg-com/gallery/01_lg_86QNED82A6B_gallery_basic_450x450.jpg",
+   "price": 999.01,
+   "old_price": 3099.0,
+   "from": "2026-10-27",
+   "until": "2026-11-26",
+   "position": 3
+  }
+ ]
 }

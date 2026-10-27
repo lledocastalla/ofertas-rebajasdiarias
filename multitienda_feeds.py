@@ -2182,6 +2182,121 @@ def fetch_acer_offers(log, local_test_file=None, cap=None):
     return {o["id"]: o for o in top}
 
 
+
+# ---------------------------------------------------------------------------
+# LG ES (27 oct 2026, aceptados en Awin -- advertiser 31267 "LG PRM ES", feed 94742
+# "GP1 ES Feed", 1.439 productos). Hay un segundo feed, 114535 "GP1_Aire_RAC", con 22
+# productos de aire acondicionado; no se usa porque sus referencias ya salen en el principal.
+#
+# PRECIO DE REFERENCIA: LG deja `product_price_old` VACÍO en las 1.439 filas (comprobado), y
+# pone la tarifa en `rrp_price`. Mismo criterio que Stylevana, Zapatos OBI, 4 Elementos y Acer.
+# Conviene recordar qué es: `rrp_price` es el precio de tarifa del fabricante, no un precio
+# que LG haya cobrado antes. Es la referencia más débil de las que usamos, pero aquí el
+# fabricante y la tienda son el mismo, así que la tarifa sí es su precio oficial.
+#
+# DOS TIENDAS, NO UNA (petición del usuario: "lo primero que vea la gente es el outlet y
+# luego por categorías"). LG mete en el mismo feed producto nuevo y producto de outlet
+# --exposición o devolución--, y el título lo dice con la palabra "Outlet". Mezclarlos sería
+# vender como nuevo algo que no lo es, así que se separan en `lg_outlet` y `lg`. Además de
+# ser más honesto, es lo que el usuario quiere enseñar primero: el outlet es donde están los
+# descuentos de verdad (el -68%, el -59% y el -58% son todos de ahí).
+#
+# Medido el 27 oct 2026 sobre el feed entero: 669 sin stock, 126 con stock y sin rebaja, y
+# 223 en el rango 30-80% de siempre -- 105 de outlet y 118 de producto nuevo. Todas con foto.
+# ---------------------------------------------------------------------------
+
+LG_FID = "94742"
+
+# El feed trae la categoría comercial de LG; se lleva a las del catálogo. Lo que no encaje
+# cae en Tecnología, que es donde está casi todo lo de LG.
+LG_CATEGORIAS = {
+    "Electrodomésticos": "Hogar",
+    "Electrodomésticos integrables": "Hogar",
+    "Lavadoras y Secadoras": "Hogar",
+    "Frigoríficos": "Hogar",
+    "Microondas LG Smart inverter": "Hogar",
+    "Lavavajillas": "Hogar",
+    "Aerotermia": "Hogar",
+    "Climatización": "Hogar",
+    "Aire Acondicionado Doméstico": "Hogar",
+}
+
+
+def fetch_lg_offers(log, local_test_file=None, cap=None):
+    columns = (
+        "aw_deep_link,aw_product_id,merchant_product_id,merchant_image_url,"
+        "merchant_category,product_name,search_price,rrp_price,in_stock,currency"
+    )
+    try:
+        if local_test_file:
+            with gzip.open(local_test_file, "rt", encoding="utf-8", errors="replace") as f:
+                text = f.read()
+        else:
+            url = _awin_feed_url(AWIN_API_KEY, LG_FID, columns)
+            text = _download_feed_csv(url, log)
+    except Exception as e:
+        log(f"[lg] error descargando feed: {e}")
+        return {}
+
+    nuevos, outlet = [], []
+    for row in csv.DictReader(io.StringIO(text)):
+        if (row.get("in_stock") or "").strip() != "1":
+            continue
+        if (row.get("currency") or "").strip().upper() not in ("", "EUR"):
+            continue
+        try:
+            actual = float(row.get("search_price") or "")
+            original = float(row.get("rrp_price") or "")
+        except ValueError:
+            continue
+        if original <= 0 or actual <= 0 or actual >= original or actual < MIN_PRICE_EUR:
+            continue
+        pct = (original - actual) / original * 100
+        if pct < MIN_DISCOUNT_PERCENT or pct > MAX_DISCOUNT_PERCENT:
+            continue
+
+        title = (row.get("product_name") or "").strip()
+        # El feed termina los títulos en "| LG ES" y los de outlet empiezan por "Outlet ".
+        # Las dos cosas sobran en la tarjeta: la tienda ya se ve en la insignia y lo de outlet
+        # va en su propia etiqueta.
+        es_outlet = title.lower().startswith("outlet") or ".outlet" in title.lower()
+        title = re.sub(r"\s*\|\s*LG ES\s*$", "", title).strip()
+        title = re.sub(r"^Outlet\s+", "", title).strip()
+
+        pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
+        image = (row.get("merchant_image_url") or "").strip()
+        aff_url = (row.get("aw_deep_link") or "").strip()
+        if not title or not pid or not aff_url or not image:
+            continue
+
+        cat_lg = (row.get("merchant_category") or "").strip()
+        oferta = {
+            "id": f"lg_{pid}",
+            "title": title[:180],
+            "category": LG_CATEGORIAS.get(cat_lg, "Tecnología"),
+            "subcategory": cat_lg,
+            "price": round(actual, 2),
+            "original_price": round(original, 2),
+            "discount_percent": int(round(pct)),
+            "is_flash": False,
+            "image": image,
+            "url": aff_url,
+            "store": "lg_outlet" if es_outlet else "lg",
+            "store_label": "LG Outlet" if es_outlet else "LG",
+        }
+        (outlet if es_outlet else nuevos).append(oferta)
+
+    # El outlet va DELANTE a propósito: es donde están los descuentos grandes y es lo que el
+    # usuario quiere que se vea primero. Dentro de cada grupo, de mayor a menor descuento.
+    outlet.sort(key=lambda o: -o["discount_percent"])
+    nuevos.sort(key=lambda o: -o["discount_percent"])
+    todas = outlet + nuevos
+    top = todas if cap is None else todas[:cap]
+    log(f"[lg] {len(outlet)} de outlet + {len(nuevos)} de producto nuevo = {len(todas)} "
+        f"candidatos 30-80% con stock, {len(top)} publicados esta vez")
+    return {o["id"]: o for o in top}
+
+
 # ---------------------------------------------------------------------------
 # Armani Beauty ES, YSL Beauty ES y Kiwoko (23 sep 2026, aceptadas en Tradedoubler -- ver
 # RASPI_REBAJASDIARIAS.md). Los tres feeds traen precio de referencia real: `sale_price` en
@@ -2720,6 +2835,19 @@ def prune_expired_coupons(merged, fresh, log):
     log(f"[cupones] códigos caducados quitados del catálogo: {removed}")
 
 
+# Qué tiendas han conseguido bajar su feed en el último ciclo. Lo rellena
+# fetch_multitienda_offers() y lo lee update_offers.py para poder retirar en el acto las
+# ofertas que ya no vienen en el feed (27 oct 2026, petición del usuario: "hay que hacer que
+# se revise automáticamente y se elimine si ya no existe").
+#
+# La distinción es IMPRESCINDIBLE: un feed trae el catálogo COMPLETO de su tienda, así que si
+# una oferta no viene, es que ya no existe. Pero si la descarga falla, el resultado también
+# está vacío, y ahí borrar sería catastrófico: se cargaría la tienda entera por un fallo de
+# red de treinta segundos. Por eso no basta con mirar si hay resultados; hay que saber si la
+# bajada funcionó.
+TIENDAS_OK_ULTIMO_CICLO = set()
+
+
 def fetch_multitienda_offers(log, local_test_files=None):
     """Punto de entrada único. local_test_files (dict opcional {'leroymerlin': path, 'stylevana': path,
     'perfumeriacomas': path}) solo para pruebas locales sin red — en producción se omite y se
@@ -2764,7 +2892,9 @@ def fetch_multitienda_offers(log, local_test_files=None):
         ("kiwoko", fetch_kiwoko_offers, "kiwoko"),
         ("toysrus", fetch_toysrus_offers, "toysrus"),
         ("allpowers", fetch_allpowers_offers, "allpowers"),
+        ("lg", fetch_lg_offers, "lg"),
     ]
+    TIENDAS_OK_ULTIMO_CICLO.clear()
     for name, fetch_fn, key in stores:
         # 17 sep 2026: heartbeat ANTES de cada tienda -- bug real detectado en producción,
         # "acer" (última de la lista) no dejaba NINGÚN rastro en el log tras integrarse (ni
@@ -2775,11 +2905,24 @@ def fetch_multitienda_offers(log, local_test_files=None):
         # "nunca llegó a intentarlo" de "lo intentó y algo se comió tanto el resultado como la
         # excepción" -- con este log, el próximo ciclo real deja dicho hasta dónde llegó.
         log(f"[{name}] intentando...")
+        _ids_antes = set(result)
         try:
             result.update(fetch_fn(log, local_test_files.get(key)))
         except Exception as e:
             log(f"[{name}] aviso: fallo inesperado, se omite esta tienda este ciclo "
                 f"(las demás no se ven afectadas): {e!r}")
+        # Una tienda cuenta como "bajada correctamente" solo si ha traído al menos una oferta.
+        # Es deliberadamente conservador: las funciones devuelven {} tanto si la descarga falló
+        # como si de verdad hoy no hay nada, y desde fuera no se distingue. Con esta regla, el
+        # caso malo (fallo de red) nunca borra nada; el caso raro (la tienda se queda de
+        # verdad a cero) lo recoge igualmente la poda normal de STALE_AFTER_DAYS.
+        #
+        # Se leen los `store` de las ofertas devueltas y no la clave del registro porque una
+        # sola función puede producir varias tiendas: fetch_lg_offers() devuelve `lg` y
+        # `lg_outlet` a la vez.
+        _nuevas = [result[i] for i in set(result) - _ids_antes]
+        if _nuevas:
+            TIENDAS_OK_ULTIMO_CICLO.update(o.get("store") for o in _nuevas if o.get("store"))
     try:
         attach_store_coupons(result, log)
     except Exception as e:

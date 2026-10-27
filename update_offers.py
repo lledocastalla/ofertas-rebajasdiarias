@@ -47,6 +47,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException
 
+import multitienda_feeds
 from multitienda_feeds import fetch_multitienda_offers
 # 15 sep 2026, ver quiksilver_roxy_scraper.py -- import circular a propósito (ese módulo hace
 # "import update_offers as uo" para reusar build_driver()/parse_price()): funciona porque los
@@ -617,11 +618,42 @@ def deploy_offers_to_netlify():
             },
             method="POST",
         )
-        with urllib.request.urlopen(req, timeout=60) as r:
-            r.read()
-        log("Deploy a Netlify realizado correctamente.")
+        # COMPROBAR LA RESPUESTA (23 oct 2026). Antes esto hacía `r.read()` y tiraba el
+        # resultado, así que el log decía "realizado correctamente" pasara lo que pasara. El
+        # catálogo estuvo TRES DÍAS sin publicarse -- del 20 al 23 de octubre -- y en el log
+        # ponía que todo iba bien en los seis ciclos de cada día. Un error disfrazado de éxito
+        # es peor que un error: nadie lo busca.
+        with urllib.request.urlopen(req, timeout=120) as r:
+            info = json.loads(r.read() or b"{}")
+        deploy_id, estado = info.get("id"), info.get("state")
+        if not deploy_id:
+            raise RuntimeError(f"Netlify no devolvió id de deploy: {str(info)[:200]}")
+        # El POST devuelve enseguida con el deploy "uploaded"/"processing"; hay que esperar a
+        # que diga "ready" para poder afirmar que está publicado.
+        for _ in range(20):
+            if estado in ("ready", "error"):
+                break
+            time.sleep(6)
+            cons = urllib.request.Request(
+                f"https://api.netlify.com/api/v1/deploys/{deploy_id}",
+                headers={"Authorization": f"Bearer {token}"})
+            with urllib.request.urlopen(cons, timeout=60) as r2:
+                estado = (json.loads(r2.read() or b"{}")).get("state")
+        if estado != "ready":
+            raise RuntimeError(f"el deploy {deploy_id} se quedó en estado {estado!r}")
+        log(f"Deploy a Netlify publicado y verificado (deploy {deploy_id}).")
+        return True
     except Exception as e:
-        log(f"aviso: fallo el deploy a Netlify, se sigue sin él este ciclo: {e}")
+        # Esto NO puede pasar en silencio: mientras falle, la web, la app y los bots de redes
+        # siguen leyendo el catálogo viejo, con precios que ya no existen.
+        log(f"ERROR: el catálogo NO se ha publicado en Netlify: {e}")
+        try:
+            notify_telegram(
+                "🔴 El catálogo NO se ha publicado en Netlify. La web y la app están "
+                f"sirviendo precios viejos hasta que se arregle.\nMotivo: {e}")
+        except Exception:
+            pass
+        return False
 
 
 def notify_telegram(msg):
@@ -2103,6 +2135,30 @@ def refresh_amazon_offers(merged, now_iso, log):
             f"precio de los {len(amazon_ids)} productos de Amazon del catálogo.")
         return
     raw_items, failed_asins = result
+
+    # REINTENTOS CON PAUSA CRECIENTE (23 oct 2026). Sin esto el log decía, ciclo tras ciclo,
+    # "1162 ASIN revalidados (650 sin comprobar por fallo de red/API)": el 56% del catálogo
+    # NO se estaba revisando. No es un fallo de red, es la API de Amazon devolviendo 429 al
+    # recibir ~116 llamadas seguidas. El mismo arreglo en price_watch.py bajó los fallos de
+    # 633 a 0, así que aquí debería pasar lo mismo.
+    #
+    # Importa más de lo que parece: un ASIN que falla se queda con el precio viejo, y es
+    # exactamente de ahí de donde salen los precios que no coinciden con Amazon.
+    for espera in (30, 60, 120):
+        if not failed_asins:
+            break
+        log(f"[amazon-refresh] {len(failed_asins)} sin comprobar; reintento en {espera}s")
+        time.sleep(espera)
+        res2 = paapi.get_items(sorted(failed_asins))
+        if res2 is None:
+            break
+        mas_items, fallan_aun = res2
+        raw_items.extend(mas_items)
+        if len(fallan_aun) >= len(failed_asins):
+            # No mejora: la API está limitando de verdad e insistir solo lo empeora.
+            failed_asins = fallan_aun
+            break
+        failed_asins = fallan_aun
     fresh_by_asin = {o["id"]: o for o in paapi.offers_from_items(raw_items)}
     updated = removed = 0
     # CADUCIDAD DE LO NO COMPROBADO (20 oct 2026) ------------------------------------------
@@ -2677,6 +2733,37 @@ def main():
         except Exception:
             return True  # si no se puede leer la fecha, no se borra por precaución
 
+    # RETIRADA INMEDIATA DE LAS TIENDAS DE FEED (27 oct 2026, petición del usuario: "hay que
+    # hacer que se revise automáticamente y se elimine si ya no existe").
+    #
+    # La poda de STALE_AFTER_DAYS espera DOS DÍAS, y para un feed eso es demasiado: el feed
+    # trae el catálogo COMPLETO de su tienda en cada ciclo, así que una oferta que no viene ya
+    # no existe hoy, no dentro de dos días. Donde más se nota es en el outlet de LG, que es
+    # producto de exposición y de una sola unidad: puede agotarse en una hora, y hasta ahora
+    # habría seguido anunciándose hasta 48 h.
+    #
+    # Solo se tocan las tiendas que HAN BAJADO su feed bien en este ciclo
+    # (multitienda_feeds.TIENDAS_OK_ULTIMO_CICLO). Una tienda cuyo feed falló no entra en esa
+    # lista y se queda intacta: un fallo de red no puede vaciar una tienda entera.
+    tiendas_ok = set(getattr(multitienda_feeds, "TIENDAS_OK_ULTIMO_CICLO", set()))
+    if tiendas_ok:
+        vivas_ahora = {k for k, v in multitienda_offers.items()}
+        fuera = [k for k, v in merged.items()
+                 if v.get("store") in tiendas_ok and k not in vivas_ahora]
+        # El tope de seguridad de siempre: si esto dejara el catálogo bajo mínimos, algo va mal
+        # y es mejor no tocar nada.
+        if fuera and len(merged) - len(fuera) >= MIN_TOTAL_OFFERS:
+            por_tienda = {}
+            for k in fuera:
+                t = merged[k].get("store")
+                por_tienda[t] = por_tienda.get(t, 0) + 1
+                del merged[k]
+            log(f"Retiradas al momento {len(fuera)} ofertas que ya no vienen en su feed: "
+                f"{', '.join(f'{t} {n}' for t, n in sorted(por_tienda.items()))}")
+        elif fuera:
+            log(f"Se omite la retirada inmediata de {len(fuera)} ofertas de feed: dejaría el "
+                f"catálogo por debajo del mínimo.")
+
     pruned = {k: v for k, v in merged.items() if _is_fresh(v)}
     if len(pruned) >= MIN_TOTAL_OFFERS:
         removed = len(merged) - len(pruned)
@@ -2857,6 +2944,14 @@ def main():
     with open(OFFERS_PATH, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
+    # PUBLICAR LO PRIMERO (23 oct 2026). Esta llamada estaba al final, después del commit y del
+    # push, y el 20 de octubre un push rechazado mató el ciclo justo antes de llegar aquí: tres
+    # días sirviendo el catálogo del día 20, con el 28% de los precios de Amazon ya caducados.
+    #
+    # El orden correcto es éste y no el otro: publicar es lo único que la gente nota, y git es
+    # el historial. Que falle el historial no puede impedir que se publiquen precios buenos.
+    deploy_offers_to_netlify()
+
     # Catálogo ampliado: YA NO se genera aquí (26 ago 2026, bug real: descargar los 7 feeds
     # completos de Leroy Merlin dejaba la Pi sin memoria y el proceso entero moría por SIGKILL
     # del kernel -- un try/except normal NO protege contra esto, el OOM killer no da opción a
@@ -2903,17 +2998,32 @@ def main():
                 capture_output=True, text=True,
             )
             if rebase.returncode != 0:
-                log(f"ERROR: el rebase automático falló, hace falta arreglarlo a mano: "
-                    f"{rebase.stderr}")
-                sys.exit(1)
+                # Ya NO se corta el ciclo aquí (23 oct 2026). Esto es exactamente lo que pasó:
+                # el 20 de octubre el repositorio se quedó divergido, el rebase no pudo
+                # arreglarlo y el `sys.exit(1)` mataba el ciclo JUSTO ANTES del deploy a
+                # Netlify. Tres días sirviendo el catálogo del día 20, con el 28% de los
+                # precios de Amazon ya caducados, por un problema de git que no tiene nada que
+                # ver con publicar.
+                #
+                # Git es el historial; Netlify es lo que lee la gente. Que falle el historial
+                # no puede impedir que la gente vea precios buenos.
+                log(f"ERROR: el rebase automático falló, hay que arreglar el repositorio a "
+                    f"mano: {rebase.stderr}")
+                notify_telegram(
+                    "⚠️ El repositorio del catálogo está divergido y no se puede hacer push. "
+                    "El catálogo SÍ se está publicando igualmente, pero hay que reconciliar "
+                    "git a mano.")
+                return
             push = subprocess.run(["git", "-C", REPO_DIR, "push"], capture_output=True, text=True)
             if push.returncode != 0:
                 log(f"ERROR haciendo push (tras reintento): {push.stderr}")
-                sys.exit(1)
+                notify_telegram("⚠️ No se puede hacer push del catálogo a git. Publicado en "
+                                "Netlify igualmente; hay que mirar el repositorio.")
+                return
             log("Push realizado correctamente tras reintento con pull --rebase.")
         else:
             log("Push realizado correctamente.")
-        deploy_offers_to_netlify()
+        # (el deploy ya se hizo arriba, nada más escribir offers.json)
         notify_telegram(
             f"📦 RebajasDiarias actualizado: {len(new_or_updated)} ofertas nuevas/actualizadas, "
             f"{len(merged)} en total."
