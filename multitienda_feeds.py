@@ -2194,12 +2194,19 @@ def fetch_acer_offers(log, local_test_file=None, cap=None):
 # que LG haya cobrado antes. Es la referencia más débil de las que usamos, pero aquí el
 # fabricante y la tienda son el mismo, así que la tarifa sí es su precio oficial.
 #
-# DOS TIENDAS, NO UNA (petición del usuario: "lo primero que vea la gente es el outlet y
-# luego por categorías"). LG mete en el mismo feed producto nuevo y producto de outlet
-# --exposición o devolución--, y el título lo dice con la palabra "Outlet". Mezclarlos sería
-# vender como nuevo algo que no lo es, así que se separan en `lg_outlet` y `lg`. Además de
-# ser más honesto, es lo que el usuario quiere enseñar primero: el outlet es donde están los
-# descuentos de verdad (el -68%, el -59% y el -58% son todos de ahí).
+# UNA SOLA TIENDA, Y EL OUTLET COMO CATEGORÍA (27 oct 2026, corrección del usuario: "lo que
+# hay que hacer es una tienda lg sola y una categoría arriba del todo que sea outlet, luego
+# hogar, etc"). El primer intento fueron dos tiendas, `lg` y `lg_outlet`, y partía la marca en
+# dos sitios para el usuario sin necesidad.
+#
+# Lo que SÍ hay que seguir separando es el producto: el feed mezcla producto nuevo con producto
+# de outlet --exposición o devolución-- y el título lo dice con la palabra "Outlet". Venderlos
+# juntos sería presentar como nuevo algo que no lo es. Ahora la separación va por CATEGORÍA:
+# los de outlet pasan a la categoría "Outlet" y su categoría real de LG se guarda en
+# `subcategory`, para no perder el dato.
+#
+# En la web eso deja el outlet arriba del todo solo: las secciones se ordenan por número de
+# ofertas y el outlet es el grupo más grande (105 de 223).
 #
 # Medido el 27 oct 2026 sobre el feed entero: 669 sin stock, 126 con stock y sin rebaja, y
 # 223 en el rango 30-80% de siempre -- 105 de outlet y 118 de producto nuevo. Todas con foto.
@@ -2274,10 +2281,13 @@ def fetch_lg_offers(log, local_test_file=None, cap=None):
             continue
 
         cat_lg = (row.get("merchant_category") or "").strip()
+        # El outlet es su propia categoría; la real de LG se conserva en `subcategory` para
+        # que no se pierda de qué tipo de producto es.
+        categoria = "Outlet" if es_outlet else LG_CATEGORIAS.get(cat_lg, "Tecnología")
         oferta = {
             "id": f"lg_{pid}",
             "title": title[:180],
-            "category": LG_CATEGORIAS.get(cat_lg, "Tecnología"),
+            "category": categoria,
             "subcategory": cat_lg,
             "price": round(actual, 2),
             "original_price": round(original, 2),
@@ -2285,8 +2295,8 @@ def fetch_lg_offers(log, local_test_file=None, cap=None):
             "is_flash": False,
             "image": image,
             "url": aff_url,
-            "store": "lg_outlet" if es_outlet else "lg",
-            "store_label": "LG Outlet" if es_outlet else "LG",
+            "store": "lg",
+            "store_label": "LG",
         }
         (outlet if es_outlet else nuevos).append(oferta)
 
@@ -2297,7 +2307,8 @@ def fetch_lg_offers(log, local_test_file=None, cap=None):
     todas = outlet + nuevos
     top = todas if cap is None else todas[:cap]
     log(f"[lg] {len(outlet)} de outlet + {len(nuevos)} de producto nuevo = {len(todas)} "
-        f"candidatos 30-80% con stock, {len(top)} publicados esta vez")
+        f"candidatos 30-80% con stock, {len(top)} publicados esta vez (una sola tienda 'lg'; "
+        f"el outlet va en la categoría Outlet)")
     return {o["id"]: o for o in top}
 
 

@@ -10,7 +10,6 @@
   "armani",
   "ysl",
   "amazon",
-  "lg_outlet",
   "lg",
   "mediamarkt",
   "toysrus",
@@ -423,17 +422,6 @@
     "#ffffff",
     "#a50034"
    ]
-  },
-  "lg_outlet": {
-   "bg": [
-    "#3d0014",
-    "#7a0027"
-   ],
-   "accent": "#ffc24d",
-   "cta": [
-    "#ffc24d",
-    "#3d0014"
-   ]
   }
  },
  "custom": [
@@ -646,12 +634,12 @@
    "until": "2026-11-03"
   },
   {
-   "title": "Nueva tienda: LG Outlet 📺",
+   "title": "Nueva tienda: LG 📺",
    "eyebrow": "LG · hasta -68%",
-   "subtitle": "Televisores OLED y QNED, electrodomésticos y barras de sonido de la tienda oficial de LG. Son unidades de exposición o devolución, revisadas por LG y con su garantía: pocas de cada cosa y a precio de outlet.",
-   "store": "lg_outlet",
+   "subtitle": "Televisores OLED y QNED, electrodomésticos y barras de sonido de la tienda oficial de LG. Arriba del todo, el outlet: unidades de exposición o devolución revisadas por LG y con su garantía.",
+   "store": "lg",
    "logo_store": "lg",
-   "cta": "Ver el outlet",
+   "cta": "Ver las ofertas de LG",
    "image": "https://www.lg.com/content/dam/channel/wcms/es/productos/he/2025/tv/qned/qned-82/86qned82a6b/lg-com/gallery/01_lg_86QNED82A6B_gallery_basic_450x450.jpg",
    "price": 999.01,
    "old_price": 3099.0,
