@@ -2262,6 +2262,10 @@ def fetch_lg_offers(log, local_test_file=None, cap=None):
         es_outlet = title.lower().startswith("outlet") or ".outlet" in title.lower()
         title = re.sub(r"\s*\|\s*LG ES\s*$", "", title).strip()
         title = re.sub(r"^Outlet\s+", "", title).strip()
+        # Y el ".OUTLET" pegado a la referencia del modelo: "86QNED82A6B.OUTLET" queda feo en
+        # la tarjeta y al compartir por WhatsApp, y no aporta nada -- que es de outlet ya lo
+        # dice la tienda en la insignia.
+        title = re.sub(r"\.OUTLET\b", "", title, flags=re.I).strip(" -")
 
         pid = (row.get("aw_product_id") or row.get("merchant_product_id") or "").strip()
         image = (row.get("merchant_image_url") or "").strip()
@@ -2756,9 +2760,60 @@ def _awin_promotions(log):
     return _awin_promos_cache
 
 
+# Códigos que el anunciante manda por correo pero NO devuelve su propia API de Awin
+# (27 oct 2026). Comprobado con Perfumería Comas: de los 25 códigos del correo "Promociones de
+# Noviembre", la API daba 14. Faltaban los de Black Friday **y** tres que llevan activos desde
+# primavera (RADAR7, PRECISO7, SAMWISE7), así que no es solo cosa de fechas futuras: la API
+# simplemente no los publica todos.
+#
+# Solo van aquí los de TODA LA WEB: este código se pega a cada oferta de la tienda, y uno que
+# sea de una categoría concreta fallaría en el carrito de la mayoría de la gente.
+#
+# `pct` es lo que se usa para competir con los de la API, que se puntúan por porcentaje. Un
+# código de "-10 €" no puede puntuarse así (depende del importe), por eso los de euros no
+# entran aquí aunque sí salgan en la página de cupones.
+CODIGOS_MANUALES_AWIN = {
+    33073: [  # Perfumería Comas
+        {"code": "BLACKFRIDAY", "pct": 12.0, "desde": "2026-11-01", "hasta": "2026-11-30",
+         "label": "12% de descuento extra en toda la web (compra mínima 60 €)"},
+        {"code": "CIBERMONDAY", "pct": 10.0, "desde": "2026-11-01", "hasta": "2026-11-30",
+         "label": "10% de descuento en toda la web (compra mínima 60 €)"},
+        {"code": "PREBLACK", "pct": 8.0, "desde": "2026-11-01", "hasta": "2026-11-30",
+         "label": "8% de descuento extra en toda la web (compra mínima 60 €)"},
+        {"code": "SINGLEDAYS10", "pct": 10.0, "desde": "2026-11-01", "hasta": "2026-11-30",
+         "label": "10% por el Día del Soltero (compra mínima 79 €)"},
+        {"code": "RADAR7", "pct": 7.0, "desde": "", "hasta": "2026-12-31",
+         "label": "7% de descuento extra en toda la web (compra mínima 39 €)"},
+        {"code": "PRECISO7", "pct": 7.0, "desde": "", "hasta": "2026-12-31",
+         "label": "7% de descuento extra en toda la web (compra mínima 50 €)"},
+        {"code": "SAMWISE7", "pct": 7.0, "desde": "", "hasta": "2026-12-31",
+         "label": "7% de descuento extra en toda la web (compra mínima 79 €)"},
+    ],
+}
+
+
+def _manuales_vigentes(advertiser_id):
+    """Los códigos manuales de hoy de ese anunciante, como (puntuación, código, texto)."""
+    from datetime import date
+    hoy = date.today().isoformat()
+    out = []
+    for c in CODIGOS_MANUALES_AWIN.get(advertiser_id, []):
+        if c.get("desde") and hoy < c["desde"]:
+            continue
+        if c.get("hasta") and hoy > c["hasta"]:
+            continue
+        out.append((c["pct"], c["code"], c["label"]))
+    return out
+
+
 def _best_awin_sitewide_code(advertiser_id, log):
-    """(código, texto) del mejor código de Awin válido en toda la tienda, o (None, None)."""
+    """(código, texto) del mejor código de Awin válido en toda la tienda, o (None, None).
+
+    Compite lo que da la API con los de CODIGOS_MANUALES_AWIN; gana el de mayor porcentaje."""
     best = None
+    for pct, code, label in _manuales_vigentes(advertiser_id):
+        if best is None or pct > best[0]:
+            best = (pct, code, label)
     for pr in _awin_promotions(log):
         if (pr.get("advertiser") or {}).get("id") != advertiser_id or pr.get("type") != "voucher":
             continue
